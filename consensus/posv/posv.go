@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Tomochain
+// Copyright (c) 2020 Rupaya
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/tomochain/tomochain/tomox/tomox_state"
+	"github.com/rupayaproject/go-rupaya/tomox/tomox_state"
 	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
 	"io/ioutil"
 	"math/big"
@@ -34,21 +34,21 @@ import (
 	"time"
 
 	lru "github.com/hashicorp/golang-lru"
-	"github.com/tomochain/tomochain/accounts"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/common/hexutil"
-	"github.com/tomochain/tomochain/consensus"
-	"github.com/tomochain/tomochain/consensus/clique"
-	"github.com/tomochain/tomochain/consensus/misc"
-	"github.com/tomochain/tomochain/core/state"
-	"github.com/tomochain/tomochain/core/types"
-	"github.com/tomochain/tomochain/crypto"
-	"github.com/tomochain/tomochain/crypto/sha3"
-	"github.com/tomochain/tomochain/ethdb"
-	"github.com/tomochain/tomochain/log"
-	"github.com/tomochain/tomochain/params"
-	"github.com/tomochain/tomochain/rlp"
-	"github.com/tomochain/tomochain/rpc"
+	"github.com/rupayaproject/go-rupaya/accounts"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/common/hexutil"
+	"github.com/rupayaproject/go-rupaya/consensus"
+	"github.com/rupayaproject/go-rupaya/consensus/clique"
+	"github.com/rupayaproject/go-rupaya/consensus/misc"
+	"github.com/rupayaproject/go-rupaya/core/state"
+	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/go-rupaya/crypto/sha3"
+	"github.com/rupayaproject/go-rupaya/ethdb"
+	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/go-rupaya/rpc"
 )
 
 const (
@@ -563,7 +563,7 @@ func (c *Posv) YourTurn(chain consensus.ChainReader, parent *types.Header, signe
 	masternodes := c.GetMasternodes(chain, parent)
 
 	if common.IsTestnet {
-		// Only three mns hard code for tomo testnet.
+		// Only three mns hard code for rupaya testnet.
 		masternodes = []common.Address{
 			common.HexToAddress("0xfFC679Dcdf444D2eEb0491A998E7902B411CcF20"),
 			common.HexToAddress("0xd76fd76F7101811726DCE9E43C2617706a4c45c8"),
@@ -1261,7 +1261,7 @@ func (c *Posv) CheckMNTurn(chain consensus.ChainReader, parent *types.Header, si
 	masternodes := c.GetMasternodes(chain, parent)
 
 	if common.IsTestnet {
-		// Only three mns hard code for tomo testnet.
+		// Only three mns hard code for rupaya testnet.
 		masternodes = []common.Address{
 			common.HexToAddress("0xfFC679Dcdf444D2eEb0491A998E7902B411CcF20"),
 			common.HexToAddress("0xd76fd76F7101811726DCE9E43C2617706a4c45c8"),

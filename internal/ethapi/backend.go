@@ -19,22 +19,22 @@ package ethapi
 
 import (
 	"context"
-	"github.com/tomochain/tomochain/tomox"
+	"github.com/rupayaproject/go-rupaya/tomox"
 	"math/big"
 
-	"github.com/tomochain/tomochain/accounts"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/consensus"
-	"github.com/tomochain/tomochain/core"
-	"github.com/tomochain/tomochain/core/state"
-	"github.com/tomochain/tomochain/core/types"
-	"github.com/tomochain/tomochain/core/vm"
-	"github.com/tomochain/tomochain/eth/downloader"
-	"github.com/tomochain/tomochain/ethclient"
-	"github.com/tomochain/tomochain/ethdb"
-	"github.com/tomochain/tomochain/event"
-	"github.com/tomochain/tomochain/params"
-	"github.com/tomochain/tomochain/rpc"
+	"github.com/rupayaproject/go-rupaya/accounts"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/consensus"
+	"github.com/rupayaproject/go-rupaya/core"
+	"github.com/rupayaproject/go-rupaya/core/state"
+	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/go-rupaya/core/vm"
+	"github.com/rupayaproject/go-rupaya/eth/downloader"
+	"github.com/rupayaproject/go-rupaya/ethclient"
+	"github.com/rupayaproject/go-rupaya/ethdb"
+	"github.com/rupayaproject/go-rupaya/event"
+	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/go-rupaya/rpc"
 )
 
 // Backend interface provides the common API services (that are provided by

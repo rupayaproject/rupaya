@@ -24,8 +24,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/tomochain/tomochain/accounts/abi/bind"
-	"github.com/tomochain/tomochain/common/compiler"
+	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/go-rupaya/common/compiler"
 )
 
 var (

@@ -23,15 +23,15 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/core"
-	"github.com/tomochain/tomochain/core/types"
-	"github.com/tomochain/tomochain/crypto"
-	"github.com/tomochain/tomochain/ethdb"
-	"github.com/tomochain/tomochain/light"
-	"github.com/tomochain/tomochain/log"
-	"github.com/tomochain/tomochain/rlp"
-	"github.com/tomochain/tomochain/trie"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/core"
+	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/go-rupaya/ethdb"
+	"github.com/rupayaproject/go-rupaya/light"
+	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/go-rupaya/trie"
 )
 
 var (

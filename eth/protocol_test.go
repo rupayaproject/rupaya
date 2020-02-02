@@ -22,12 +22,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/core/types"
-	"github.com/tomochain/tomochain/crypto"
-	"github.com/tomochain/tomochain/eth/downloader"
-	"github.com/tomochain/tomochain/p2p"
-	"github.com/tomochain/tomochain/rlp"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/go-rupaya/eth/downloader"
+	"github.com/rupayaproject/go-rupaya/p2p"
+	"github.com/rupayaproject/go-rupaya/rlp"
 )
 
 func init() {

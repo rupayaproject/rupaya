@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tomochain/tomochain/log"
+	"github.com/rupayaproject/go-rupaya/log"
 )
 
 // deployExplorer creates a new block explorer based on some user input.
@@ -50,7 +50,7 @@ func (w *wizard) deployExplorer() {
 	infos, err := checkExplorer(client, w.network)
 	if err != nil {
 		infos = &explorerInfos{
-			nodePort: 30303, webPort: 80, webHost: client.server,
+			nodePort: 9050, webPort: 80, webHost: client.server,
 		}
 	}
 	existed := err == nil

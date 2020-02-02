@@ -24,13 +24,13 @@ import (
 	"net"
 	"time"
 
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/common/mclock"
-	"github.com/tomochain/tomochain/crypto"
-	"github.com/tomochain/tomochain/crypto/sha3"
-	"github.com/tomochain/tomochain/log"
-	"github.com/tomochain/tomochain/p2p/netutil"
-	"github.com/tomochain/tomochain/rlp"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/common/mclock"
+	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/go-rupaya/crypto/sha3"
+	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/go-rupaya/p2p/netutil"
+	"github.com/rupayaproject/go-rupaya/rlp"
 )
 
 var (

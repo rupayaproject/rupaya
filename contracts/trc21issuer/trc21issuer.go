@@ -1,9 +1,9 @@
 package trc21issuer
 
 import (
-	"github.com/tomochain/tomochain/accounts/abi/bind"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/contracts/trc21issuer/contract"
+	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/contracts/trc21issuer/contract"
 	"math/big"
 )
 

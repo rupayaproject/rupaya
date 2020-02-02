@@ -3,20 +3,20 @@ package tomox
 import (
 	"errors"
 	"fmt"
-	"github.com/tomochain/tomochain/consensus"
-	"github.com/tomochain/tomochain/core/types"
-	"github.com/tomochain/tomochain/p2p"
-	"github.com/tomochain/tomochain/tomox/tomox_state"
+	"github.com/rupayaproject/go-rupaya/consensus"
+	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/go-rupaya/p2p"
+	"github.com/rupayaproject/go-rupaya/tomox/tomox_state"
 	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
 	"math/big"
 	"strconv"
 	"time"
 
 	lru "github.com/hashicorp/golang-lru"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/core/state"
-	"github.com/tomochain/tomochain/log"
-	"github.com/tomochain/tomochain/rpc"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/core/state"
+	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/go-rupaya/rpc"
 	"golang.org/x/sync/syncmap"
 )
 

@@ -3,11 +3,11 @@ package tomox_state
 import (
 	"encoding/json"
 	"errors"
-	"github.com/tomochain/tomochain/crypto"
+	"github.com/rupayaproject/go-rupaya/crypto"
 	"math/big"
 	"time"
 
-	"github.com/tomochain/tomochain/common"
+	"github.com/rupayaproject/go-rupaya/common"
 )
 
 const (

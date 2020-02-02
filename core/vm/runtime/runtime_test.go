@@ -21,11 +21,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tomochain/tomochain/accounts/abi"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/core/state"
-	"github.com/tomochain/tomochain/core/vm"
-	"github.com/tomochain/tomochain/ethdb"
+	"github.com/rupayaproject/go-rupaya/accounts/abi"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/core/state"
+	"github.com/rupayaproject/go-rupaya/core/vm"
+	"github.com/rupayaproject/go-rupaya/ethdb"
 )
 
 func TestDefaults(t *testing.T) {

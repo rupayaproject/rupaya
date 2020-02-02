@@ -27,39 +27,39 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/tomochain/tomochain/accounts/abi/bind"
-	"github.com/tomochain/tomochain/common/hexutil"
-	"github.com/tomochain/tomochain/core/state"
-	"github.com/tomochain/tomochain/eth/filters"
-	"github.com/tomochain/tomochain/rlp"
+	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/go-rupaya/common/hexutil"
+	"github.com/rupayaproject/go-rupaya/core/state"
+	"github.com/rupayaproject/go-rupaya/eth/filters"
+	"github.com/rupayaproject/go-rupaya/rlp"
 
 	"bytes"
 
-	"github.com/tomochain/tomochain/accounts"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/consensus"
-	"github.com/tomochain/tomochain/consensus/ethash"
-	"github.com/tomochain/tomochain/consensus/posv"
-	"github.com/tomochain/tomochain/contracts"
-	contractValidator "github.com/tomochain/tomochain/contracts/validator/contract"
-	"github.com/tomochain/tomochain/core"
-	"github.com/tomochain/tomochain/core/bloombits"
+	"github.com/rupayaproject/go-rupaya/accounts"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/consensus"
+	"github.com/rupayaproject/go-rupaya/consensus/ethash"
+	"github.com/rupayaproject/go-rupaya/consensus/posv"
+	"github.com/rupayaproject/go-rupaya/contracts"
+	contractValidator "github.com/rupayaproject/go-rupaya/contracts/validator/contract"
+	"github.com/rupayaproject/go-rupaya/core"
+	"github.com/rupayaproject/go-rupaya/core/bloombits"
 
-	//"github.com/tomochain/tomochain/core/state"
-	"github.com/tomochain/tomochain/core/types"
-	"github.com/tomochain/tomochain/core/vm"
-	"github.com/tomochain/tomochain/eth/downloader"
-	"github.com/tomochain/tomochain/eth/gasprice"
-	"github.com/tomochain/tomochain/ethdb"
-	"github.com/tomochain/tomochain/event"
-	"github.com/tomochain/tomochain/internal/ethapi"
-	"github.com/tomochain/tomochain/log"
-	"github.com/tomochain/tomochain/miner"
-	"github.com/tomochain/tomochain/node"
-	"github.com/tomochain/tomochain/p2p"
-	"github.com/tomochain/tomochain/params"
-	"github.com/tomochain/tomochain/rpc"
-	"github.com/tomochain/tomochain/tomox"
+	//"github.com/rupayaproject/go-rupaya/core/state"
+	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/go-rupaya/core/vm"
+	"github.com/rupayaproject/go-rupaya/eth/downloader"
+	"github.com/rupayaproject/go-rupaya/eth/gasprice"
+	"github.com/rupayaproject/go-rupaya/ethdb"
+	"github.com/rupayaproject/go-rupaya/event"
+	"github.com/rupayaproject/go-rupaya/internal/ethapi"
+	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/go-rupaya/miner"
+	"github.com/rupayaproject/go-rupaya/node"
+	"github.com/rupayaproject/go-rupaya/p2p"
+	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/go-rupaya/tomox"
 )
 
 type LesServer interface {
@@ -593,7 +593,7 @@ func makeExtraData(extra []byte) []byte {
 		// create default extradata
 		extra, _ = rlp.EncodeToBytes([]interface{}{
 			uint(params.VersionMajor<<16 | params.VersionMinor<<8 | params.VersionPatch),
-			"tomo",
+			"rupaya",
 			runtime.Version(),
 			runtime.GOOS,
 		})

@@ -29,7 +29,7 @@ import (
 	"net"
 	"sort"
 
-	"github.com/tomochain/tomochain/common"
+	"github.com/rupayaproject/go-rupaya/common"
 )
 
 const (

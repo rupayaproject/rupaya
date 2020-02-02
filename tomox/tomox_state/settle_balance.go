@@ -3,8 +3,8 @@ package tomox_state
 import (
 	"encoding/json"
 	"errors"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/log"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/log"
 	"math/big"
 )
 

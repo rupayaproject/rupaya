@@ -22,10 +22,10 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/tomochain/tomochain/accounts/abi"
-	"github.com/tomochain/tomochain/accounts/abi/bind"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/core/types"
+	"github.com/rupayaproject/go-rupaya/accounts/abi"
+	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/core/types"
 )
 
 // Signer is an interaface defining the callback when a contract requires a

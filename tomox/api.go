@@ -3,12 +3,12 @@ package tomox
 import (
 	"context"
 	"errors"
-	"github.com/tomochain/tomochain/tomox/tomox_state"
+	"github.com/rupayaproject/go-rupaya/tomox/tomox_state"
 	"math/big"
 	"sync"
 	"time"
 
-	"github.com/tomochain/tomochain/common"
+	"github.com/rupayaproject/go-rupaya/common"
 )
 
 const (

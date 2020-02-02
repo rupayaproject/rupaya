@@ -26,13 +26,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/core/types"
-	"github.com/tomochain/tomochain/eth"
-	"github.com/tomochain/tomochain/les/flowcontrol"
-	"github.com/tomochain/tomochain/light"
-	"github.com/tomochain/tomochain/p2p"
-	"github.com/tomochain/tomochain/rlp"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/go-rupaya/eth"
+	"github.com/rupayaproject/go-rupaya/les/flowcontrol"
+	"github.com/rupayaproject/go-rupaya/light"
+	"github.com/rupayaproject/go-rupaya/p2p"
+	"github.com/rupayaproject/go-rupaya/rlp"
 )
 
 var (

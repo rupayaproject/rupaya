@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"github.com/tomochain/tomochain/common/math"
-	"github.com/tomochain/tomochain/params"
+	"github.com/rupayaproject/go-rupaya/common/math"
+	"github.com/rupayaproject/go-rupaya/params"
 )
 
 // Config are the configuration options for the Interpreter

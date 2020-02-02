@@ -19,7 +19,7 @@ package whisperv5
 import (
 	"testing"
 
-	"github.com/tomochain/tomochain/crypto"
+	"github.com/rupayaproject/go-rupaya/crypto"
 )
 
 func BenchmarkDeriveKeyMaterial(b *testing.B) {

@@ -7,11 +7,11 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/tomochain/tomochain/accounts/abi/bind"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/contracts/tomox"
-	"github.com/tomochain/tomochain/contracts/tomox/simulation"
-	"github.com/tomochain/tomochain/ethclient"
+	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/contracts/tomox"
+	"github.com/rupayaproject/go-rupaya/contracts/tomox/simulation"
+	"github.com/rupayaproject/go-rupaya/ethclient"
 )
 
 func main() {

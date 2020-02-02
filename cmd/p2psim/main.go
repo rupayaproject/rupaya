@@ -45,12 +45,12 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/tomochain/tomochain/crypto"
-	"github.com/tomochain/tomochain/p2p"
-	"github.com/tomochain/tomochain/p2p/discover"
-	"github.com/tomochain/tomochain/p2p/simulations"
-	"github.com/tomochain/tomochain/p2p/simulations/adapters"
-	"github.com/tomochain/tomochain/rpc"
+	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/go-rupaya/p2p"
+	"github.com/rupayaproject/go-rupaya/p2p/discover"
+	"github.com/rupayaproject/go-rupaya/p2p/simulations"
+	"github.com/rupayaproject/go-rupaya/p2p/simulations/adapters"
+	"github.com/rupayaproject/go-rupaya/rpc"
 	"gopkg.in/urfave/cli.v1"
 )
 

@@ -24,13 +24,13 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/common/hexutil"
-	"github.com/tomochain/tomochain/consensus/ethash"
-	"github.com/tomochain/tomochain/core"
-	"github.com/tomochain/tomochain/eth/downloader"
-	"github.com/tomochain/tomochain/eth/gasprice"
-	"github.com/tomochain/tomochain/params"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/common/hexutil"
+	"github.com/rupayaproject/go-rupaya/consensus/ethash"
+	"github.com/rupayaproject/go-rupaya/core"
+	"github.com/rupayaproject/go-rupaya/eth/downloader"
+	"github.com/rupayaproject/go-rupaya/eth/gasprice"
+	"github.com/rupayaproject/go-rupaya/params"
 )
 
 // DefaultConfig contains default settings for use on the Ethereum main net.

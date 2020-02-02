@@ -2,16 +2,16 @@ package tomox
 
 import (
 	"context"
-	"github.com/tomochain/tomochain/log"
+	"github.com/rupayaproject/go-rupaya/log"
 	"math/big"
 	"strings"
 
-	"github.com/tomochain/tomochain"
-	"github.com/tomochain/tomochain/accounts/abi"
-	"github.com/tomochain/tomochain/accounts/abi/bind/backends"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/consensus"
-	"github.com/tomochain/tomochain/core/state"
+	"github.com/rupayaproject/go-rupaya"
+	"github.com/rupayaproject/go-rupaya/accounts/abi"
+	"github.com/rupayaproject/go-rupaya/accounts/abi/bind/backends"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/consensus"
+	"github.com/rupayaproject/go-rupaya/core/state"
 )
 
 const tokenAbi = `

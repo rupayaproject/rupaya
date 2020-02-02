@@ -19,7 +19,7 @@ package state
 import (
 	"math/big"
 
-	"github.com/tomochain/tomochain/common"
+	"github.com/rupayaproject/go-rupaya/common"
 )
 
 type journalEntry interface {

@@ -19,7 +19,7 @@
 package downloader
 
 import (
-	"github.com/tomochain/tomochain/metrics"
+	"github.com/rupayaproject/go-rupaya/metrics"
 )
 
 var (

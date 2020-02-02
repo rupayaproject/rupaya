@@ -17,8 +17,8 @@
 package eth
 
 import (
-	"github.com/tomochain/tomochain/metrics"
-	"github.com/tomochain/tomochain/p2p"
+	"github.com/rupayaproject/go-rupaya/metrics"
+	"github.com/rupayaproject/go-rupaya/p2p"
 )
 
 var (

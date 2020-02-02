@@ -31,12 +31,12 @@ Building `tomo` requires both a Go (1.7+) and C compiler; install both of these.
 Once the dependencies are installed, just run the below commands:
 
 ```bash
-$ git clone https://github.com/tomochain/tomochain tomochain
+$ git clone https://github.com/rupayaproject/go-rupaya tomochain
 $ cd tomochain
 $ make tomo
 ```
 
-Alternatively, you could quickly download our pre-complied binary from our [github release page](https://github.com/tomochain/tomochain/releases)
+Alternatively, you could quickly download our pre-complied binary from our [github release page](https://github.com/rupayaproject/go-rupaya/releases)
 
 ## Running `tomo`
 
@@ -129,12 +129,12 @@ tomo account list --datadir ./  --keystore $KEYSTORE_DIR
 ##### Let's start a node
 ```bash
 tomo  --syncmode "full" \    
-    --datadir $DATA_DIR --networkid $NETWORK_ID --port 30303 \   
+    --datadir $DATA_DIR --networkid $NETWORK_ID --port 9050 \   
     --keystore $KEYSTORE_DIR --password $PASSWORD \    
-    --rpc --rpccorsdomain "*" --rpcaddr 0.0.0.0 --rpcport 8545 --rpcvhosts "*" \   
+    --rpc --rpccorsdomain "*" --rpcaddr 0.0.0.0 --rpcport 7050 --rpcvhosts "*" \   
     --rpcapi "db,eth,net,web3,personal,debug" \    
     --gcmode "archive" \   
-    --ws --wsaddr 0.0.0.0 --wsport 8546 --wsorigins "*" --unlock "$YOUR_COINBASE_ADDRESS" \   
+    --ws --wsaddr 0.0.0.0 --wsport 8050 --wsorigins "*" --unlock "$YOUR_COINBASE_ADDRESS" \   
     --identity $IDENTITY \  
     --mine --gasprice 2500 \  
     --bootnodes $BOOTNODES \   
@@ -152,15 +152,15 @@ tomo  --syncmode "full" \
 --password: your account's password.
 --networkid: our network ID.
 --tomo-testnet: required when the networkid is testnet(89).
---port: your full-node's listening port (default to 30303)
---rpc, --rpccorsdomain, --rpcaddr, --rpcport, --rpcvhosts: your full-node will accept RPC requests at 8545 TCP.
---ws, --wsaddr, --wsport, --wsorigins: your full-node will accept Websocket requests at 8546 TCP.
+--port: your full-node's listening port (default to 9050)
+--rpc, --rpccorsdomain, --rpcaddr, --rpcport, --rpcvhosts: your full-node will accept RPC requests at 7050 TCP.
+--ws, --wsaddr, --wsport, --wsorigins: your full-node will accept Websocket requests at 8050 TCP.
 --mine: your full-node wants to register to be a candidate for masternode selection.
 --gasprice: Minimal gas price to accept for mining a transaction.
 --targetgaslimit: Target gas limit sets the artificial target gas floor for the blocks to mine (default: 4712388)
 --bootnode: bootnode information to help to discover other nodes in the network
 --gcmode: blockchain garbage collection mode ("full", "archive")
---synmode: blockchain sync mode ("fast", "full", or "light". More detail: https://github.com/tomochain/tomochain/blob/master/eth/downloader/modes.go#L24)           
+--synmode: blockchain sync mode ("fast", "full", or "light". More detail: https://github.com/rupayaproject/go-rupaya/blob/master/eth/downloader/modes.go#L24)           
 --ethstats: send data to stats website
 ```
 To see all flags usage
@@ -187,7 +187,7 @@ Please also make sure your contributions adhere to the base coding guidelines:
 - Code must adhere to official Go [formatting](https://golang.org/doc/effective_go.html#formatting) guidelines (i.e uses [gofmt](https://golang.org/cmd/gofmt/)).
 - Code comments must adhere to the official Go [commentary](https://golang.org/doc/effective_go.html#commentary) guidelines.
 - Pull requests need to be based on and opened against the `master` branch.
-- Any code you are trying to contribute must be well-explained as an issue on our [github issue page](https://github.com/tomochain/tomochain/issues)
+- Any code you are trying to contribute must be well-explained as an issue on our [github issue page](https://github.com/rupayaproject/go-rupaya/issues)
 - Commit messages should be short but clear enough and should refer to the corresponding pre-logged issue mentioned above.
 
 For technical discussion, feel free to join our chat at [Gitter](https://gitter.im/tomochain/tomochain).

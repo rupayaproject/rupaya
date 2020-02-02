@@ -35,9 +35,9 @@ import (
 	"io"
 	"sort"
 
-	"github.com/tomochain/tomochain/crypto"
-	"github.com/tomochain/tomochain/crypto/sha3"
-	"github.com/tomochain/tomochain/rlp"
+	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/go-rupaya/crypto/sha3"
+	"github.com/rupayaproject/go-rupaya/rlp"
 )
 
 const SizeLimit = 300 // maximum encoded size of a node record in bytes

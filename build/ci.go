@@ -47,7 +47,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/tomochain/tomochain/internal/build"
+	"github.com/rupayaproject/go-rupaya/internal/build"
 )
 
 var (
@@ -116,7 +116,7 @@ func doInstall(cmdline []string) {
 
 		if minor < 9 {
 			log.Println("You have Go version", runtime.Version())
-			log.Println("tomo requires at least Go version 1.9 and cannot")
+			log.Println("Rupaya requires at least Go version 1.9 and cannot")
 			log.Println("be compiled with an earlier version. Please upgrade your Go installation.")
 			os.Exit(1)
 		}

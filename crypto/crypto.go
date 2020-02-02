@@ -28,10 +28,10 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/common/math"
-	"github.com/tomochain/tomochain/crypto/sha3"
-	"github.com/tomochain/tomochain/rlp"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/common/math"
+	"github.com/rupayaproject/go-rupaya/crypto/sha3"
+	"github.com/rupayaproject/go-rupaya/rlp"
 )
 
 var (

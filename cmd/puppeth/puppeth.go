@@ -23,7 +23,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tomochain/tomochain/log"
+	"github.com/rupayaproject/go-rupaya/log"
 	"gopkg.in/urfave/cli.v1"
 )
 

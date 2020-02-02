@@ -19,7 +19,7 @@ package event_test
 import (
 	"fmt"
 
-	"github.com/tomochain/tomochain/event"
+	"github.com/rupayaproject/go-rupaya/event"
 )
 
 func ExampleNewSubscription() {

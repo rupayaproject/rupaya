@@ -6,7 +6,7 @@ import (
 	uurl "net/url"
 	"time"
 
-	"github.com/tomochain/tomochain/metrics"
+	"github.com/rupayaproject/go-rupaya/metrics"
 	"github.com/influxdata/influxdb/client"
 )
 

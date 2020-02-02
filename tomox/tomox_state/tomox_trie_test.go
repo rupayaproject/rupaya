@@ -2,8 +2,8 @@ package tomox_state
 
 import (
 	"fmt"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/ethdb"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/ethdb"
 	"math/big"
 	"testing"
 )

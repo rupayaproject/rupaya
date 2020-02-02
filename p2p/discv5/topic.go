@@ -23,8 +23,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/tomochain/tomochain/common/mclock"
-	"github.com/tomochain/tomochain/log"
+	"github.com/rupayaproject/go-rupaya/common/mclock"
+	"github.com/rupayaproject/go-rupaya/log"
 )
 
 const (

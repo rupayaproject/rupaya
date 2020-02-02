@@ -1,7 +1,7 @@
 package eth
 
 import (
-	"github.com/tomochain/tomochain/params"
+	"github.com/rupayaproject/go-rupaya/params"
 	"math/big"
 	"testing"
 )

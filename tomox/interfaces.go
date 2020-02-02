@@ -1,9 +1,9 @@
 package tomox
 
 import (
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/ethdb"
-	"github.com/tomochain/tomochain/tomox/tomox_state"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/ethdb"
+	"github.com/rupayaproject/go-rupaya/tomox/tomox_state"
 	"github.com/globalsign/mgo"
 )
 

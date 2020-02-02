@@ -25,9 +25,9 @@ const (
 	IgnoreSignerCheckBlock     = uint64(14458500)
 )
 
-var TIP2019Block = big.NewInt(1050000)
-var TIPSigning = big.NewInt(3000000)
-var TIPRandomize = big.NewInt(3464000)
+var TIP2019Block = big.NewInt(0)
+var TIPSigning = big.NewInt(0)
+var TIPRandomize = big.NewInt(0)
 var BlackListHFNumber = uint64(9349100)
 var TIPTomoX = big.NewInt(0)
 var TIPTomoXTestnet = big.NewInt(11303000)

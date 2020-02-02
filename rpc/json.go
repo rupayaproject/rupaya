@@ -26,7 +26,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/tomochain/tomochain/log"
+	"github.com/rupayaproject/go-rupaya/log"
 )
 
 const (

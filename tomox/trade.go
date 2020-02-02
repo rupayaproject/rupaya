@@ -1,13 +1,13 @@
 package tomox
 
 import (
-	"github.com/tomochain/tomochain/tomox/tomox_state"
+	"github.com/rupayaproject/go-rupaya/tomox/tomox_state"
 	"math/big"
 	"time"
 
 	"github.com/globalsign/mgo/bson"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/crypto/sha3"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/crypto/sha3"
 )
 
 const (

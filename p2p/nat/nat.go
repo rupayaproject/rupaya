@@ -25,7 +25,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tomochain/tomochain/log"
+	"github.com/rupayaproject/go-rupaya/log"
 	"github.com/jackpal/go-nat-pmp"
 )
 

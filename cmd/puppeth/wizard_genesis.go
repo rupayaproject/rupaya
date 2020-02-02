@@ -24,22 +24,22 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/core"
-	"github.com/tomochain/tomochain/log"
-	"github.com/tomochain/tomochain/params"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/core"
+	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/go-rupaya/params"
 
 	"context"
 	"math/big"
 
-	"github.com/tomochain/tomochain/accounts/abi/bind"
-	"github.com/tomochain/tomochain/accounts/abi/bind/backends"
-	blockSignerContract "github.com/tomochain/tomochain/contracts/blocksigner"
-	multiSignWalletContract "github.com/tomochain/tomochain/contracts/multisigwallet"
-	randomizeContract "github.com/tomochain/tomochain/contracts/randomize"
-	validatorContract "github.com/tomochain/tomochain/contracts/validator"
-	"github.com/tomochain/tomochain/crypto"
-	"github.com/tomochain/tomochain/rlp"
+	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/go-rupaya/accounts/abi/bind/backends"
+	blockSignerContract "github.com/rupayaproject/go-rupaya/contracts/blocksigner"
+	multiSignWalletContract "github.com/rupayaproject/go-rupaya/contracts/multisigwallet"
+	randomizeContract "github.com/rupayaproject/go-rupaya/contracts/randomize"
+	validatorContract "github.com/rupayaproject/go-rupaya/contracts/validator"
+	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/go-rupaya/rlp"
 )
 
 // makeGenesis creates a new genesis struct based on some user input.
@@ -122,7 +122,7 @@ func (w *wizard) makeGenesis() {
 		genesis.Config.Posv.Period = uint64(w.readDefaultInt(2))
 
 		fmt.Println()
-		fmt.Println("How many Ethers should be rewarded to masternode? (default = 10)")
+		fmt.Println("How many RUPX should be rewarded to masternode? (default = 10)")
 		genesis.Config.Posv.Reward = uint64(w.readDefaultInt(10))
 
 		fmt.Println()
@@ -167,8 +167,8 @@ func (w *wizard) makeGenesis() {
 		genesis.Config.Posv.RewardCheckpoint = epochNumber
 
 		fmt.Println()
-		fmt.Println("How many blocks before checkpoint need to prepare new set of masternodes? (default = 450)")
-		genesis.Config.Posv.Gap = uint64(w.readDefaultInt(450))
+		fmt.Println("How many blocks before checkpoint need to prepare new set of masternodes? (default = 900)")
+		genesis.Config.Posv.Gap = uint64(w.readDefaultInt(900))
 
 		fmt.Println()
 		fmt.Println("What is foundation wallet address? (default = 0x0000000000000000000000000000000000000068)")
@@ -297,14 +297,15 @@ func (w *wizard) makeGenesis() {
 		code, _ = contractBackend.CodeAt(ctx, multiSignWalletTeamAddr, nil)
 		storage = make(map[common.Hash]common.Hash)
 		contractBackend.ForEachStorageAt(ctx, multiSignWalletTeamAddr, nil, f)
+
 		// Team balance.
-		balance := big.NewInt(0) // 12m
-		balance.Add(balance, big.NewInt(12*1000*1000))
+		balance := big.NewInt(0) // 1m
+		balance.Add(balance, big.NewInt(1*1000*1000))
 		balance.Mul(balance, big.NewInt(1000000000000000000))
 		subBalance := big.NewInt(0) // i * 50k
 		subBalance.Add(subBalance, big.NewInt(int64(len(signers))*50*1000))
 		subBalance.Mul(subBalance, big.NewInt(1000000000000000000))
-		balance.Sub(balance, subBalance) // 12m - i * 50k
+		balance.Sub(balance, subBalance) // 1m - i * 50k
 		genesis.Alloc[common.HexToAddress(common.TeamAddr)] = core.GenesisAccount{
 			Balance: balance,
 			Code:    code,
@@ -312,10 +313,10 @@ func (w *wizard) makeGenesis() {
 		}
 
 		fmt.Println()
-		fmt.Println("What is swap wallet address for fund 55m tomo?")
+		fmt.Println("What is swap wallet address for fund 7m RUPX?")
 		swapAddr := *w.readAddress()
-		baseBalance := big.NewInt(0) // 55m
-		baseBalance.Add(baseBalance, big.NewInt(55*1000*1000))
+		baseBalance := big.NewInt(0) // 7m
+		baseBalance.Add(baseBalance, big.NewInt(7*1000*1000))
 		baseBalance.Mul(baseBalance, big.NewInt(1000000000000000000))
 		genesis.Alloc[swapAddr] = core.GenesisAccount{
 			Balance: baseBalance,

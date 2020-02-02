@@ -22,8 +22,8 @@ import (
 	"io"
 	"net"
 
-	"github.com/tomochain/tomochain/crypto"
-	"github.com/tomochain/tomochain/rlp"
+	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/go-rupaya/rlp"
 )
 
 // Entry is implemented by known node record entry types.

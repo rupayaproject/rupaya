@@ -5,7 +5,7 @@ package whisperv5
 import (
 	"encoding/json"
 
-	"github.com/tomochain/tomochain/common/hexutil"
+	"github.com/rupayaproject/go-rupaya/common/hexutil"
 )
 
 var _ = (*newMessageOverride)(nil)

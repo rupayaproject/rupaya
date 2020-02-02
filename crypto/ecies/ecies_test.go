@@ -40,7 +40,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/tomochain/tomochain/crypto"
+	"github.com/rupayaproject/go-rupaya/crypto"
 )
 
 var dumpEnc bool

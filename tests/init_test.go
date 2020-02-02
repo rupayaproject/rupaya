@@ -29,7 +29,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tomochain/tomochain/params"
+	"github.com/rupayaproject/go-rupaya/params"
 )
 
 var (
