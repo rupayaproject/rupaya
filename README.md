@@ -67,12 +67,12 @@ curl -L https://raw.githubusercontent.com/rupayaproject/go-rupaya/master/genesis
 
 ```bash
 export DATA_DIR=/path/to/your/data/folder 
-mkdir -p $DATA_DIR/tomo
+mkdir -p $DATA_DIR/rupaya
 ```
 #### Initialize the chain from genesis
 
 ```bash
-tomo init $GENESIS_PATH --datadir $DATA_DIR
+rupaya init $GENESIS_PATH --datadir $DATA_DIR
 ```
 
 #### Initialize / Import accounts for the nodes's keystore
@@ -84,14 +84,14 @@ export KEYSTORE_DIR=path/to/keystore
 
 ##### Initialize new accounts
 ```bash
-tomo account new \
+rupaya account new \
   --password [YOUR_PASSWORD_FILE_TO_LOCK_YOUR_ACCOUNT] \
   --keystore $KEYSTORE_DIR
 ```
     
 ##### Import accounts
 ```bash
-tomo  account import [PRIVATE_KEY_FILE_OF_YOUR_ACCOUNT] \
+rupaya  account import [PRIVATE_KEY_FILE_OF_YOUR_ACCOUNT] \
      --keystore $KEYSTORE_DIR \
      --password [YOUR_PASSWORD_FILE_TO_LOCK_YOUR_ACCOUNT]
 ```
@@ -99,7 +99,7 @@ tomo  account import [PRIVATE_KEY_FILE_OF_YOUR_ACCOUNT] \
 ##### List all available accounts in keystore folder
 
 ```bash
-tomo account list --datadir ./  --keystore $KEYSTORE_DIR
+rupaya account list --datadir ./  --keystore $KEYSTORE_DIR
 ```
 
 #### Start a node
@@ -115,7 +115,7 @@ tomo account list --datadir ./  --keystore $KEYSTORE_DIR
     
 ##### Let's start a node
 ```bash
-tomo  --syncmode "full" \    
+rupaya  --syncmode "full" \    
     --datadir $DATA_DIR --networkid $NETWORK_ID --port 9050 \   
     --keystore $KEYSTORE_DIR --password $PASSWORD \    
     --rpc --rpccorsdomain "*" --rpcaddr 0.0.0.0 --rpcport 7050 --rpcvhosts "*" \   
@@ -138,7 +138,7 @@ tomo  --syncmode "full" \
 --identity: your full-node's name.
 --password: your account's password.
 --networkid: our network ID.
---tomo-testnet: required when the networkid is testnet(89).
+--rupaya-testnet: required when the networkid is testnet(89).
 --port: your full-node's listening port (default to 9050)
 --rpc, --rpccorsdomain, --rpcaddr, --rpcport, --rpcvhosts: your full-node will accept RPC requests at 7050 TCP.
 --ws, --wsaddr, --wsport, --wsorigins: your full-node will accept Websocket requests at 8050 TCP.
@@ -153,7 +153,7 @@ tomo  --syncmode "full" \
 To see all flags usage
    
 ```bash
-tomo --help
+rupaya --help
 ```
 
 #### See your node on stats page
