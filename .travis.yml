@@ -1,6 +1,6 @@
 sudo: required
 language: go
-go_import_path: github.com/tomochain/tomochain
+go_import_path: github.com/rupayaproject/go-rupaya
 
 env:
   global:
@@ -58,46 +58,46 @@ jobs:
       - docker
     install: skip
     before_script:
-      - docker build -t tomochain/tomochain .
-      - docker build -t tomochain/node -f Dockerfile.node .
+      - docker build -t rupayaproject/go-rupaya .
+      - docker build -t rupaya/node -f Dockerfile.node .
     script:
       - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-      - docker tag tomochain/tomochain tomochain/tomochain:latest
-      - docker push tomochain/tomochain:latest
-      - docker tag tomochain/tomochain tomochain/tomochain:$TRAVIS_BUILD_ID
-      - docker push tomochain/tomochain:$TRAVIS_BUILD_ID
-      - docker tag tomochain/node tomochain/node:latest
-      - docker push tomochain/node:latest
-      - docker tag tomochain/node tomochain/node:$TRAVIS_BUILD_ID
-      - docker push tomochain/node:$TRAVIS_BUILD_ID
+      - docker tag rupayaproject/go-rupaya rupayaproject/go-rupaya:latest
+      - docker push rupayaproject/go-rupaya:latest
+      - docker tag rupayaproject/go-rupaya rupayaproject/go-rupaya:$TRAVIS_BUILD_ID
+      - docker push rupayaproject/go-rupaya:$TRAVIS_BUILD_ID
+      - docker tag rupaya/node rupaya/node:latest
+      - docker push rupaya/node:latest
+      - docker tag rupaya/node rupaya/node:$TRAVIS_BUILD_ID
+      - docker push rupaya/node:$TRAVIS_BUILD_ID
 
   - stage: Build and push image (tagged)
     services:
       - docker
     install: skip
     before_script:
-      - docker build -t tomochain/tomochain .
-      - docker build -t tomochain/tomochain -f Dockerfile.node .
+      - docker build -t rupayaproject/go-rupaya .
+      - docker build -t rupayaproject/go-rupaya -f Dockerfile.node .
     script:
       - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-      - docker tag tomochain/tomochain tomochain/tomochain:latest
-      - docker push tomochain/tomochain:latest
-      - docker tag tomochain/tomochain tomochain/tomochain:$TRAVIS_TAG
-      - docker push tomochain/tomochain:$TRAVIS_TAG
-      - docker tag tomochain/tomochain tomochain/node:latest
-      - docker push tomochain/node:latest
-      - docker tag tomochain/node tomochain/node:$TRAVIS_TAG
-      - docker push tomochain/node:$TRAVIS_TAG
+      - docker tag rupayaproject/go-rupaya rupayaproject/go-rupaya:latest
+      - docker push rupayaproject/go-rupaya:latest
+      - docker tag rupayaproject/go-rupaya rupayaproject/go-rupaya:$TRAVIS_TAG
+      - docker push rupayaproject/go-rupaya:$TRAVIS_TAG
+      - docker tag rupayaproject/go-rupaya rupaya/node:latest
+      - docker push rupaya/node:latest
+      - docker tag rupaya/node rupaya/node:$TRAVIS_TAG
+      - docker push rupaya/node:$TRAVIS_TAG
 
 stages:
   - name: Lint
   - name: Build and test
   - name: Github release
-    if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/tomochain
+    if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = rupayaproject/go-rupaya
   - name: Build and push image
-    if: type != pull_request AND branch = master AND tag IS blank AND repo = tomochain/tomochain
+    if: type != pull_request AND branch = master AND tag IS blank AND repo = rupayaproject/go-rupaya
   - name: Build and push image (tagged)
-    if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/tomochain
+    if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = rupayaproject/go-rupaya
 
 notifications:
   slack:

@@ -24,19 +24,19 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tomochain/tomochain/accounts"
-	"github.com/tomochain/tomochain/accounts/keystore"
-	"github.com/tomochain/tomochain/cmd/utils"
-	"github.com/tomochain/tomochain/common"
-	"github.com/tomochain/tomochain/consensus/posv"
-	"github.com/tomochain/tomochain/console"
-	"github.com/tomochain/tomochain/core"
-	"github.com/tomochain/tomochain/eth"
-	"github.com/tomochain/tomochain/ethclient"
-	"github.com/tomochain/tomochain/internal/debug"
-	"github.com/tomochain/tomochain/log"
-	"github.com/tomochain/tomochain/metrics"
-	"github.com/tomochain/tomochain/node"
+	"github.com/rupayaproject/go-rupaya/accounts"
+	"github.com/rupayaproject/go-rupaya/accounts/keystore"
+	"github.com/rupayaproject/go-rupaya/cmd/utils"
+	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/go-rupaya/consensus/posv"
+	"github.com/rupayaproject/go-rupaya/console"
+	"github.com/rupayaproject/go-rupaya/core"
+	"github.com/rupayaproject/go-rupaya/eth"
+	"github.com/rupayaproject/go-rupaya/ethclient"
+	"github.com/rupayaproject/go-rupaya/internal/debug"
+	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/go-rupaya/metrics"
+	"github.com/rupayaproject/go-rupaya/node"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -48,7 +48,7 @@ var (
 	// Git SHA1 commit hash of the release (set via linker flags)
 	gitCommit = ""
 	// The app that holds all commands and flags.
-	app = utils.NewApp(gitCommit, "the tomochain command line interface")
+	app = utils.NewApp(gitCommit, "the rupaya command line interface")
 	// flags that configure the node
 	nodeFlags = []cli.Flag{
 		utils.IdentityFlag,

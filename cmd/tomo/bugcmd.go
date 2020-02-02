@@ -26,10 +26,10 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/tomochain/tomochain/cmd/internal/browser"
-	"github.com/tomochain/tomochain/params"
+	"github.com/rupayaproject/go-rupaya/cmd/internal/browser"
+	"github.com/rupayaproject/go-rupaya/params"
 
-	"github.com/tomochain/tomochain/cmd/utils"
+	"github.com/rupayaproject/go-rupaya/cmd/utils"
 	cli "gopkg.in/urfave/cli.v1"
 )
 
@@ -41,7 +41,7 @@ var bugCommand = cli.Command{
 	Category:  "MISCELLANEOUS COMMANDS",
 }
 
-const issueUrl = "https://github.com/tomochain/tomochain/issues/new"
+const issueUrl = "https://github.com/rupayaproject/go-rupaya/issues/new"
 
 // reportBug reports a bug by opening a new URL to the go-ethereum GH issue
 // tracker and setting default values as the issue body.

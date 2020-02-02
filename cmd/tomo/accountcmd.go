@@ -20,12 +20,12 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/tomochain/tomochain/accounts"
-	"github.com/tomochain/tomochain/accounts/keystore"
-	"github.com/tomochain/tomochain/cmd/utils"
-	"github.com/tomochain/tomochain/console"
-	"github.com/tomochain/tomochain/crypto"
-	"github.com/tomochain/tomochain/log"
+	"github.com/rupayaproject/go-rupaya/accounts"
+	"github.com/rupayaproject/go-rupaya/accounts/keystore"
+	"github.com/rupayaproject/go-rupaya/cmd/utils"
+	"github.com/rupayaproject/go-rupaya/console"
+	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/go-rupaya/log"
 	"gopkg.in/urfave/cli.v1"
 )
 

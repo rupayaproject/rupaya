@@ -23,10 +23,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tomochain/tomochain/cmd/utils"
-	"github.com/tomochain/tomochain/consensus/ethash"
-	"github.com/tomochain/tomochain/eth"
-	"github.com/tomochain/tomochain/params"
+	"github.com/rupayaproject/go-rupaya/cmd/utils"
+	"github.com/rupayaproject/go-rupaya/consensus/ethash"
+	"github.com/rupayaproject/go-rupaya/eth"
+	"github.com/rupayaproject/go-rupaya/params"
 	"gopkg.in/urfave/cli.v1"
 )
 
