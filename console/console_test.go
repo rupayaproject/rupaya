@@ -19,7 +19,7 @@ package console
 import (
 	"bytes"
 	"errors"
-	"github.com/rupayaproject/go-rupaya/tomox"
+	"github.com/rupayaproject/go-rupaya/rupx"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -105,7 +105,7 @@ func newTester(t *testing.T, confOverride func(*eth.Config)) *tester {
 	if confOverride != nil {
 		confOverride(ethConf)
 	}
-	if err = stack.Register(func(ctx *node.ServiceContext) (node.Service, error) { return eth.New(ctx, ethConf, &tomox.TomoX{}) }); err != nil {
+	if err = stack.Register(func(ctx *node.ServiceContext) (node.Service, error) { return eth.New(ctx, ethConf, &rupx.RupX{}) }); err != nil {
 		t.Fatalf("failed to register Ethereum protocol: %v", err)
 	}
 	// Start the node and assemble the JavaScript console around it

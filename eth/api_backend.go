@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/rupayaproject/go-rupaya/tomox"
+	"github.com/rupayaproject/go-rupaya/rupx"
 	"io/ioutil"
 	"math/big"
 	"path/filepath"
@@ -411,17 +411,17 @@ func (b *EthApiBackend) AreTwoBlockSamePath(bh1 common.Hash, bh2 common.Hash) bo
 
 // GetOrderNonce get order nonce
 func (b *EthApiBackend) GetOrderNonce(address common.Hash) (uint64, error) {
-	tomoxService := b.eth.GetTomoX()
-	if tomoxService != nil {
-		tomoxState, err := tomoxService.GetTomoxState(b.CurrentBlock())
+	rupxService := b.eth.GetRupX()
+	if rupxService != nil {
+		rupxState, err := rupxService.GetTomoxState(b.CurrentBlock())
 		if err != nil {
 			return 0, err
 		}
-		return tomoxState.GetNonce(address), nil
+		return rupxState.GetNonce(address), nil
 	}
-	return 0, errors.New("cannot find tomox service")
+	return 0, errors.New("cannot find rupx service")
 }
 
-func (b *EthApiBackend) TomoxService() *tomox.TomoX {
-	return b.eth.TomoX
+func (b *EthApiBackend) TomoxService() *rupx.RupX {
+	return b.eth.RupX
 }

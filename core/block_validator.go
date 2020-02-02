@@ -19,7 +19,7 @@ package core
 import (
 	"fmt"
 	"github.com/rupayaproject/go-rupaya/consensus/posv"
-	"github.com/rupayaproject/go-rupaya/tomox/tomox_state"
+	"github.com/rupayaproject/go-rupaya/rupx/rupx_state"
 
 	"github.com/rupayaproject/go-rupaya/common"
 	"github.com/rupayaproject/go-rupaya/consensus"
@@ -105,17 +105,17 @@ func (v *BlockValidator) ValidateState(block, parent *types.Block, statedb *stat
 	return nil
 }
 
-func (v *BlockValidator) ValidateMatchingOrder(statedb *state.StateDB, tomoxStatedb *tomox_state.TomoXStateDB, txMatchBatch tomox_state.TxMatchBatch, coinbase common.Address) error {
+func (v *BlockValidator) ValidateMatchingOrder(statedb *state.StateDB, rupxStatedb *rupx_state.RupXStateDB, txMatchBatch rupx_state.TxMatchBatch, coinbase common.Address) error {
 	posvEngine, ok := v.bc.Engine().(*posv.Posv)
 	if posvEngine == nil || !ok {
 		return ErrNotPoSV
 	}
-	tomoXService := posvEngine.GetTomoXService()
+	tomoXService := posvEngine.GetRupXService()
 	if tomoXService == nil {
-		return fmt.Errorf("tomox not found")
+		return fmt.Errorf("rupx not found")
 	}
 	log.Debug("verify matching transaction found a TxMatches Batch", "numTxMatches", len(txMatchBatch.Data))
-	matchingResult := map[common.Hash]tomox_state.MatchingResult{}
+	matchingResult := map[common.Hash]rupx_state.MatchingResult{}
 	for _, txMatch := range txMatchBatch.Data {
 		// verify orderItem
 		order, err := txMatch.DecodeOrder()
@@ -128,11 +128,11 @@ func (v *BlockValidator) ValidateMatchingOrder(statedb *state.StateDB, tomoxStat
 			return fmt.Errorf("invalid order . Error: %v", err)
 		}
 		// process Matching Engine
-		newTrades, newRejectedOrders, err := tomoXService.ApplyOrder(coinbase, v.bc, statedb, tomoxStatedb, tomox_state.GetOrderBookHash(order.BaseToken, order.QuoteToken), order)
+		newTrades, newRejectedOrders, err := tomoXService.ApplyOrder(coinbase, v.bc, statedb, rupxStatedb, rupx_state.GetOrderBookHash(order.BaseToken, order.QuoteToken), order)
 		if err != nil {
 			return err
 		}
-		matchingResult[order.Hash] = tomox_state.MatchingResult{
+		matchingResult[order.Hash] = rupx_state.MatchingResult{
 			Trades:  newTrades,
 			Rejects: newRejectedOrders,
 		}
@@ -174,13 +174,13 @@ func CalcGasLimit(parent *types.Block) uint64 {
 	return limit
 }
 
-func ExtractMatchingTransactions(transactions types.Transactions) ([]tomox_state.TxMatchBatch, error) {
-	txMatchBatchData := []tomox_state.TxMatchBatch{}
+func ExtractMatchingTransactions(transactions types.Transactions) ([]rupx_state.TxMatchBatch, error) {
+	txMatchBatchData := []rupx_state.TxMatchBatch{}
 	for _, tx := range transactions {
 		if tx.IsMatchingTransaction() {
-			txMatchBatch, err := tomox_state.DecodeTxMatchesBatch(tx.Data())
+			txMatchBatch, err := rupx_state.DecodeTxMatchesBatch(tx.Data())
 			if err != nil {
-				return []tomox_state.TxMatchBatch{}, fmt.Errorf("transaction match is corrupted. Failed to decode txMatchBatch. Error: %s", err)
+				return []rupx_state.TxMatchBatch{}, fmt.Errorf("transaction match is corrupted. Failed to decode txMatchBatch. Error: %s", err)
 			}
 			txMatchBatch.TxHash = tx.Hash()
 			txMatchBatchData = append(txMatchBatchData, txMatchBatch)

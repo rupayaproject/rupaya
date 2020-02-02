@@ -245,11 +245,11 @@ func (c *ChainConfig) IsTIPRandomize(num *big.Int) bool {
 	return isForked(common.TIPRandomize, num)
 }
 
-func (c *ChainConfig) IsTIPTomoX(num *big.Int) bool {
+func (c *ChainConfig) IsTIPRupX(num *big.Int) bool {
 	if common.IsTestnet {
-		return isForked(common.TIPTomoXTestnet, num)
+		return isForked(common.TIPRupXTestnet, num)
 	} else {
-		return isForked(common.TIPTomoX, num)
+		return isForked(common.TIPRupX, num)
 	}
 }
 

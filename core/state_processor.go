@@ -191,10 +191,10 @@ func ApplyTransaction(config *params.ChainConfig, tokensFee map[common.Address]*
 	if tx.To() != nil && tx.To().String() == common.BlockSigners && config.IsTIPSigning(header.Number) {
 		return ApplySignTransaction(config, statedb, header, tx, usedGas)
 	}
-	if tx.To() != nil && tx.To().String() == common.TomoXStateAddr && config.IsTIPTomoX(header.Number) {
+	if tx.To() != nil && tx.To().String() == common.RupXStateAddr && config.IsTIPRupX(header.Number) {
 		return ApplyEmptyTransaction(config, statedb, header, tx, usedGas)
 	}
-	if tx.IsMatchingTransaction() && config.IsTIPTomoX(header.Number) {
+	if tx.IsMatchingTransaction() && config.IsTIPRupX(header.Number) {
 		return ApplyEmptyTransaction(config, statedb, header, tx, usedGas)
 	}
 	var balanceFee *big.Int

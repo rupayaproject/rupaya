@@ -48,7 +48,7 @@ func getNonce(t *testing.T, userAddress common.Address) (uint64, error) {
 
 		return 0, err
 	}
-	err = rpcClient.Call(&result, "tomox_getOrderCount", userAddress)
+	err = rpcClient.Call(&result, "rupx_getOrderCount", userAddress)
 	if err != nil {
 		return 0, err
 	}

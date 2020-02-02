@@ -20,7 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/rupayaproject/go-rupaya/tomox"
+	"github.com/rupayaproject/go-rupaya/rupx"
 	"io/ioutil"
 	"math/big"
 	"path/filepath"
@@ -261,9 +261,9 @@ func (b *LesApiBackend) AreTwoBlockSamePath(bh1 common.Hash, bh2 common.Hash) bo
 
 // GetOrderNonce get order nonce
 func (b *LesApiBackend) GetOrderNonce(address common.Hash) (uint64, error) {
-	return 0, errors.New("cannot find tomox service")
+	return 0, errors.New("cannot find rupx service")
 }
 
-func (b *LesApiBackend) TomoxService() *tomox.TomoX {
+func (b *LesApiBackend) TomoxService() *rupx.RupX {
 	return nil
 }

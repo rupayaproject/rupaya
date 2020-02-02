@@ -306,7 +306,7 @@ func (tx *Transaction) IsMatchingTransaction() bool {
 		return false
 	}
 
-	if tx.To().String() != common.TomoXAddr {
+	if tx.To().String() != common.RupXAddr {
 		return false
 	}
 
@@ -317,7 +317,7 @@ func (tx *Transaction) IsSkipNonceTransaction() bool {
 	if tx.To() == nil {
 		return false
 	}
-	if tx.To().String() == common.TomoXAddr || tx.To().String() == common.TomoXStateAddr {
+	if tx.To().String() == common.RupXAddr || tx.To().String() == common.RupXStateAddr {
 		return true
 	}
 	return false

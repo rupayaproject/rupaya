@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/rupayaproject/go-rupaya/tomox/tomox_state"
+	"github.com/rupayaproject/go-rupaya/rupx/rupx_state"
 	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
 	"io/ioutil"
 	"math/big"
@@ -62,14 +62,14 @@ type Masternode struct {
 	Stake   *big.Int
 }
 
-type TomoXService interface {
+type RupXService interface {
 	GetTomoxStateRoot(block *types.Block) (common.Hash, error)
-	GetTomoxState(block *types.Block) (*tomox_state.TomoXStateDB, error)
-	GetStateCache() tomox_state.Database
+	GetTomoxState(block *types.Block) (*rupx_state.RupXStateDB, error)
+	GetStateCache() rupx_state.Database
 	GetTriegc() *prque.Prque
-	ApplyOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, tomoXstatedb *tomox_state.TomoXStateDB, orderBook common.Hash, order *tomox_state.OrderItem) ([]map[string]string, []*tomox_state.OrderItem, error)
+	ApplyOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, tomoXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error)
 	IsSDKNode() bool
-	SyncDataToSDKNode(takerOrder *tomox_state.OrderItem, txHash common.Hash, txMatchTime time.Time, statedb *state.StateDB, trades []map[string]string, rejectedOrders []*tomox_state.OrderItem, dirtyOrderCount *uint64) error
+	SyncDataToSDKNode(takerOrder *rupx_state.OrderItem, txHash common.Hash, txMatchTime time.Time, statedb *state.StateDB, trades []map[string]string, rejectedOrders []*rupx_state.OrderItem, dirtyOrderCount *uint64) error
 	RollbackReorgTxMatch(txhash common.Hash)
 	GetTokenDecimal(chain consensus.ChainContext, statedb *state.StateDB, coinbase common.Address, tokenAddr common.Address) (*big.Int, error)
 }
@@ -247,7 +247,7 @@ type Posv struct {
 	HookPenaltyTIPSigning      func(chain consensus.ChainReader, header *types.Header, candidate []common.Address) ([]common.Address, error)
 	HookValidator              func(header *types.Header, signers []common.Address) ([]byte, error)
 	HookVerifyMNs              func(header *types.Header, signers []common.Address) error
-	GetTomoXService            func() TomoXService
+	GetRupXService            func() RupXService
 	HookGetSignersFromContract func(blockHash common.Hash) ([]common.Address, error)
 }
 
