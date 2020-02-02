@@ -31,15 +31,15 @@ func main() {
 	auth.GasLimit = uint64(4000000) // in units
 	auth.GasPrice = big.NewInt(210000000000000)
 
-	// init trc21 issuer
+	// init rrc21 issuer
 	auth.Nonce = big.NewInt(int64(nonce))
-	trc21IssuerAddr, trc21Issuer, err := tomox.DeployTRC21Issuer(auth, client, simulation.MinTRC21Apply)
+	rrc21IssuerAddr, rrc21Issuer, err := tomox.DeployRRC21Issuer(auth, client, simulation.MinRRC21Apply)
 	if err != nil {
-		log.Fatal("DeployTRC21Issuer", err)
+		log.Fatal("DeployRRC21Issuer", err)
 	}
-	trc21Issuer.TransactOpts.GasPrice = big.NewInt(210000000000000)
+	rrc21Issuer.TransactOpts.GasPrice = big.NewInt(210000000000000)
 
-	fmt.Println("===> trc21 issuer address", trc21IssuerAddr.Hex())
+	fmt.Println("===> rrc21 issuer address", rrc21IssuerAddr.Hex())
 	fmt.Println("wait 10s to execute init smart contract : TRC Issuer")
 	time.Sleep(2 * time.Second)
 
@@ -68,11 +68,11 @@ func main() {
 	time.Sleep(2 * time.Second)
 
 	currentNonce := nonce + 3
-	tokenList := initTRC21(auth, client, currentNonce, simulation.TokenNameList)
+	tokenList := initRRC21(auth, client, currentNonce, simulation.TokenNameList)
 
 	currentNonce = currentNonce + uint64(len(simulation.TokenNameList)) // init smartcontract
 
-	applyIssuer(trc21Issuer, tokenList, currentNonce)
+	applyIssuer(rrc21Issuer, tokenList, currentNonce)
 
 	currentNonce = currentNonce + uint64(len(simulation.TokenNameList))
 	applyTomoXListing(tomoxListing, tokenList, currentNonce)
@@ -158,7 +158,7 @@ func main() {
 	time.Sleep(2 * time.Second)
 }
 
-func initTRC21(auth *bind.TransactOpts, client *ethclient.Client, nonce uint64, tokenNameList []string) []map[string]interface{} {
+func initRRC21(auth *bind.TransactOpts, client *ethclient.Client, nonce uint64, tokenNameList []string) []map[string]interface{} {
 	tokenListResult := []map[string]interface{}{}
 	for _, tokenName := range tokenNameList {
 		auth.Nonce = big.NewInt(int64(nonce))
@@ -166,12 +166,12 @@ func initTRC21(auth *bind.TransactOpts, client *ethclient.Client, nonce uint64, 
 		if tokenName == "USD" {
 			d = 8
 		}
-		tokenAddr, _, err := tomox.DeployTRC21(auth, client, tokenName, tokenName, d, simulation.TRC21TokenCap, simulation.TRC21TokenFee)
+		tokenAddr, _, err := tomox.DeployRRC21(auth, client, tokenName, tokenName, d, simulation.RRC21TokenCap, simulation.RRC21TokenFee)
 		if err != nil {
-			log.Fatal("DeployTRC21 ", tokenName, err)
+			log.Fatal("DeployRRC21 ", tokenName, err)
 		}
 
-		fmt.Println(tokenName+" token address", tokenAddr.Hex(), "cap", simulation.TRC21TokenCap)
+		fmt.Println(tokenName+" token address", tokenAddr.Hex(), "cap", simulation.RRC21TokenCap)
 		fmt.Println("wait 10s to execute init smart contract", tokenName)
 
 		tokenListResult = append(tokenListResult, map[string]interface{}{
@@ -184,13 +184,13 @@ func initTRC21(auth *bind.TransactOpts, client *ethclient.Client, nonce uint64, 
 	return tokenListResult
 }
 
-func applyIssuer(trc21Issuer *tomox.TRC21Issuer, tokenList []map[string]interface{}, nonce uint64) {
+func applyIssuer(rrc21Issuer *tomox.RRC21Issuer, tokenList []map[string]interface{}, nonce uint64) {
 	for _, token := range tokenList {
-		trc21Issuer.TransactOpts.Nonce = big.NewInt(int64(nonce))
-		trc21Issuer.TransactOpts.Value = simulation.MinTRC21Apply
-		_, err := trc21Issuer.Apply(token["address"].(common.Address))
+		rrc21Issuer.TransactOpts.Nonce = big.NewInt(int64(nonce))
+		rrc21Issuer.TransactOpts.Value = simulation.MinRRC21Apply
+		_, err := rrc21Issuer.Apply(token["address"].(common.Address))
 		if err != nil {
-			log.Fatal("trc21Issuer Apply  ", token["name"].(string), err)
+			log.Fatal("rrc21Issuer Apply  ", token["name"].(string), err)
 		}
 		fmt.Println("wait 10s to applyIssuer ", token["name"].(string))
 		nonce = nonce + 1
@@ -215,9 +215,9 @@ func applyTomoXListing(tomoxListing *tomox.TOMOXListing, tokenList []map[string]
 func airdrop(auth *bind.TransactOpts, client *ethclient.Client, tokenList []map[string]interface{}, addresses []common.Address, nonce uint64) {
 	for _, token := range tokenList {
 		for _, address := range addresses {
-			trc21Contract, _ := tomox.NewTRC21(auth, token["address"].(common.Address), client)
-			trc21Contract.TransactOpts.Nonce = big.NewInt(int64(nonce))
-			_, err := trc21Contract.Transfer(address, big.NewInt(0).Mul(common.BasePrice, big.NewInt(1000000)))
+			rrc21Contract, _ := tomox.NewRRC21(auth, token["address"].(common.Address), client)
+			rrc21Contract.TransactOpts.Nonce = big.NewInt(int64(nonce))
+			_, err := rrc21Contract.Transfer(address, big.NewInt(0).Mul(common.BasePrice, big.NewInt(1000000)))
 			if err == nil {
 				fmt.Printf("Transfer %v to %v successfully", token["name"].(string), address.String())
 				fmt.Println()

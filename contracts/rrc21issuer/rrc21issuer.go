@@ -1,9 +1,9 @@
-package tomox
+package rrc21issuer
 
 import (
 	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
 	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/contracts/tomox/contract"
+	"github.com/rupayaproject/go-rupaya/contracts/rrc21issuer/contract"
 	"math/big"
 )
 

@@ -156,10 +156,10 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, rupayaConfig) {
 	// Check testnet is enable.
 	if ctx.GlobalBool(utils.RupayaTestnetFlag.Name) {
 		common.IsTestnet = true
-		common.TRC21IssuerSMC = common.TRC21IssuerSMCTestNet
+		common.RRC21IssuerSMC = common.RRC21IssuerSMCTestNet
 		cfg.Eth.NetworkId = 89
 		common.RelayerRegistrationSMC = common.RelayerRegistrationSMCTestnet
-		common.TIPTRC21Fee = common.TIPTomoXTestnet
+		common.TIPRRC21Fee = common.TIPTomoXTestnet
 	}
 
 	// Check rollback hash exist.
