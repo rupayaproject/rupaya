@@ -456,7 +456,7 @@ func New(ctx *node.ServiceContext, config *Config, tomoXServ *tomox.TomoX) (*Eth
 				return nil, err
 			}
 			addr := common.HexToAddress(common.MasternodeVotingSMC)
-			validator, err := contractValidator.NewTomoValidator(addr, client)
+			validator, err := contractValidator.NewRupxValidator(addr, client)
 			if err != nil {
 				return nil, err
 			}
