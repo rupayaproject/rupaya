@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestTomoxTrieTest(t *testing.T) {
+func TestRupxTrieTest(t *testing.T) {
 	db, _ := ethdb.NewMemDatabase()
 	stateCache := NewDatabase(db)
 	trie, _ := stateCache.OpenStorageTrie(EmptyHash, EmptyHash)

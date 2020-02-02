@@ -19,10 +19,10 @@ func RegisterEthService(stack *node.Node, cfg *eth.Config) {
 		})
 	} else {
 		err = stack.Register(func(ctx *node.ServiceContext) (node.Service, error) {
-			var tomoXServ *rupx.RupX
-			ctx.Service(&tomoXServ)
+			var rupXServ *rupx.RupX
+			ctx.Service(&rupXServ)
 
-			fullNode, err := eth.New(ctx, cfg, tomoXServ)
+			fullNode, err := eth.New(ctx, cfg, rupXServ)
 			if fullNode != nil && cfg.LightServ > 0 {
 				ls, _ := les.NewLesServer(fullNode, cfg)
 				fullNode.AddLesServer(ls)

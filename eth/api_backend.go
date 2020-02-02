@@ -413,7 +413,7 @@ func (b *EthApiBackend) AreTwoBlockSamePath(bh1 common.Hash, bh2 common.Hash) bo
 func (b *EthApiBackend) GetOrderNonce(address common.Hash) (uint64, error) {
 	rupxService := b.eth.GetRupX()
 	if rupxService != nil {
-		rupxState, err := rupxService.GetTomoxState(b.CurrentBlock())
+		rupxState, err := rupxService.GetRupxState(b.CurrentBlock())
 		if err != nil {
 			return 0, err
 		}
@@ -422,6 +422,6 @@ func (b *EthApiBackend) GetOrderNonce(address common.Hash) (uint64, error) {
 	return 0, errors.New("cannot find rupx service")
 }
 
-func (b *EthApiBackend) TomoxService() *rupx.RupX {
+func (b *EthApiBackend) RupxService() *rupx.RupX {
 	return b.eth.RupX
 }

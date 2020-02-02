@@ -6,19 +6,19 @@ import (
 	"github.com/rupayaproject/go-rupaya/contracts/rupx/contract"
 )
 
-type TOMOXListing struct {
-	*contract.TOMOXListingSession
+type RUPXListing struct {
+	*contract.RUPXListingSession
 	contractBackend bind.ContractBackend
 }
 
-func NewMyTOMOXListing(transactOpts *bind.TransactOpts, contractAddr common.Address, contractBackend bind.ContractBackend) (*TOMOXListing, error) {
-	smartContract, err := contract.NewTOMOXListing(contractAddr, contractBackend)
+func NewMyRUPXListing(transactOpts *bind.TransactOpts, contractAddr common.Address, contractBackend bind.ContractBackend) (*RUPXListing, error) {
+	smartContract, err := contract.NewRUPXListing(contractAddr, contractBackend)
 	if err != nil {
 		return nil, err
 	}
 
-	return &TOMOXListing{
-		&contract.TOMOXListingSession{
+	return &RUPXListing{
+		&contract.RUPXListingSession{
 			Contract:     smartContract,
 			TransactOpts: *transactOpts,
 		},
@@ -26,12 +26,12 @@ func NewMyTOMOXListing(transactOpts *bind.TransactOpts, contractAddr common.Addr
 	}, nil
 }
 
-func DeployTOMOXListing(transactOpts *bind.TransactOpts, contractBackend bind.ContractBackend) (common.Address, *TOMOXListing, error) {
-	contractAddr, _, _, err := contract.DeployTOMOXListing(transactOpts, contractBackend)
+func DeployRUPXListing(transactOpts *bind.TransactOpts, contractBackend bind.ContractBackend) (common.Address, *RUPXListing, error) {
+	contractAddr, _, _, err := contract.DeployRUPXListing(transactOpts, contractBackend)
 	if err != nil {
 		return contractAddr, nil, err
 	}
-	smartContract, err := NewMyTOMOXListing(transactOpts, contractAddr, contractBackend)
+	smartContract, err := NewMyRUPXListing(transactOpts, contractAddr, contractBackend)
 	if err != nil {
 		return contractAddr, nil, err
 	}

@@ -453,8 +453,8 @@ func (self *worker) makeCurrent(parent *types.Block, header *types.Header) error
 	}
 	var rupxState *rupx_state.RupXStateDB
 	if self.config.Posv != nil {
-		tomoX := self.eth.GetRupX()
-		rupxState, err = tomoX.GetTomoxState(parent)
+		rupX := self.eth.GetRupX()
+		rupxState, err = rupX.GetRupxState(parent)
 		if err != nil {
 			log.Error("Failed to create mining context", "err", err)
 			return err
@@ -634,12 +634,12 @@ func (self *worker) commitNewWork() {
 			return
 		}
 		if self.config.Posv != nil && header.Number.Uint64()%self.config.Posv.Epoch != 0 && self.chain.Config().IsTIPRupX(header.Number) {
-			tomoX := self.eth.GetRupX()
-			if tomoX != nil && header.Number.Uint64() > self.config.Posv.Epoch {
+			rupX := self.eth.GetRupX()
+			if rupX != nil && header.Number.Uint64() > self.config.Posv.Epoch {
 				log.Debug("Start processing order pending")
 				orderPending, _ := self.eth.OrderPool().Pending()
 				log.Debug("Start processing order pending", "len", len(orderPending))
-				txMatches, matchingResults = tomoX.ProcessOrderPending(self.coinbase, self.chain, orderPending, work.state, work.rupxState)
+				txMatches, matchingResults = rupX.ProcessOrderPending(self.coinbase, self.chain, orderPending, work.state, work.rupxState)
 				log.Debug("transaction matches found", "txMatches", len(txMatches))
 			}
 			txMatchBatch := &rupx_state.TxMatchBatch{
@@ -660,15 +660,15 @@ func (self *worker) commitNewWork() {
 				return
 			} else {
 				matchingTransaction = txM
-				if tomoX != nil && tomoX.IsSDKNode() {
+				if rupX != nil && rupX.IsSDKNode() {
 					self.chain.AddMatchingResult(matchingTransaction.Hash(), matchingResults)
 				}
 			}
 			// force adding matching transaction to this block
 			specialTxs = append(specialTxs, matchingTransaction)
 		}
-		TomoxStateRoot := work.rupxState.IntermediateRoot()
-		tx := types.NewTransaction(work.state.GetNonce(self.coinbase), common.HexToAddress(common.RupXStateAddr), big.NewInt(0), txMatchGasLimit, big.NewInt(0), TomoxStateRoot.Bytes())
+		RupxStateRoot := work.rupxState.IntermediateRoot()
+		tx := types.NewTransaction(work.state.GetNonce(self.coinbase), common.HexToAddress(common.RupXStateAddr), big.NewInt(0), txMatchGasLimit, big.NewInt(0), RupxStateRoot.Bytes())
 		txStateRoot, err := wallet.SignTx(accounts.Account{Address: self.coinbase}, tx, self.config.ChainId)
 		if err != nil {
 			log.Error("Fail to create tx state root", "error", err)

@@ -91,7 +91,7 @@ func NewMongoDBEngine(cfg *Config) *MongoDatabase {
 func New(cfg *Config) *RupX {
 	tokenDecimalCache, _ := lru.New(defaultCacheLimit)
 	orderCache, _ := lru.New(rupx_state.OrderCacheLimit)
-	tomoX := &RupX{
+	rupX := &RupX{
 		orderNonce:        make(map[common.Address]*big.Int),
 		Triegc:            prque.New(),
 		tokenDecimalCache: tokenDecimalCache,
@@ -99,18 +99,18 @@ func New(cfg *Config) *RupX {
 	}
 
 	// default DBEngine: levelDB
-	tomoX.db = NewLDBEngine(cfg)
-	tomoX.sdkNode = false
+	rupX.db = NewLDBEngine(cfg)
+	rupX.sdkNode = false
 
 	if cfg.DBEngine == "mongodb" { // this is an add-on DBEngine for SDK nodes
-		tomoX.mongodb = NewMongoDBEngine(cfg)
-		tomoX.sdkNode = true
+		rupX.mongodb = NewMongoDBEngine(cfg)
+		rupX.sdkNode = true
 	}
 
-	tomoX.StateCache = rupx_state.NewDatabase(tomoX.db)
-	tomoX.settings.Store(overflowIdx, false)
+	rupX.StateCache = rupx_state.NewDatabase(rupX.db)
+	rupX.settings.Store(overflowIdx, false)
 
-	return tomoX
+	return rupX
 }
 
 // Overflow returns an indication if the message queue is full.
@@ -148,7 +148,7 @@ func (rupx *RupX) Version() uint64 {
 	return ProtocolVersion
 }
 
-func (rupx *RupX) ProcessOrderPending(coinbase common.Address, chain consensus.ChainContext, pending map[common.Address]types.OrderTransactions, statedb *state.StateDB, tomoXstatedb *rupx_state.RupXStateDB) ([]rupx_state.TxDataMatch, map[common.Hash]rupx_state.MatchingResult) {
+func (rupx *RupX) ProcessOrderPending(coinbase common.Address, chain consensus.ChainContext, pending map[common.Address]types.OrderTransactions, statedb *state.StateDB, rupXstatedb *rupx_state.RupXStateDB) ([]rupx_state.TxDataMatch, map[common.Hash]rupx_state.MatchingResult) {
 	txMatches := []rupx_state.TxDataMatch{}
 	matchingResults := map[common.Hash]rupx_state.MatchingResult{}
 
@@ -202,7 +202,7 @@ func (rupx *RupX) ProcessOrderPending(coinbase common.Address, chain consensus.C
 			order.Status = OrderStatusCancelled
 		}
 
-		newTrades, newRejectedOrders, err := rupx.CommitOrder(coinbase, chain, statedb, tomoXstatedb, rupx_state.GetOrderBookHash(order.BaseToken, order.QuoteToken), order)
+		newTrades, newRejectedOrders, err := rupx.CommitOrder(coinbase, chain, statedb, rupXstatedb, rupx_state.GetOrderBookHash(order.BaseToken, order.QuoteToken), order)
 
 		for _, reject := range newRejectedOrders {
 			log.Debug("Reject order", "reject", *reject)
@@ -486,8 +486,8 @@ func (rupx *RupX) SyncDataToSDKNode(takerOrderInTx *rupx_state.OrderItem, txHash
 	return nil
 }
 
-func (rupx *RupX) GetTomoxState(block *types.Block) (*rupx_state.RupXStateDB, error) {
-	root, err := rupx.GetTomoxStateRoot(block)
+func (rupx *RupX) GetRupxState(block *types.Block) (*rupx_state.RupXStateDB, error) {
+	root, err := rupx.GetRupxStateRoot(block)
 	if err != nil {
 		return nil, err
 	}
@@ -505,7 +505,7 @@ func (rupx *RupX) GetTriegc() *prque.Prque {
 	return rupx.Triegc
 }
 
-func (rupx *RupX) GetTomoxStateRoot(block *types.Block) (common.Hash, error) {
+func (rupx *RupX) GetRupxStateRoot(block *types.Block) (common.Hash, error) {
 	for _, tx := range block.Transactions() {
 		if tx.To() != nil && tx.To().Hex() == common.RupXStateAddr {
 			if len(tx.Data()) > 0 {
@@ -538,9 +538,9 @@ func (rupx *RupX) RollbackReorgTxMatch(txhash common.Hash) {
 
 	for _, order := range db.GetOrderByTxHash(txhash) {
 		c, ok := rupx.orderCache.Get(txhash)
-		log.Debug("Tomox reorg: rollback order", "txhash", txhash.Hex(), "order", rupx_state.ToJSON(order))
+		log.Debug("Rupx reorg: rollback order", "txhash", txhash.Hex(), "order", rupx_state.ToJSON(order))
 		if !ok {
-			log.Debug("Tomox reorg: remove order due to no orderCache", "order", rupx_state.ToJSON(order))
+			log.Debug("Rupx reorg: remove order due to no orderCache", "order", rupx_state.ToJSON(order))
 			if err := db.DeleteObject(order.Hash); err != nil {
 				log.Error("SDKNode: failed to remove reorg order", "err", err.Error(), "order", rupx_state.ToJSON(order))
 			}
@@ -549,7 +549,7 @@ func (rupx *RupX) RollbackReorgTxMatch(txhash common.Hash) {
 		orderCacheAtTxHash := c.(map[common.Hash]rupx_state.OrderHistoryItem)
 		orderHistoryItem, _ := orderCacheAtTxHash[rupx_state.GetOrderHistoryKey(order.BaseToken, order.QuoteToken, order.Hash)]
 		if (orderHistoryItem == rupx_state.OrderHistoryItem{}) {
-			log.Debug("Tomox reorg: remove order due to empty orderHistory", "order", rupx_state.ToJSON(order))
+			log.Debug("Rupx reorg: remove order due to empty orderHistory", "order", rupx_state.ToJSON(order))
 			if err := db.DeleteObject(order.Hash); err != nil {
 				log.Error("SDKNode: failed to remove reorg order", "err", err.Error(), "order", rupx_state.ToJSON(order))
 			}
@@ -559,12 +559,12 @@ func (rupx *RupX) RollbackReorgTxMatch(txhash common.Hash) {
 		order.Status = orderHistoryItem.Status
 		order.FilledAmount = rupx_state.CloneBigInt(orderHistoryItem.FilledAmount)
 		order.UpdatedAt = orderHistoryItem.UpdatedAt
-		log.Debug("Tomox reorg: update order to the last orderHistoryItem", "order", rupx_state.ToJSON(order), "orderHistoryItem", rupx_state.ToJSON(orderHistoryItem))
+		log.Debug("Rupx reorg: update order to the last orderHistoryItem", "order", rupx_state.ToJSON(order), "orderHistoryItem", rupx_state.ToJSON(orderHistoryItem))
 		if err := db.PutObject(order.Hash, order); err != nil {
 			log.Error("SDKNode: failed to update reorg order", "err", err.Error(), "order", rupx_state.ToJSON(order))
 		}
 	}
-	log.Debug("Tomox reorg: DeleteTradeByTxHash", "txhash", txhash.Hex())
+	log.Debug("Rupx reorg: DeleteTradeByTxHash", "txhash", txhash.Hex())
 	db.DeleteTradeByTxHash(txhash)
 
 }

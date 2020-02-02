@@ -208,7 +208,7 @@ var (
 	// RupX settings
 	RupXEnabledFlag = cli.BoolFlag{
 		Name:  "rupx",
-		Usage: "Enable the tomoX protocol",
+		Usage: "Enable the rupX protocol",
 	}
 	// Ethash settings
 	EthashCacheDirFlag = DirectoryFlag{

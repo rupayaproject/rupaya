@@ -108,7 +108,7 @@ type BlockChain struct {
 	cacheConfig *CacheConfig        // Cache configuration for pruning
 
 	db      ethdb.Database // Low level persistent database to store final content in
-	rupxDb ethdb.TomoxDatabase
+	rupxDb ethdb.RupxDatabase
 	triegc  *prque.Prque  // Priority queue mapping block numbers to tries to gc
 	gcproc  time.Duration // Accumulates canonical block processing for trie dumping
 
@@ -240,13 +240,13 @@ func NewBlockChain(db ethdb.Database, cacheConfig *CacheConfig, chainConfig *par
 }
 
 // NewBlockChainEx extend old blockchain, add order state db
-func NewBlockChainEx(db ethdb.Database, rupxDb ethdb.TomoxDatabase, cacheConfig *CacheConfig, chainConfig *params.ChainConfig, engine consensus.Engine, vmConfig vm.Config) (*BlockChain, error) {
+func NewBlockChainEx(db ethdb.Database, rupxDb ethdb.RupxDatabase, cacheConfig *CacheConfig, chainConfig *params.ChainConfig, engine consensus.Engine, vmConfig vm.Config) (*BlockChain, error) {
 	blockchain, err := NewBlockChain(db, cacheConfig, chainConfig, engine, vmConfig)
 	if err != nil {
 		return nil, err
 	}
 	if blockchain != nil {
-		blockchain.addTomoxDb(rupxDb)
+		blockchain.addRupxDb(rupxDb)
 	}
 	return blockchain, nil
 }
@@ -255,7 +255,7 @@ func (bc *BlockChain) getProcInterrupt() bool {
 	return atomic.LoadInt32(&bc.procInterrupt) == 1
 }
 
-func (bc *BlockChain) addTomoxDb(rupxDb ethdb.TomoxDatabase) {
+func (bc *BlockChain) addRupxDb(rupxDb ethdb.RupxDatabase) {
 	bc.rupxDb = rupxDb
 }
 
@@ -284,15 +284,15 @@ func (bc *BlockChain) loadLastState() error {
 	} else {
 		engine, ok := bc.Engine().(*posv.Posv)
 		if ok {
-			tomoXService := engine.GetRupXService()
-			if bc.Config().IsTIPRupX(currentBlock.Number()) && tomoXService != nil {
-				rupxRoot, err := tomoXService.GetTomoxStateRoot(currentBlock)
+			rupXService := engine.GetRupXService()
+			if bc.Config().IsTIPRupX(currentBlock.Number()) && rupXService != nil {
+				rupxRoot, err := rupXService.GetRupxStateRoot(currentBlock)
 				if err != nil {
 					repair = true
 				} else {
 
-					if tomoXService.GetStateCache() != nil {
-						_, err = rupx_state.New(rupxRoot, tomoXService.GetStateCache())
+					if rupXService.GetStateCache() != nil {
+						_, err = rupx_state.New(rupxRoot, rupXService.GetStateCache())
 						if err != nil {
 							repair = true
 						}
@@ -477,10 +477,10 @@ func (bc *BlockChain) StateAt(root common.Hash) (*state.StateDB, error) {
 func (bc *BlockChain) OrderStateAt(block *types.Block) (*rupx_state.RupXStateDB, error) {
 	engine, ok := bc.Engine().(*posv.Posv)
 	if ok {
-		tomoXService := engine.GetRupXService()
-		if bc.Config().IsTIPRupX(block.Number()) && tomoXService != nil {
+		rupXService := engine.GetRupXService()
+		if bc.Config().IsTIPRupX(block.Number()) && rupXService != nil {
 			log.Debug("OrderStateAt", "blocknumber", block.Header().Number)
-			rupxState, err := tomoXService.GetTomoxState(block)
+			rupxState, err := rupXService.GetRupxState(block)
 			if err == nil {
 				return rupxState, nil
 			} else {
@@ -537,11 +537,11 @@ func (bc *BlockChain) repair(head **types.Block) error {
 			log.Info("Rewound blockchain to past state", "number", (*head).Number(), "hash", (*head).Hash())
 			engine, ok := bc.Engine().(*posv.Posv)
 			if ok {
-				tomoXService := engine.GetRupXService()
-				if bc.Config().IsTIPRupX((*head).Number()) && tomoXService != nil {
-					rupxRoot, err := tomoXService.GetTomoxStateRoot(*head)
+				rupXService := engine.GetRupXService()
+				if bc.Config().IsTIPRupX((*head).Number()) && rupXService != nil {
+					rupxRoot, err := rupXService.GetRupxStateRoot(*head)
 					if err == nil {
-						_, err = rupx_state.New(rupxRoot, tomoXService.GetStateCache())
+						_, err = rupx_state.New(rupxRoot, rupXService.GetStateCache())
 						if err == nil {
 							return nil
 						}
@@ -806,8 +806,8 @@ func (bc *BlockChain) Stop() {
 		engine, _ := bc.Engine().(*posv.Posv)
 		triedb := bc.stateCache.TrieDB()
 		if bc.Config().IsTIPRupX(bc.CurrentBlock().Number()) && engine != nil {
-			if tomoXService := engine.GetRupXService(); tomoXService != nil && tomoXService.GetStateCache() != nil {
-				rupxTriedb = tomoXService.GetStateCache().TrieDB()
+			if rupXService := engine.GetRupXService(); rupXService != nil && rupXService.GetStateCache() != nil {
+				rupxTriedb = rupXService.GetStateCache().TrieDB()
 			}
 		}
 		for _, offset := range []uint64{0, 1, triesInMemory - 1} {
@@ -819,8 +819,8 @@ func (bc *BlockChain) Stop() {
 					log.Error("Failed to commit recent state trie", "err", err)
 				}
 				if bc.Config().IsTIPRupX(bc.CurrentBlock().Number()) && engine != nil {
-					if tomoXService := engine.GetRupXService(); tomoXService != nil {
-						rupxRoot, _ := tomoXService.GetTomoxStateRoot(recent)
+					if rupXService := engine.GetRupXService(); rupXService != nil {
+						rupxRoot, _ := rupXService.GetRupxStateRoot(recent)
 						if !common.EmptyHash(rupxRoot) && rupxTriedb != nil {
 							if err := rupxTriedb.Commit(rupxRoot, true); err != nil {
 								log.Error("Failed to commit recent state trie", "err", err)
@@ -834,9 +834,9 @@ func (bc *BlockChain) Stop() {
 			triedb.Dereference(bc.triegc.PopItem().(common.Hash), common.Hash{})
 		}
 		if bc.Config().IsTIPRupX(bc.CurrentBlock().Number()) && engine != nil && rupxTriedb != nil {
-			if tomoXService := engine.GetRupXService(); tomoXService != nil && tomoXService.GetTriegc() != nil {
-				for !tomoXService.GetTriegc().Empty() {
-					rupxTriedb.Dereference(tomoXService.GetTriegc().PopItem().(common.Hash), common.Hash{})
+			if rupXService := engine.GetRupXService(); rupXService != nil && rupXService.GetTriegc() != nil {
+				for !rupXService.GetTriegc().Empty() {
+					rupxTriedb.Dereference(rupXService.GetTriegc().PopItem().(common.Hash), common.Hash{})
 				}
 			}
 		}
@@ -1088,8 +1088,8 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 	engine, _ := bc.Engine().(*posv.Posv)
 	var rupxTrieDb *trie.Database
 	if bc.Config().IsTIPRupX(block.Number()) && engine != nil {
-		if tomoXService := engine.GetRupXService(); tomoXService != nil {
-			rupxTrieDb = tomoXService.GetStateCache().TrieDB()
+		if rupXService := engine.GetRupXService(); rupXService != nil {
+			rupxTrieDb = rupXService.GetStateCache().TrieDB()
 		}
 	}
 	triedb := bc.stateCache.TrieDB()
@@ -1112,8 +1112,8 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 			if rupxTrieDb != nil {
 				rupxTrieDb.Reference(rupxRoot, common.Hash{})
 			}
-			if tomoXService := engine.GetRupXService(); tomoXService != nil {
-				tomoXService.GetTriegc().Push(rupxRoot, -float32(block.NumberU64()))
+			if rupXService := engine.GetRupXService(); rupXService != nil {
+				rupXService.GetTriegc().Push(rupxRoot, -float32(block.NumberU64()))
 			}
 		}
 		if current := block.NumberU64(); current > triesInMemory {
@@ -1122,8 +1122,8 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 			chosen := header.Number.Uint64()
 			oldRupXRoot := common.Hash{}
 			if bc.Config().IsTIPRupX(block.Number()) && engine != nil {
-				if tomoXService := engine.GetRupXService(); tomoXService != nil {
-					oldRupXRoot, _ = tomoXService.GetTomoxStateRoot(bc.GetBlock(header.Hash(), current-triesInMemory))
+				if rupXService := engine.GetRupXService(); rupXService != nil {
+					oldRupXRoot, _ = rupXService.GetRupxStateRoot(bc.GetBlock(header.Hash(), current-triesInMemory))
 				}
 			}
 			// Only write to disk if we exceeded our memory allowance *and* also have at
@@ -1163,11 +1163,11 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 				triedb.Dereference(root.(common.Hash), common.Hash{})
 			}
 			if bc.Config().IsTIPRupX(block.Number()) && engine != nil {
-				if tomoXService := engine.GetRupXService(); tomoXService != nil {
-					for !tomoXService.GetTriegc().Empty() {
-						tomoRoot, number := tomoXService.GetTriegc().Pop()
+				if rupXService := engine.GetRupXService(); rupXService != nil {
+					for !rupXService.GetTriegc().Empty() {
+						tomoRoot, number := rupXService.GetTriegc().Pop()
 						if uint64(-number) > chosen {
-							tomoXService.GetTriegc().Push(tomoRoot, number)
+							rupXService.GetTriegc().Push(tomoRoot, number)
 							break
 						}
 						rupxTrieDb.Dereference(tomoRoot.(common.Hash), common.Hash{})
@@ -1385,13 +1385,13 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 		// clear the previous dry-run cache
 		var rupxState *rupx_state.RupXStateDB
 		if bc.Config().IsTIPRupX(block.Number()) && engine != nil {
-			if tomoXService := engine.GetRupXService(); tomoXService != nil {
+			if rupXService := engine.GetRupXService(); rupXService != nil {
 				txMatchBatchData, err := ExtractMatchingTransactions(block.Transactions())
 				if err != nil {
 					bc.reportBlock(block, nil, err)
 					return i, events, coalescedLogs, err
 				}
-				rupxState, err = tomoXService.GetTomoxState(parent)
+				rupxState, err = rupXService.GetRupxState(parent)
 				if err != nil {
 					bc.reportBlock(block, nil, err)
 					return i, events, coalescedLogs, err
@@ -1406,16 +1406,16 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 				}
 				if len(txMatchBatchData) > 0 {
 					gotRoot := rupxState.IntermediateRoot()
-					expectRoot, _ := tomoXService.GetTomoxStateRoot(block)
+					expectRoot, _ := rupXService.GetRupxStateRoot(block)
 					if gotRoot != expectRoot {
 						err = fmt.Errorf("invalid rupx merke trie got : %s , expect : %s ", gotRoot.Hex(), expectRoot.Hex())
 						bc.reportBlock(block, nil, err)
 						return i, events, coalescedLogs, err
 					}
 				}
-				parentRupXRoot, _ := tomoXService.GetTomoxStateRoot(parent)
-				nextTomoxRoot, _ := tomoXService.GetTomoxStateRoot(block)
-				log.Debug("RupX State Root", "number", block.NumberU64(), "parent", parentRupXRoot.Hex(), "nextTomoxRoot", nextTomoxRoot.Hex())
+				parentRupXRoot, _ := rupXService.GetRupxStateRoot(parent)
+				nextRupxRoot, _ := rupXService.GetRupxStateRoot(block)
+				log.Debug("RupX State Root", "number", block.NumberU64(), "parent", parentRupXRoot.Hex(), "nextRupxRoot", nextRupxRoot.Hex())
 			}
 		}
 		feeCapacity := state.GetRRC21FeeCapacityFromStateWithCache(parent.Root(), statedb)
@@ -1616,8 +1616,8 @@ func (bc *BlockChain) getResultBlock(block *types.Block, verifiedM2 bool) (*Resu
 	}
 	var rupxState *rupx_state.RupXStateDB
 	if bc.Config().IsTIPRupX(block.Number()) && engine != nil {
-		if tomoXService := engine.GetRupXService(); tomoXService != nil {
-			rupxState, err = tomoXService.GetTomoxState(parent)
+		if rupXService := engine.GetRupXService(); rupXService != nil {
+			rupxState, err = rupXService.GetRupxState(parent)
 			if err != nil {
 				bc.reportBlock(block, nil, err)
 				return nil, err
@@ -1637,16 +1637,16 @@ func (bc *BlockChain) getResultBlock(block *types.Block, verifiedM2 bool) (*Resu
 			}
 			if len(txMatchBatchData) > 0 {
 				gotRoot := rupxState.IntermediateRoot()
-				expectRoot, _ := tomoXService.GetTomoxStateRoot(block)
+				expectRoot, _ := rupXService.GetRupxStateRoot(block)
 				if gotRoot != expectRoot {
 					err = fmt.Errorf("invalid rupx merke trie got : %s , expect : %s ", gotRoot.Hex(), expectRoot.Hex())
 					bc.reportBlock(block, nil, err)
 					return nil, err
 				}
 			}
-			parentRupXRoot, _ := tomoXService.GetTomoxStateRoot(parent)
-			nextTomoxRoot, _ := tomoXService.GetTomoxStateRoot(block)
-			log.Debug("RupX State Root", "number", block.NumberU64(), "parent", parentRupXRoot.Hex(), "nextTomoxRoot", nextTomoxRoot.Hex())
+			parentRupXRoot, _ := rupXService.GetRupxStateRoot(parent)
+			nextRupxRoot, _ := rupXService.GetRupxStateRoot(block)
+			log.Debug("RupX State Root", "number", block.NumberU64(), "parent", parentRupXRoot.Hex(), "nextRupxRoot", nextRupxRoot.Hex())
 		}
 	}
 	feeCapacity := state.GetRRC21FeeCapacityFromStateWithCache(parent.Root(), statedb)
@@ -2248,8 +2248,8 @@ func (bc *BlockChain) logExchangeData(block *types.Block) {
 	if !ok || engine == nil {
 		return
 	}
-	tomoXService := engine.GetRupXService()
-	if tomoXService == nil || !tomoXService.IsSDKNode() {
+	rupXService := engine.GetRupXService()
+	if rupXService == nil || !rupXService.IsSDKNode() {
 		return
 	}
 	txMatchBatchData, err := ExtractMatchingTransactions(block.Transactions())
@@ -2303,7 +2303,7 @@ func (bc *BlockChain) logExchangeData(block *types.Block) {
 			// old txData has been attached with nanosecond, to avoid hard fork, convert nanosecond to millisecond here
 			milliSecond := txMatchBatch.Timestamp / 1e6
 			txMatchTime := time.Unix(0, milliSecond*1e6).UTC()
-			if err := tomoXService.SyncDataToSDKNode(takerOrderInTx, txMatchBatch.TxHash, txMatchTime, currentState, trades, rejectedOrders, &dirtyOrderCount); err != nil {
+			if err := rupXService.SyncDataToSDKNode(takerOrderInTx, txMatchBatch.TxHash, txMatchTime, currentState, trades, rejectedOrders, &dirtyOrderCount); err != nil {
 				log.Error("failed to SyncDataToSDKNode ", "blockNumber", block.Number(), "err", err)
 				return
 			}
@@ -2316,8 +2316,8 @@ func (bc *BlockChain) reorgTxMatches(deletedTxs types.Transactions, newChain typ
 	if !ok || engine == nil {
 		return
 	}
-	tomoXService := engine.GetRupXService()
-	if tomoXService == nil || !tomoXService.IsSDKNode() {
+	rupXService := engine.GetRupXService()
+	if rupXService == nil || !rupXService.IsSDKNode() {
 		return
 	}
 	start := time.Now()
@@ -2329,7 +2329,7 @@ func (bc *BlockChain) reorgTxMatches(deletedTxs types.Transactions, newChain typ
 	for _, deletedTx := range deletedTxs {
 		if deletedTx.IsMatchingTransaction() {
 			log.Debug("Rollback reorg txMatch", "txhash", deletedTx.Hash())
-			tomoXService.RollbackReorgTxMatch(deletedTx.Hash())
+			rupXService.RollbackReorgTxMatch(deletedTx.Hash())
 		}
 	}
 

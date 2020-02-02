@@ -63,11 +63,11 @@ type Masternode struct {
 }
 
 type RupXService interface {
-	GetTomoxStateRoot(block *types.Block) (common.Hash, error)
-	GetTomoxState(block *types.Block) (*rupx_state.RupXStateDB, error)
+	GetRupxStateRoot(block *types.Block) (common.Hash, error)
+	GetRupxState(block *types.Block) (*rupx_state.RupXStateDB, error)
 	GetStateCache() rupx_state.Database
 	GetTriegc() *prque.Prque
-	ApplyOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, tomoXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error)
+	ApplyOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, rupXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error)
 	IsSDKNode() bool
 	SyncDataToSDKNode(takerOrder *rupx_state.OrderItem, txHash common.Hash, txMatchTime time.Time, statedb *state.StateDB, trades []map[string]string, rejectedOrders []*rupx_state.OrderItem, dirtyOrderCount *uint64) error
 	RollbackReorgTxMatch(txhash common.Hash)

@@ -679,7 +679,7 @@ web3._extend({
 		}),
 		new web3._extend.Method({
             name: 'GetFeeByEpoch',
-            call: 'tomoX_GetFeeByEpoch',
+            call: 'rupX_GetFeeByEpoch',
             params: 1,
             inputFormatter: [null, web3._extend.formatters.inputAddressFormatter]
         }),

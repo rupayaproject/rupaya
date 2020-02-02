@@ -1882,12 +1882,12 @@ func (s *PublicRupXTransactionPoolAPI) GetBestBid(ctx context.Context, baseToken
 	if block == nil {
 		return result, errors.New("Current block not found")
 	}
-	rupxService := s.b.TomoxService()
+	rupxService := s.b.RupxService()
 	if rupxService == nil {
 		return result, errors.New("RupX service not found")
 	}
 
-	rupxState, err := rupxService.GetTomoxState(block)
+	rupxState, err := rupxService.GetRupxState(block)
 	if err != nil {
 		return result, err
 	}
@@ -1904,12 +1904,12 @@ func (s *PublicRupXTransactionPoolAPI) GetBestAsk(ctx context.Context, baseToken
 	if block == nil {
 		return result, errors.New("Current block not found")
 	}
-	rupxService := s.b.TomoxService()
+	rupxService := s.b.RupxService()
 	if rupxService == nil {
 		return result, errors.New("RupX service not found")
 	}
 
-	rupxState, err := rupxService.GetTomoxState(block)
+	rupxState, err := rupxService.GetRupxState(block)
 	if err != nil {
 		return result, err
 	}
@@ -1925,11 +1925,11 @@ func (s *PublicRupXTransactionPoolAPI) GetBidTree(ctx context.Context, baseToken
 	if block == nil {
 		return nil, errors.New("Current block not found")
 	}
-	rupxService := s.b.TomoxService()
+	rupxService := s.b.RupxService()
 	if rupxService == nil {
 		return nil, errors.New("RupX service not found")
 	}
-	rupxState, err := rupxService.GetTomoxState(block)
+	rupxState, err := rupxService.GetRupxState(block)
 	if err != nil {
 		return nil, err
 	}
@@ -1945,11 +1945,11 @@ func (s *PublicRupXTransactionPoolAPI) GetPrice(ctx context.Context, baseToken, 
 	if block == nil {
 		return nil, errors.New("Current block not found")
 	}
-	rupxService := s.b.TomoxService()
+	rupxService := s.b.RupxService()
 	if rupxService == nil {
 		return nil, errors.New("RupX service not found")
 	}
-	rupxState, err := rupxService.GetTomoxState(block)
+	rupxState, err := rupxService.GetRupxState(block)
 	if err != nil {
 		return nil, err
 	}
@@ -1965,11 +1965,11 @@ func (s *PublicRupXTransactionPoolAPI) GetAskTree(ctx context.Context, baseToken
 	if block == nil {
 		return nil, errors.New("Current block not found")
 	}
-	rupxService := s.b.TomoxService()
+	rupxService := s.b.RupxService()
 	if rupxService == nil {
 		return nil, errors.New("RupX service not found")
 	}
-	rupxState, err := rupxService.GetTomoxState(block)
+	rupxState, err := rupxService.GetRupxState(block)
 	if err != nil {
 		return nil, err
 	}
@@ -1985,11 +1985,11 @@ func (s *PublicRupXTransactionPoolAPI) GetOrderById(ctx context.Context, baseTok
 	if block == nil {
 		return nil, errors.New("Current block not found")
 	}
-	rupxService := s.b.TomoxService()
+	rupxService := s.b.RupxService()
 	if rupxService == nil {
 		return nil, errors.New("RupX service not found")
 	}
-	rupxState, err := rupxService.GetTomoxState(block)
+	rupxState, err := rupxService.GetRupxState(block)
 	if err != nil {
 		return nil, err
 	}

@@ -264,6 +264,6 @@ func (b *LesApiBackend) GetOrderNonce(address common.Hash) (uint64, error) {
 	return 0, errors.New("cannot find rupx service")
 }
 
-func (b *LesApiBackend) TomoxService() *rupx.RupX {
+func (b *LesApiBackend) RupxService() *rupx.RupX {
 	return nil
 }

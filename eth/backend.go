@@ -115,7 +115,7 @@ func (s *Ethereum) AddLesServer(ls LesServer) {
 
 // New creates a new Ethereum object (including the
 // initialisation of the common Ethereum object)
-func New(ctx *node.ServiceContext, config *Config, tomoXServ *rupx.RupX) (*Ethereum, error) {
+func New(ctx *node.ServiceContext, config *Config, rupXServ *rupx.RupX) (*Ethereum, error) {
 	if config.SyncMode == downloader.LightSync {
 		return nil, errors.New("can't run eth.Ethereum in light sync mode, use les.LightEthereum")
 	}
@@ -150,8 +150,8 @@ func New(ctx *node.ServiceContext, config *Config, tomoXServ *rupx.RupX) (*Ether
 		bloomIndexer:   NewBloomIndexer(chainDb, params.BloomBitsBlocks),
 	}
 	// Inject RupX Service into main Eth Service.
-	if tomoXServ != nil {
-		eth.RupX = tomoXServ
+	if rupXServ != nil {
+		eth.RupX = rupXServ
 	}
 	log.Info("Initialising Ethereum protocol", "versions", ProtocolVersions, "network", config.NetworkId)
 
@@ -172,7 +172,7 @@ func New(ctx *node.ServiceContext, config *Config, tomoXServ *rupx.RupX) (*Ether
 			return eth.RupX
 		}
 	}
-	eth.blockchain, err = core.NewBlockChainEx(chainDb, tomoXServ.GetDB(), cacheConfig, eth.chainConfig, eth.engine, vmConfig)
+	eth.blockchain, err = core.NewBlockChainEx(chainDb, rupXServ.GetDB(), cacheConfig, eth.chainConfig, eth.engine, vmConfig)
 	if err != nil {
 		return nil, err
 	}

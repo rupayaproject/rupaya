@@ -15,123 +15,123 @@ import (
 	"github.com/rupayaproject/go-rupaya/event"
 )
 
-// AbstractTOMOXListingABI is the input ABI used to generate the binding from.
-const AbstractTOMOXListingABI = "[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"getTokenStatus\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]"
+// AbstractRUPXListingABI is the input ABI used to generate the binding from.
+const AbstractRUPXListingABI = "[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"getTokenStatus\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
-// AbstractTOMOXListingBin is the compiled bytecode used for deploying new contracts.
-const AbstractTOMOXListingBin = `0x`
+// AbstractRUPXListingBin is the compiled bytecode used for deploying new contracts.
+const AbstractRUPXListingBin = `0x`
 
-// DeployAbstractTOMOXListing deploys a new Ethereum contract, binding an instance of AbstractTOMOXListing to it.
-func DeployAbstractTOMOXListing(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *AbstractTOMOXListing, error) {
-	parsed, err := abi.JSON(strings.NewReader(AbstractTOMOXListingABI))
+// DeployAbstractRUPXListing deploys a new Ethereum contract, binding an instance of AbstractRUPXListing to it.
+func DeployAbstractRUPXListing(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *AbstractRUPXListing, error) {
+	parsed, err := abi.JSON(strings.NewReader(AbstractRUPXListingABI))
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
-	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(AbstractTOMOXListingBin), backend)
+	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(AbstractRUPXListingBin), backend)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
-	return address, tx, &AbstractTOMOXListing{AbstractTOMOXListingCaller: AbstractTOMOXListingCaller{contract: contract}, AbstractTOMOXListingTransactor: AbstractTOMOXListingTransactor{contract: contract}, AbstractTOMOXListingFilterer: AbstractTOMOXListingFilterer{contract: contract}}, nil
+	return address, tx, &AbstractRUPXListing{AbstractRUPXListingCaller: AbstractRUPXListingCaller{contract: contract}, AbstractRUPXListingTransactor: AbstractRUPXListingTransactor{contract: contract}, AbstractRUPXListingFilterer: AbstractRUPXListingFilterer{contract: contract}}, nil
 }
 
-// AbstractTOMOXListing is an auto generated Go binding around an Ethereum contract.
-type AbstractTOMOXListing struct {
-	AbstractTOMOXListingCaller     // Read-only binding to the contract
-	AbstractTOMOXListingTransactor // Write-only binding to the contract
-	AbstractTOMOXListingFilterer   // Log filterer for contract events
+// AbstractRUPXListing is an auto generated Go binding around an Ethereum contract.
+type AbstractRUPXListing struct {
+	AbstractRUPXListingCaller     // Read-only binding to the contract
+	AbstractRUPXListingTransactor // Write-only binding to the contract
+	AbstractRUPXListingFilterer   // Log filterer for contract events
 }
 
-// AbstractTOMOXListingCaller is an auto generated read-only Go binding around an Ethereum contract.
-type AbstractTOMOXListingCaller struct {
+// AbstractRUPXListingCaller is an auto generated read-only Go binding around an Ethereum contract.
+type AbstractRUPXListingCaller struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// AbstractTOMOXListingTransactor is an auto generated write-only Go binding around an Ethereum contract.
-type AbstractTOMOXListingTransactor struct {
+// AbstractRUPXListingTransactor is an auto generated write-only Go binding around an Ethereum contract.
+type AbstractRUPXListingTransactor struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// AbstractTOMOXListingFilterer is an auto generated log filtering Go binding around an Ethereum contract events.
-type AbstractTOMOXListingFilterer struct {
+// AbstractRUPXListingFilterer is an auto generated log filtering Go binding around an Ethereum contract events.
+type AbstractRUPXListingFilterer struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// AbstractTOMOXListingSession is an auto generated Go binding around an Ethereum contract,
+// AbstractRUPXListingSession is an auto generated Go binding around an Ethereum contract,
 // with pre-set call and transact options.
-type AbstractTOMOXListingSession struct {
-	Contract     *AbstractTOMOXListing // Generic contract binding to set the session for
-	CallOpts     bind.CallOpts         // Call options to use throughout this session
-	TransactOpts bind.TransactOpts     // Transaction auth options to use throughout this session
+type AbstractRUPXListingSession struct {
+	Contract     *AbstractRUPXListing // Generic contract binding to set the session for
+	CallOpts     bind.CallOpts        // Call options to use throughout this session
+	TransactOpts bind.TransactOpts    // Transaction auth options to use throughout this session
 }
 
-// AbstractTOMOXListingCallerSession is an auto generated read-only Go binding around an Ethereum contract,
+// AbstractRUPXListingCallerSession is an auto generated read-only Go binding around an Ethereum contract,
 // with pre-set call options.
-type AbstractTOMOXListingCallerSession struct {
-	Contract *AbstractTOMOXListingCaller // Generic contract caller binding to set the session for
-	CallOpts bind.CallOpts               // Call options to use throughout this session
+type AbstractRUPXListingCallerSession struct {
+	Contract *AbstractRUPXListingCaller // Generic contract caller binding to set the session for
+	CallOpts bind.CallOpts              // Call options to use throughout this session
 }
 
-// AbstractTOMOXListingTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
+// AbstractRUPXListingTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
 // with pre-set transact options.
-type AbstractTOMOXListingTransactorSession struct {
-	Contract     *AbstractTOMOXListingTransactor // Generic contract transactor binding to set the session for
-	TransactOpts bind.TransactOpts               // Transaction auth options to use throughout this session
+type AbstractRUPXListingTransactorSession struct {
+	Contract     *AbstractRUPXListingTransactor // Generic contract transactor binding to set the session for
+	TransactOpts bind.TransactOpts              // Transaction auth options to use throughout this session
 }
 
-// AbstractTOMOXListingRaw is an auto generated low-level Go binding around an Ethereum contract.
-type AbstractTOMOXListingRaw struct {
-	Contract *AbstractTOMOXListing // Generic contract binding to access the raw methods on
+// AbstractRUPXListingRaw is an auto generated low-level Go binding around an Ethereum contract.
+type AbstractRUPXListingRaw struct {
+	Contract *AbstractRUPXListing // Generic contract binding to access the raw methods on
 }
 
-// AbstractTOMOXListingCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
-type AbstractTOMOXListingCallerRaw struct {
-	Contract *AbstractTOMOXListingCaller // Generic read-only contract binding to access the raw methods on
+// AbstractRUPXListingCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
+type AbstractRUPXListingCallerRaw struct {
+	Contract *AbstractRUPXListingCaller // Generic read-only contract binding to access the raw methods on
 }
 
-// AbstractTOMOXListingTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
-type AbstractTOMOXListingTransactorRaw struct {
-	Contract *AbstractTOMOXListingTransactor // Generic write-only contract binding to access the raw methods on
+// AbstractRUPXListingTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
+type AbstractRUPXListingTransactorRaw struct {
+	Contract *AbstractRUPXListingTransactor // Generic write-only contract binding to access the raw methods on
 }
 
-// NewAbstractTOMOXListing creates a new instance of AbstractTOMOXListing, bound to a specific deployed contract.
-func NewAbstractTOMOXListing(address common.Address, backend bind.ContractBackend) (*AbstractTOMOXListing, error) {
-	contract, err := bindAbstractTOMOXListing(address, backend, backend, backend)
+// NewAbstractRUPXListing creates a new instance of AbstractRUPXListing, bound to a specific deployed contract.
+func NewAbstractRUPXListing(address common.Address, backend bind.ContractBackend) (*AbstractRUPXListing, error) {
+	contract, err := bindAbstractRUPXListing(address, backend, backend, backend)
 	if err != nil {
 		return nil, err
 	}
-	return &AbstractTOMOXListing{AbstractTOMOXListingCaller: AbstractTOMOXListingCaller{contract: contract}, AbstractTOMOXListingTransactor: AbstractTOMOXListingTransactor{contract: contract}, AbstractTOMOXListingFilterer: AbstractTOMOXListingFilterer{contract: contract}}, nil
+	return &AbstractRUPXListing{AbstractRUPXListingCaller: AbstractRUPXListingCaller{contract: contract}, AbstractRUPXListingTransactor: AbstractRUPXListingTransactor{contract: contract}, AbstractRUPXListingFilterer: AbstractRUPXListingFilterer{contract: contract}}, nil
 }
 
-// NewAbstractTOMOXListingCaller creates a new read-only instance of AbstractTOMOXListing, bound to a specific deployed contract.
-func NewAbstractTOMOXListingCaller(address common.Address, caller bind.ContractCaller) (*AbstractTOMOXListingCaller, error) {
-	contract, err := bindAbstractTOMOXListing(address, caller, nil, nil)
+// NewAbstractRUPXListingCaller creates a new read-only instance of AbstractRUPXListing, bound to a specific deployed contract.
+func NewAbstractRUPXListingCaller(address common.Address, caller bind.ContractCaller) (*AbstractRUPXListingCaller, error) {
+	contract, err := bindAbstractRUPXListing(address, caller, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &AbstractTOMOXListingCaller{contract: contract}, nil
+	return &AbstractRUPXListingCaller{contract: contract}, nil
 }
 
-// NewAbstractTOMOXListingTransactor creates a new write-only instance of AbstractTOMOXListing, bound to a specific deployed contract.
-func NewAbstractTOMOXListingTransactor(address common.Address, transactor bind.ContractTransactor) (*AbstractTOMOXListingTransactor, error) {
-	contract, err := bindAbstractTOMOXListing(address, nil, transactor, nil)
+// NewAbstractRUPXListingTransactor creates a new write-only instance of AbstractRUPXListing, bound to a specific deployed contract.
+func NewAbstractRUPXListingTransactor(address common.Address, transactor bind.ContractTransactor) (*AbstractRUPXListingTransactor, error) {
+	contract, err := bindAbstractRUPXListing(address, nil, transactor, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &AbstractTOMOXListingTransactor{contract: contract}, nil
+	return &AbstractRUPXListingTransactor{contract: contract}, nil
 }
 
-// NewAbstractTOMOXListingFilterer creates a new log filterer instance of AbstractTOMOXListing, bound to a specific deployed contract.
-func NewAbstractTOMOXListingFilterer(address common.Address, filterer bind.ContractFilterer) (*AbstractTOMOXListingFilterer, error) {
-	contract, err := bindAbstractTOMOXListing(address, nil, nil, filterer)
+// NewAbstractRUPXListingFilterer creates a new log filterer instance of AbstractRUPXListing, bound to a specific deployed contract.
+func NewAbstractRUPXListingFilterer(address common.Address, filterer bind.ContractFilterer) (*AbstractRUPXListingFilterer, error) {
+	contract, err := bindAbstractRUPXListing(address, nil, nil, filterer)
 	if err != nil {
 		return nil, err
 	}
-	return &AbstractTOMOXListingFilterer{contract: contract}, nil
+	return &AbstractRUPXListingFilterer{contract: contract}, nil
 }
 
-// bindAbstractTOMOXListing binds a generic wrapper to an already deployed contract.
-func bindAbstractTOMOXListing(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
-	parsed, err := abi.JSON(strings.NewReader(AbstractTOMOXListingABI))
+// bindAbstractRUPXListing binds a generic wrapper to an already deployed contract.
+func bindAbstractRUPXListing(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
+	parsed, err := abi.JSON(strings.NewReader(AbstractRUPXListingABI))
 	if err != nil {
 		return nil, err
 	}
@@ -142,64 +142,64 @@ func bindAbstractTOMOXListing(address common.Address, caller bind.ContractCaller
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_AbstractTOMOXListing *AbstractTOMOXListingRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
-	return _AbstractTOMOXListing.Contract.AbstractTOMOXListingCaller.contract.Call(opts, result, method, params...)
+func (_AbstractRUPXListing *AbstractRUPXListingRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+	return _AbstractRUPXListing.Contract.AbstractRUPXListingCaller.contract.Call(opts, result, method, params...)
 }
 
 // Transfer initiates a plain transaction to move funds to the contract, calling
 // its default method if one is available.
-func (_AbstractTOMOXListing *AbstractTOMOXListingRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _AbstractTOMOXListing.Contract.AbstractTOMOXListingTransactor.contract.Transfer(opts)
+func (_AbstractRUPXListing *AbstractRUPXListingRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _AbstractRUPXListing.Contract.AbstractRUPXListingTransactor.contract.Transfer(opts)
 }
 
 // Transact invokes the (paid) contract method with params as input values.
-func (_AbstractTOMOXListing *AbstractTOMOXListingRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
-	return _AbstractTOMOXListing.Contract.AbstractTOMOXListingTransactor.contract.Transact(opts, method, params...)
+func (_AbstractRUPXListing *AbstractRUPXListingRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _AbstractRUPXListing.Contract.AbstractRUPXListingTransactor.contract.Transact(opts, method, params...)
 }
 
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_AbstractTOMOXListing *AbstractTOMOXListingCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
-	return _AbstractTOMOXListing.Contract.contract.Call(opts, result, method, params...)
+func (_AbstractRUPXListing *AbstractRUPXListingCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+	return _AbstractRUPXListing.Contract.contract.Call(opts, result, method, params...)
 }
 
 // Transfer initiates a plain transaction to move funds to the contract, calling
 // its default method if one is available.
-func (_AbstractTOMOXListing *AbstractTOMOXListingTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _AbstractTOMOXListing.Contract.contract.Transfer(opts)
+func (_AbstractRUPXListing *AbstractRUPXListingTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _AbstractRUPXListing.Contract.contract.Transfer(opts)
 }
 
 // Transact invokes the (paid) contract method with params as input values.
-func (_AbstractTOMOXListing *AbstractTOMOXListingTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
-	return _AbstractTOMOXListing.Contract.contract.Transact(opts, method, params...)
+func (_AbstractRUPXListing *AbstractRUPXListingTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _AbstractRUPXListing.Contract.contract.Transact(opts, method, params...)
 }
 
 // GetTokenStatus is a free data retrieval call binding the contract method 0xa3ff31b5.
 //
 // Solidity: function getTokenStatus( address) constant returns(bool)
-func (_AbstractTOMOXListing *AbstractTOMOXListingCaller) GetTokenStatus(opts *bind.CallOpts, arg0 common.Address) (bool, error) {
+func (_AbstractRUPXListing *AbstractRUPXListingCaller) GetTokenStatus(opts *bind.CallOpts, arg0 common.Address) (bool, error) {
 	var (
 		ret0 = new(bool)
 	)
 	out := ret0
-	err := _AbstractTOMOXListing.contract.Call(opts, out, "getTokenStatus", arg0)
+	err := _AbstractRUPXListing.contract.Call(opts, out, "getTokenStatus", arg0)
 	return *ret0, err
 }
 
 // GetTokenStatus is a free data retrieval call binding the contract method 0xa3ff31b5.
 //
 // Solidity: function getTokenStatus( address) constant returns(bool)
-func (_AbstractTOMOXListing *AbstractTOMOXListingSession) GetTokenStatus(arg0 common.Address) (bool, error) {
-	return _AbstractTOMOXListing.Contract.GetTokenStatus(&_AbstractTOMOXListing.CallOpts, arg0)
+func (_AbstractRUPXListing *AbstractRUPXListingSession) GetTokenStatus(arg0 common.Address) (bool, error) {
+	return _AbstractRUPXListing.Contract.GetTokenStatus(&_AbstractRUPXListing.CallOpts, arg0)
 }
 
 // GetTokenStatus is a free data retrieval call binding the contract method 0xa3ff31b5.
 //
 // Solidity: function getTokenStatus( address) constant returns(bool)
-func (_AbstractTOMOXListing *AbstractTOMOXListingCallerSession) GetTokenStatus(arg0 common.Address) (bool, error) {
-	return _AbstractTOMOXListing.Contract.GetTokenStatus(&_AbstractTOMOXListing.CallOpts, arg0)
+func (_AbstractRUPXListing *AbstractRUPXListingCallerSession) GetTokenStatus(arg0 common.Address) (bool, error) {
+	return _AbstractRUPXListing.Contract.GetTokenStatus(&_AbstractRUPXListing.CallOpts, arg0)
 }
 
 // RelayerRegistrationABI is the input ABI used to generate the binding from.

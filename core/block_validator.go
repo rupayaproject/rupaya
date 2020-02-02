@@ -110,8 +110,8 @@ func (v *BlockValidator) ValidateMatchingOrder(statedb *state.StateDB, rupxState
 	if posvEngine == nil || !ok {
 		return ErrNotPoSV
 	}
-	tomoXService := posvEngine.GetRupXService()
-	if tomoXService == nil {
+	rupXService := posvEngine.GetRupXService()
+	if rupXService == nil {
 		return fmt.Errorf("rupx not found")
 	}
 	log.Debug("verify matching transaction found a TxMatches Batch", "numTxMatches", len(txMatchBatch.Data))
@@ -128,7 +128,7 @@ func (v *BlockValidator) ValidateMatchingOrder(statedb *state.StateDB, rupxState
 			return fmt.Errorf("invalid order . Error: %v", err)
 		}
 		// process Matching Engine
-		newTrades, newRejectedOrders, err := tomoXService.ApplyOrder(coinbase, v.bc, statedb, rupxStatedb, rupx_state.GetOrderBookHash(order.BaseToken, order.QuoteToken), order)
+		newTrades, newRejectedOrders, err := rupXService.ApplyOrder(coinbase, v.bc, statedb, rupxStatedb, rupx_state.GetOrderBookHash(order.BaseToken, order.QuoteToken), order)
 		if err != nil {
 			return err
 		}
@@ -137,7 +137,7 @@ func (v *BlockValidator) ValidateMatchingOrder(statedb *state.StateDB, rupxState
 			Rejects: newRejectedOrders,
 		}
 	}
-	if tomoXService.IsSDKNode() {
+	if rupXService.IsSDKNode() {
 		v.bc.AddMatchingResult(txMatchBatch.TxHash, matchingResult)
 	}
 	return nil

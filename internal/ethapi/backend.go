@@ -47,7 +47,7 @@ type Backend interface {
 	ChainDb() ethdb.Database
 	EventMux() *event.TypeMux
 	AccountManager() *accounts.Manager
-	TomoxService() *rupx.RupX
+	RupxService() *rupx.RupX
 
 	// BlockChain API
 	SetHead(number uint64)

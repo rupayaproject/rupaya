@@ -79,7 +79,7 @@ type OrderPoolConfig struct {
 }
 
 // blockChain_rupx add order state
-type blockChainTomox interface {
+type blockChainRupx interface {
 	CurrentBlock() *types.Block
 	GetBlock(hash common.Hash, number uint64) *types.Block
 	OrderStateAt(block *types.Block) (*rupx_state.RupXStateDB, error)
@@ -129,7 +129,7 @@ func (config *OrderPoolConfig) sanitize() OrderPoolConfig {
 type OrderPool struct {
 	config      OrderPoolConfig
 	chainconfig *params.ChainConfig
-	chain       blockChainTomox
+	chain       blockChainRupx
 
 	txFeed       event.Feed
 	scope        event.SubscriptionScope
@@ -156,7 +156,7 @@ type OrderPool struct {
 
 // NewOrderPool creates a new transaction pool to gather, sort and filter inbound
 // transactions from the network.
-func NewOrderPool(chainconfig *params.ChainConfig, chain blockChainTomox) *OrderPool {
+func NewOrderPool(chainconfig *params.ChainConfig, chain blockChainRupx) *OrderPool {
 	// Sanitize the input to ensure no vulnerable gas prices are set
 	config := (&DefaultOrderPoolConfig).sanitize()
 	log.Debug("NewOrderPool start...", "current block", chain.CurrentBlock().Header().Number)
@@ -452,15 +452,15 @@ func (pool *OrderPool) validateOrder(tx *types.OrderTransaction) error {
 			if !ok {
 				return ErrNotPoSV
 			}
-			tomoXServ := posvEngine.GetRupXService()
-			if tomoXServ == nil {
+			rupXServ := posvEngine.GetRupXService()
+			if rupXServ == nil {
 				return fmt.Errorf("rupx not found in order validation")
 			}
-			baseDecimal, err := tomoXServ.GetTokenDecimal(pool.chain, cloneStateDb, pool.chain.CurrentBlock().Header().Coinbase, tx.BaseToken())
+			baseDecimal, err := rupXServ.GetTokenDecimal(pool.chain, cloneStateDb, pool.chain.CurrentBlock().Header().Coinbase, tx.BaseToken())
 			if err != nil {
 				return fmt.Errorf("validateOrder: failed to get baseDecimal. err: %v", err)
 			}
-			quoteDecimal, err := tomoXServ.GetTokenDecimal(pool.chain, cloneStateDb, pool.chain.CurrentBlock().Header().Coinbase, tx.QuoteToken())
+			quoteDecimal, err := rupXServ.GetTokenDecimal(pool.chain, cloneStateDb, pool.chain.CurrentBlock().Header().Coinbase, tx.QuoteToken())
 			if err != nil {
 				return fmt.Errorf("validateOrder: failed to get quoteDecimal. err: %v", err)
 			}

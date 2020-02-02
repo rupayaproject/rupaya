@@ -13,25 +13,25 @@ import (
 	"github.com/rupayaproject/go-rupaya/rupx/rupx_state"
 )
 
-func (rupx *RupX) CommitOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, tomoXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error) {
-	rupxSnap := tomoXstatedb.Snapshot()
+func (rupx *RupX) CommitOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, rupXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error) {
+	rupxSnap := rupXstatedb.Snapshot()
 	dbSnap := statedb.Snapshot()
-	trades, rejects, err := rupx.ApplyOrder(coinbase, chain, statedb, tomoXstatedb, orderBook, order)
+	trades, rejects, err := rupx.ApplyOrder(coinbase, chain, statedb, rupXstatedb, orderBook, order)
 	if err != nil {
-		tomoXstatedb.RevertToSnapshot(rupxSnap)
+		rupXstatedb.RevertToSnapshot(rupxSnap)
 		statedb.RevertToSnapshot(dbSnap)
 		return nil, nil, err
 	}
 	return trades, rejects, err
 }
 
-func (rupx *RupX) ApplyOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, tomoXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error) {
+func (rupx *RupX) ApplyOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, rupXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error) {
 	var (
 		rejects []*rupx_state.OrderItem
 		trades  []map[string]string
 		err     error
 	)
-	nonce := tomoXstatedb.GetNonce(order.UserAddress.Hash())
+	nonce := rupXstatedb.GetNonce(order.UserAddress.Hash())
 	log.Debug("ApplyOrder", "addr", order.UserAddress, "statenonce", nonce, "ordernonce", order.Nonce)
 	if big.NewInt(int64(nonce)).Cmp(order.Nonce) == -1 {
 		return nil, nil, ErrNonceTooHigh
@@ -39,7 +39,7 @@ func (rupx *RupX) ApplyOrder(coinbase common.Address, chain consensus.ChainConte
 		return nil, nil, ErrNonceTooLow
 	}
 	if order.Status == OrderStatusCancelled {
-		err, reject := rupx.ProcessCancelOrder(tomoXstatedb, statedb, chain, coinbase, orderBook, order)
+		err, reject := rupx.ProcessCancelOrder(rupXstatedb, statedb, chain, coinbase, orderBook, order)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -47,46 +47,46 @@ func (rupx *RupX) ApplyOrder(coinbase common.Address, chain consensus.ChainConte
 			rejects = append(rejects, order)
 		}
 		log.Debug("Exchange add user nonce:", "address", order.UserAddress, "status", order.Status, "nonce", nonce+1)
-		tomoXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
+		rupXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
 		return trades, rejects, nil
 	}
 	if order.Type != rupx_state.Market {
 		if order.Price.Sign() == 0 || common.BigToHash(order.Price).Big().Cmp(order.Price) != 0 {
 			log.Debug("Reject order price invalid", "price", order.Price)
 			rejects = append(rejects, order)
-			tomoXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
+			rupXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
 			return trades, rejects, nil
 		}
 	}
 	if order.Quantity.Sign() == 0 || common.BigToHash(order.Quantity).Big().Cmp(order.Quantity) != 0 {
 		log.Debug("Reject order quantity invalid", "quantity", order.Quantity)
 		rejects = append(rejects, order)
-		tomoXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
+		rupXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
 		return trades, rejects, nil
 	}
 	orderType := order.Type
 	// if we do not use auto-increment orderid, we must set price slot to avoid conflict
 	if orderType == rupx_state.Market {
 		log.Debug("Process maket order", "side", order.Side, "quantity", order.Quantity, "price", order.Price)
-		trades, rejects, err = rupx.processMarketOrder(coinbase, chain, statedb, tomoXstatedb, orderBook, order)
+		trades, rejects, err = rupx.processMarketOrder(coinbase, chain, statedb, rupXstatedb, orderBook, order)
 		if err != nil {
 			return nil, nil, err
 		}
 	} else {
 		log.Debug("Process limit order", "side", order.Side, "quantity", order.Quantity, "price", order.Price)
-		trades, rejects, err = rupx.processLimitOrder(coinbase, chain, statedb, tomoXstatedb, orderBook, order)
+		trades, rejects, err = rupx.processLimitOrder(coinbase, chain, statedb, rupXstatedb, orderBook, order)
 		if err != nil {
 			return nil, nil, err
 		}
 	}
 
 	log.Debug("Exchange add user nonce:", "address", order.UserAddress, "status", order.Status, "nonce", nonce+1)
-	tomoXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
+	rupXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
 	return trades, rejects, nil
 }
 
 // processMarketOrder : process the market order
-func (rupx *RupX) processMarketOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, tomoXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error) {
+func (rupx *RupX) processMarketOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, rupXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error) {
 	var (
 		trades     []map[string]string
 		newTrades  []map[string]string
@@ -99,29 +99,29 @@ func (rupx *RupX) processMarketOrder(coinbase common.Address, chain consensus.Ch
 	// speedup the comparison, do not assign because it is pointer
 	zero := rupx_state.Zero
 	if side == rupx_state.Bid {
-		bestPrice, volume := tomoXstatedb.GetBestAskPrice(orderBook)
+		bestPrice, volume := rupXstatedb.GetBestAskPrice(orderBook)
 		log.Debug("processMarketOrder ", "side", side, "bestPrice", bestPrice, "quantityToTrade", quantityToTrade, "volume", volume)
 		for quantityToTrade.Cmp(zero) > 0 && bestPrice.Cmp(zero) > 0 {
-			quantityToTrade, newTrades, newRejects, err = rupx.processOrderList(coinbase, chain, statedb, tomoXstatedb, rupx_state.Ask, orderBook, bestPrice, quantityToTrade, order)
+			quantityToTrade, newTrades, newRejects, err = rupx.processOrderList(coinbase, chain, statedb, rupXstatedb, rupx_state.Ask, orderBook, bestPrice, quantityToTrade, order)
 			if err != nil {
 				return nil, nil, err
 			}
 			trades = append(trades, newTrades...)
 			rejects = append(rejects, newRejects...)
-			bestPrice, volume = tomoXstatedb.GetBestAskPrice(orderBook)
+			bestPrice, volume = rupXstatedb.GetBestAskPrice(orderBook)
 			log.Debug("processMarketOrder ", "side", side, "bestPrice", bestPrice, "quantityToTrade", quantityToTrade, "volume", volume)
 		}
 	} else {
-		bestPrice, volume := tomoXstatedb.GetBestBidPrice(orderBook)
+		bestPrice, volume := rupXstatedb.GetBestBidPrice(orderBook)
 		log.Debug("processMarketOrder ", "side", side, "bestPrice", bestPrice, "quantityToTrade", quantityToTrade, "volume", volume)
 		for quantityToTrade.Cmp(zero) > 0 && bestPrice.Cmp(zero) > 0 {
-			quantityToTrade, newTrades, newRejects, err = rupx.processOrderList(coinbase, chain, statedb, tomoXstatedb, rupx_state.Bid, orderBook, bestPrice, quantityToTrade, order)
+			quantityToTrade, newTrades, newRejects, err = rupx.processOrderList(coinbase, chain, statedb, rupXstatedb, rupx_state.Bid, orderBook, bestPrice, quantityToTrade, order)
 			if err != nil {
 				return nil, nil, err
 			}
 			trades = append(trades, newTrades...)
 			rejects = append(rejects, newRejects...)
-			bestPrice, volume = tomoXstatedb.GetBestBidPrice(orderBook)
+			bestPrice, volume = rupXstatedb.GetBestBidPrice(orderBook)
 			log.Debug("processMarketOrder ", "side", side, "bestPrice", bestPrice, "quantityToTrade", quantityToTrade, "volume", volume)
 		}
 	}
@@ -130,7 +130,7 @@ func (rupx *RupX) processMarketOrder(coinbase common.Address, chain consensus.Ch
 
 // processLimitOrder : process the limit order, can change the quote
 // If not care for performance, we should make a copy of quote to prevent further reference problem
-func (rupx *RupX) processLimitOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, tomoXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error) {
+func (rupx *RupX) processLimitOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, rupXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error) {
 	var (
 		trades     []map[string]string
 		newTrades  []map[string]string
@@ -146,50 +146,50 @@ func (rupx *RupX) processLimitOrder(coinbase common.Address, chain consensus.Cha
 	zero := rupx_state.Zero
 
 	if side == rupx_state.Bid {
-		minPrice, volume := tomoXstatedb.GetBestAskPrice(orderBook)
+		minPrice, volume := rupXstatedb.GetBestAskPrice(orderBook)
 		log.Debug("processLimitOrder ", "side", side, "minPrice", minPrice, "orderPrice", price, "volume", volume)
 		for quantityToTrade.Cmp(zero) > 0 && price.Cmp(minPrice) >= 0 && minPrice.Cmp(zero) > 0 {
 			log.Debug("Min price in asks tree", "price", minPrice.String())
-			quantityToTrade, newTrades, newRejects, err = rupx.processOrderList(coinbase, chain, statedb, tomoXstatedb, rupx_state.Ask, orderBook, minPrice, quantityToTrade, order)
+			quantityToTrade, newTrades, newRejects, err = rupx.processOrderList(coinbase, chain, statedb, rupXstatedb, rupx_state.Ask, orderBook, minPrice, quantityToTrade, order)
 			if err != nil {
 				return nil, nil, err
 			}
 			trades = append(trades, newTrades...)
 			rejects = append(rejects, newRejects...)
 			log.Debug("New trade found", "newTrades", newTrades, "quantityToTrade", quantityToTrade)
-			minPrice, volume = tomoXstatedb.GetBestAskPrice(orderBook)
+			minPrice, volume = rupXstatedb.GetBestAskPrice(orderBook)
 			log.Debug("processLimitOrder ", "side", side, "minPrice", minPrice, "orderPrice", price, "volume", volume)
 		}
 	} else {
-		maxPrice, volume := tomoXstatedb.GetBestBidPrice(orderBook)
+		maxPrice, volume := rupXstatedb.GetBestBidPrice(orderBook)
 		log.Debug("processLimitOrder ", "side", side, "maxPrice", maxPrice, "orderPrice", price, "volume", volume)
 		for quantityToTrade.Cmp(zero) > 0 && price.Cmp(maxPrice) <= 0 && maxPrice.Cmp(zero) > 0 {
 			log.Debug("Max price in bids tree", "price", maxPrice.String())
-			quantityToTrade, newTrades, newRejects, err = rupx.processOrderList(coinbase, chain, statedb, tomoXstatedb, rupx_state.Bid, orderBook, maxPrice, quantityToTrade, order)
+			quantityToTrade, newTrades, newRejects, err = rupx.processOrderList(coinbase, chain, statedb, rupXstatedb, rupx_state.Bid, orderBook, maxPrice, quantityToTrade, order)
 			if err != nil {
 				return nil, nil, err
 			}
 			trades = append(trades, newTrades...)
 			rejects = append(rejects, newRejects...)
 			log.Debug("New trade found", "newTrades", newTrades, "quantityToTrade", quantityToTrade)
-			maxPrice, volume = tomoXstatedb.GetBestBidPrice(orderBook)
+			maxPrice, volume = rupXstatedb.GetBestBidPrice(orderBook)
 			log.Debug("processLimitOrder ", "side", side, "maxPrice", maxPrice, "orderPrice", price, "volume", volume)
 		}
 	}
 	if quantityToTrade.Cmp(zero) > 0 {
-		orderId := tomoXstatedb.GetNonce(orderBook)
+		orderId := rupXstatedb.GetNonce(orderBook)
 		order.OrderID = orderId + 1
 		order.Quantity = quantityToTrade
-		tomoXstatedb.SetNonce(orderBook, orderId+1)
+		rupXstatedb.SetNonce(orderBook, orderId+1)
 		orderIdHash := common.BigToHash(new(big.Int).SetUint64(order.OrderID))
-		tomoXstatedb.InsertOrderItem(orderBook, orderIdHash, *order)
+		rupXstatedb.InsertOrderItem(orderBook, orderIdHash, *order)
 		log.Debug("After matching, order (unmatched part) is now added to tree", "side", order.Side, "order", order)
 	}
 	return trades, rejects, nil
 }
 
 // processOrderList : process the order list
-func (rupx *RupX) processOrderList(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, tomoXstatedb *rupx_state.RupXStateDB, side string, orderBook common.Hash, price *big.Int, quantityStillToTrade *big.Int, order *rupx_state.OrderItem) (*big.Int, []map[string]string, []*rupx_state.OrderItem, error) {
+func (rupx *RupX) processOrderList(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, rupXstatedb *rupx_state.RupXStateDB, side string, orderBook common.Hash, price *big.Int, quantityStillToTrade *big.Int, order *rupx_state.OrderItem) (*big.Int, []map[string]string, []*rupx_state.OrderItem, error) {
 	quantityToTrade := rupx_state.CloneBigInt(quantityStillToTrade)
 	log.Debug("Process matching between order and orderlist", "quantityToTrade", quantityToTrade)
 	var (
@@ -198,10 +198,10 @@ func (rupx *RupX) processOrderList(coinbase common.Address, chain consensus.Chai
 		rejects []*rupx_state.OrderItem
 	)
 	for quantityToTrade.Sign() > 0 {
-		orderId, amount, _ := tomoXstatedb.GetBestOrderIdAndAmount(orderBook, price, side)
+		orderId, amount, _ := rupXstatedb.GetBestOrderIdAndAmount(orderBook, price, side)
 		var oldestOrder rupx_state.OrderItem
 		if amount.Sign() > 0 {
-			oldestOrder = tomoXstatedb.GetOrder(orderBook, orderId)
+			oldestOrder = rupXstatedb.GetOrder(orderBook, orderId)
 		}
 		log.Debug("found order ", "orderId ", orderId, "side", oldestOrder.Side, "amount", amount)
 		if oldestOrder.Quantity == nil || oldestOrder.Quantity.Sign() == 0 && amount.Sign() == 0 {
@@ -218,10 +218,10 @@ func (rupx *RupX) processOrderList(coinbase common.Address, chain consensus.Chai
 		}
 		var quotePrice *big.Int
 		if oldestOrder.QuoteToken.String() != common.TomoNativeAddress {
-			quotePrice = tomoXstatedb.GetPrice(rupx_state.GetOrderBookHash(oldestOrder.QuoteToken, common.HexToAddress(common.TomoNativeAddress)))
+			quotePrice = rupXstatedb.GetPrice(rupx_state.GetOrderBookHash(oldestOrder.QuoteToken, common.HexToAddress(common.TomoNativeAddress)))
 			log.Debug("TryGet quotePrice QuoteToken/TOMO", "quotePrice", quotePrice)
 			if (quotePrice == nil || quotePrice.Sign() == 0) && oldestOrder.BaseToken.String() != common.TomoNativeAddress {
-				inversePrice := tomoXstatedb.GetPrice(rupx_state.GetOrderBookHash(common.HexToAddress(common.TomoNativeAddress), oldestOrder.QuoteToken))
+				inversePrice := rupXstatedb.GetPrice(rupx_state.GetOrderBookHash(common.HexToAddress(common.TomoNativeAddress), oldestOrder.QuoteToken))
 				quoteTokenDecimal, err := rupx.GetTokenDecimal(chain, statedb, coinbase, oldestOrder.QuoteToken)
 				if err != nil || quoteTokenDecimal.Sign() == 0 {
 					return nil, nil, nil, fmt.Errorf("Fail to get tokenDecimal. Token: %v . Err: %v", oldestOrder.QuoteToken.String(), err)
@@ -241,7 +241,7 @@ func (rupx *RupX) processOrderList(coinbase common.Address, chain consensus.Chai
 					rejects = append(rejects, order)
 					quantityToTrade = rupx_state.Zero
 					rejects = append(rejects, &oldestOrder)
-					err = tomoXstatedb.CancelOrder(orderBook, &oldestOrder)
+					err = rupXstatedb.CancelOrder(orderBook, &oldestOrder)
 					if err != nil {
 						return nil, nil, nil, err
 					}
@@ -252,7 +252,7 @@ func (rupx *RupX) processOrderList(coinbase common.Address, chain consensus.Chai
 					break
 				} else { // reject maker
 					rejects = append(rejects, &oldestOrder)
-					err = tomoXstatedb.CancelOrder(orderBook, &oldestOrder)
+					err = rupXstatedb.CancelOrder(orderBook, &oldestOrder)
 					if err != nil {
 						return nil, nil, nil, err
 					}
@@ -261,7 +261,7 @@ func (rupx *RupX) processOrderList(coinbase common.Address, chain consensus.Chai
 			} else {
 				if rejectMaker { // reject maker
 					rejects = append(rejects, &oldestOrder)
-					err = tomoXstatedb.CancelOrder(orderBook, &oldestOrder)
+					err = rupXstatedb.CancelOrder(orderBook, &oldestOrder)
 					if err != nil {
 						return nil, nil, nil, err
 					}
@@ -283,8 +283,8 @@ func (rupx *RupX) processOrderList(coinbase common.Address, chain consensus.Chai
 		}
 		if tradedQuantity.Sign() > 0 {
 			quantityToTrade = rupx_state.Sub(quantityToTrade, tradedQuantity)
-			tomoXstatedb.SubAmountOrderItem(orderBook, orderId, price, tradedQuantity, side)
-			tomoXstatedb.SetPrice(orderBook, price)
+			rupXstatedb.SubAmountOrderItem(orderBook, orderId, price, tradedQuantity, side)
+			rupXstatedb.SetPrice(orderBook, price)
 			log.Debug("Update quantity for orderId", "orderId", orderId.Hex())
 			log.Debug("TRADE", "orderBook", orderBook, "Taker price", price, "maker price", order.Price, "Amount", tradedQuantity, "orderId", orderId, "side", side)
 
@@ -306,7 +306,7 @@ func (rupx *RupX) processOrderList(coinbase common.Address, chain consensus.Chai
 		}
 		if rejectMaker {
 			rejects = append(rejects, &oldestOrder)
-			err := tomoXstatedb.CancelOrder(orderBook, &oldestOrder)
+			err := rupXstatedb.CancelOrder(orderBook, &oldestOrder)
 			if err != nil {
 				return nil, nil, nil, err
 			}
@@ -560,7 +560,7 @@ func DoSettleBalance(coinbase common.Address, takerOrder, makerOrder *rupx_state
 	return nil
 }
 
-func (rupx *RupX) ProcessCancelOrder(tomoXstatedb *rupx_state.RupXStateDB, statedb *state.StateDB, chain consensus.ChainContext, coinbase common.Address, orderBook common.Hash, order *rupx_state.OrderItem) (error, bool) {
+func (rupx *RupX) ProcessCancelOrder(rupXstatedb *rupx_state.RupXStateDB, statedb *state.StateDB, chain consensus.ChainContext, coinbase common.Address, orderBook common.Hash, order *rupx_state.OrderItem) (error, bool) {
 	if err := rupx_state.CheckRelayerFee(order.ExchangeAddress, common.RelayerCancelFee, statedb); err != nil {
 		log.Debug("Relayer not enough fee when cancel order", "err", err)
 		return nil, true
@@ -570,7 +570,7 @@ func (rupx *RupX) ProcessCancelOrder(tomoXstatedb *rupx_state.RupXStateDB, state
 		log.Debug("Fail to get tokenDecimal ", "Token", order.BaseToken.String(), "err", err)
 		return err, false
 	}
-	originOrder := tomoXstatedb.GetOrder(orderBook, common.BigToHash(new(big.Int).SetUint64(order.OrderID)))
+	originOrder := rupXstatedb.GetOrder(orderBook, common.BigToHash(new(big.Int).SetUint64(order.OrderID)))
 
 	var tokenBalance *big.Int
 	switch originOrder.Side {
@@ -590,7 +590,7 @@ func (rupx *RupX) ProcessCancelOrder(tomoXstatedb *rupx_state.RupXStateDB, state
 		return nil, true
 	}
 
-	err = tomoXstatedb.CancelOrder(orderBook, order)
+	err = rupXstatedb.CancelOrder(orderBook, order)
 	if err != nil {
 		log.Debug("Error when cancel order", "order", order)
 		return err, false

@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 import "./SafeMath.sol";
 
-contract AbstractTOMOXListing {
+contract AbstractRUPXListing {
     function getTokenStatus(address) public view returns (bool);
 }
 
@@ -37,7 +37,7 @@ contract RelayerRegistration {
     uint public RelayerCount;
     uint256 public MinimumDeposit;
 
-    AbstractTOMOXListing private RupXListing;
+    AbstractRUPXListing private RupXListing;
 
     /// @dev Events
     /// struct-mapping -> values
@@ -52,7 +52,7 @@ contract RelayerRegistration {
     event BuyEvent(bool success, address coinbase, uint256 price);
 
     constructor (address rupxListing, uint maxRelayers, uint maxTokenList, uint minDeposit) public {
-        RupXListing = AbstractTOMOXListing(rupxListing);
+        RupXListing = AbstractRUPXListing(rupxListing);
         RelayerCount = 0;
         MaximumRelayers = maxRelayers;
         MaximumTokenList = maxTokenList;

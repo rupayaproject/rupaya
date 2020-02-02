@@ -22,7 +22,7 @@ var (
 	ErrOrderNonceTooHigh = errors.New("OrderNonce too high")
 )
 
-// PublicRupXAPI provides the tomoX RPC service that can be
+// PublicRupXAPI provides the rupX RPC service that can be
 // use publicly without security implications.
 type PublicRupXAPI struct {
 	t        *RupX
@@ -31,7 +31,7 @@ type PublicRupXAPI struct {
 
 }
 
-// NewPublicRupXAPI create a new RPC tomoX service.
+// NewPublicRupXAPI create a new RPC rupX service.
 func NewPublicRupXAPI(t *RupX) *PublicRupXAPI {
 	api := &PublicRupXAPI{
 		t:        t,

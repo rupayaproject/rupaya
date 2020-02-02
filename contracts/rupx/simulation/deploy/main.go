@@ -43,11 +43,11 @@ func main() {
 	fmt.Println("wait 10s to execute init smart contract : TRC Issuer")
 	time.Sleep(2 * time.Second)
 
-	//init TOMOX Listing in
+	//init RUPX Listing in
 	auth.Nonce = big.NewInt(int64(nonce + 1))
-	rupxListtingAddr, rupxListing, err := rupx.DeployTOMOXListing(auth, client)
+	rupxListtingAddr, rupxListing, err := rupx.DeployRUPXListing(auth, client)
 	if err != nil {
-		log.Fatal("DeployTOMOXListing", err)
+		log.Fatal("DeployRUPXListing", err)
 	}
 	rupxListing.TransactOpts.GasPrice = big.NewInt(210000000000000)
 
@@ -198,7 +198,7 @@ func applyIssuer(rrc21Issuer *rupx.RRC21Issuer, tokenList []map[string]interface
 	time.Sleep(5 * time.Second)
 }
 
-func applyRupXListing(rupxListing *rupx.TOMOXListing, tokenList []map[string]interface{}, nonce uint64) {
+func applyRupXListing(rupxListing *rupx.RUPXListing, tokenList []map[string]interface{}, nonce uint64) {
 	for _, token := range tokenList {
 		rupxListing.TransactOpts.Nonce = big.NewInt(int64(nonce))
 		rupxListing.TransactOpts.Value = simulation.RupXListingFee
