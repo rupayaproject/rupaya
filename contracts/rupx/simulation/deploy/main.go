@@ -97,42 +97,42 @@ func main() {
 	/*
 		for _, token := range tokenList {
 			fromTokens = append(fromTokens, token["address"].(common.Address))
-			toTokens = append(toTokens, simulation.TOMONative)
+			toTokens = append(toTokens, simulation.RUPXNative)
 		}
 	*/
 
-	// TOMO/BTC
-	fromTokens = append(fromTokens, simulation.TOMONative)
+	// RUPX/BTC
+	fromTokens = append(fromTokens, simulation.RUPXNative)
 	toTokens = append(toTokens, tokenList[0]["address"].(common.Address))
 
-	// TOMO/USD
-	fromTokens = append(fromTokens, simulation.TOMONative)
+	// RUPX/USD
+	fromTokens = append(fromTokens, simulation.RUPXNative)
 	toTokens = append(toTokens, tokenList[9]["address"].(common.Address))
 
-	// ETH/TOMO
+	// ETH/RUPX
 	fromTokens = append(fromTokens, tokenList[1]["address"].(common.Address))
-	toTokens = append(toTokens, simulation.TOMONative)
+	toTokens = append(toTokens, simulation.RUPXNative)
 
 	fromTokens = append(fromTokens, tokenList[2]["address"].(common.Address))
-	toTokens = append(toTokens, simulation.TOMONative)
+	toTokens = append(toTokens, simulation.RUPXNative)
 
 	fromTokens = append(fromTokens, tokenList[3]["address"].(common.Address))
-	toTokens = append(toTokens, simulation.TOMONative)
+	toTokens = append(toTokens, simulation.RUPXNative)
 
 	fromTokens = append(fromTokens, tokenList[4]["address"].(common.Address))
-	toTokens = append(toTokens, simulation.TOMONative)
+	toTokens = append(toTokens, simulation.RUPXNative)
 
 	fromTokens = append(fromTokens, tokenList[5]["address"].(common.Address))
-	toTokens = append(toTokens, simulation.TOMONative)
+	toTokens = append(toTokens, simulation.RUPXNative)
 
 	fromTokens = append(fromTokens, tokenList[6]["address"].(common.Address))
-	toTokens = append(toTokens, simulation.TOMONative)
+	toTokens = append(toTokens, simulation.RUPXNative)
 
 	fromTokens = append(fromTokens, tokenList[7]["address"].(common.Address))
-	toTokens = append(toTokens, simulation.TOMONative)
+	toTokens = append(toTokens, simulation.RUPXNative)
 
 	fromTokens = append(fromTokens, tokenList[8]["address"].(common.Address))
-	toTokens = append(toTokens, simulation.TOMONative)
+	toTokens = append(toTokens, simulation.RUPXNative)
 
 	// ETH/BTC
 	fromTokens = append(fromTokens, tokenList[1]["address"].(common.Address))

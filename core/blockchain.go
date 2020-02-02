@@ -285,7 +285,7 @@ func (bc *BlockChain) loadLastState() error {
 		engine, ok := bc.Engine().(*posv.Posv)
 		if ok {
 			rupXService := engine.GetRupXService()
-			if bc.Config().IsTIPRupX(currentBlock.Number()) && rupXService != nil {
+			if bc.Config().IsRIPRupX(currentBlock.Number()) && rupXService != nil {
 				rupxRoot, err := rupXService.GetRupxStateRoot(currentBlock)
 				if err != nil {
 					repair = true
@@ -478,7 +478,7 @@ func (bc *BlockChain) OrderStateAt(block *types.Block) (*rupx_state.RupXStateDB,
 	engine, ok := bc.Engine().(*posv.Posv)
 	if ok {
 		rupXService := engine.GetRupXService()
-		if bc.Config().IsTIPRupX(block.Number()) && rupXService != nil {
+		if bc.Config().IsRIPRupX(block.Number()) && rupXService != nil {
 			log.Debug("OrderStateAt", "blocknumber", block.Header().Number)
 			rupxState, err := rupXService.GetRupxState(block)
 			if err == nil {
@@ -538,7 +538,7 @@ func (bc *BlockChain) repair(head **types.Block) error {
 			engine, ok := bc.Engine().(*posv.Posv)
 			if ok {
 				rupXService := engine.GetRupXService()
-				if bc.Config().IsTIPRupX((*head).Number()) && rupXService != nil {
+				if bc.Config().IsRIPRupX((*head).Number()) && rupXService != nil {
 					rupxRoot, err := rupXService.GetRupxStateRoot(*head)
 					if err == nil {
 						_, err = rupx_state.New(rupxRoot, rupXService.GetStateCache())
@@ -607,7 +607,7 @@ func (bc *BlockChain) insert(block *types.Block) {
 	bc.currentBlock.Store(block)
 
 	// save cache BlockSigners
-	if bc.chainConfig.Posv != nil && !bc.chainConfig.IsTIPSigning(block.Number()) {
+	if bc.chainConfig.Posv != nil && !bc.chainConfig.IsRIPSigning(block.Number()) {
 		engine, ok := bc.Engine().(*posv.Posv)
 		if ok {
 			engine.CacheData(block.Header(), block.Transactions(), bc.GetReceiptsByHash(block.Hash()))
@@ -805,7 +805,7 @@ func (bc *BlockChain) Stop() {
 		var rupxTriedb *trie.Database
 		engine, _ := bc.Engine().(*posv.Posv)
 		triedb := bc.stateCache.TrieDB()
-		if bc.Config().IsTIPRupX(bc.CurrentBlock().Number()) && engine != nil {
+		if bc.Config().IsRIPRupX(bc.CurrentBlock().Number()) && engine != nil {
 			if rupXService := engine.GetRupXService(); rupXService != nil && rupXService.GetStateCache() != nil {
 				rupxTriedb = rupXService.GetStateCache().TrieDB()
 			}
@@ -818,7 +818,7 @@ func (bc *BlockChain) Stop() {
 				if err := triedb.Commit(recent.Root(), true); err != nil {
 					log.Error("Failed to commit recent state trie", "err", err)
 				}
-				if bc.Config().IsTIPRupX(bc.CurrentBlock().Number()) && engine != nil {
+				if bc.Config().IsRIPRupX(bc.CurrentBlock().Number()) && engine != nil {
 					if rupXService := engine.GetRupXService(); rupXService != nil {
 						rupxRoot, _ := rupXService.GetRupxStateRoot(recent)
 						if !common.EmptyHash(rupxRoot) && rupxTriedb != nil {
@@ -833,7 +833,7 @@ func (bc *BlockChain) Stop() {
 		for !bc.triegc.Empty() {
 			triedb.Dereference(bc.triegc.PopItem().(common.Hash), common.Hash{})
 		}
-		if bc.Config().IsTIPRupX(bc.CurrentBlock().Number()) && engine != nil && rupxTriedb != nil {
+		if bc.Config().IsRIPRupX(bc.CurrentBlock().Number()) && engine != nil && rupxTriedb != nil {
 			if rupXService := engine.GetRupXService(); rupXService != nil && rupXService.GetTriegc() != nil {
 				for !rupXService.GetTriegc().Empty() {
 					rupxTriedb.Dereference(rupXService.GetTriegc().PopItem().(common.Hash), common.Hash{})
@@ -1087,7 +1087,7 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 	}
 	engine, _ := bc.Engine().(*posv.Posv)
 	var rupxTrieDb *trie.Database
-	if bc.Config().IsTIPRupX(block.Number()) && engine != nil {
+	if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
 		if rupXService := engine.GetRupXService(); rupXService != nil {
 			rupxTrieDb = rupXService.GetStateCache().TrieDB()
 		}
@@ -1108,7 +1108,7 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 		// Full but not archive node, do proper garbage collection
 		triedb.Reference(root, common.Hash{}) // metadata reference to keep trie alive
 		bc.triegc.Push(root, -float32(block.NumberU64()))
-		if bc.Config().IsTIPRupX(block.Number()) && engine != nil {
+		if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
 			if rupxTrieDb != nil {
 				rupxTrieDb.Reference(rupxRoot, common.Hash{})
 			}
@@ -1121,7 +1121,7 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 			header := bc.GetHeaderByNumber(current - triesInMemory)
 			chosen := header.Number.Uint64()
 			oldRupXRoot := common.Hash{}
-			if bc.Config().IsTIPRupX(block.Number()) && engine != nil {
+			if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
 				if rupXService := engine.GetRupXService(); rupXService != nil {
 					oldRupXRoot, _ = rupXService.GetRupxStateRoot(bc.GetBlock(header.Hash(), current-triesInMemory))
 				}
@@ -1148,7 +1148,7 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 					triedb.Commit(header.Root, true)
 					lastWrite = chosen
 					bc.gcproc = 0
-					if bc.Config().IsTIPRupX(block.Number()) && rupxTrieDb != nil {
+					if bc.Config().IsRIPRupX(block.Number()) && rupxTrieDb != nil {
 						rupxTrieDb.Commit(oldRupXRoot, true)
 					}
 				}
@@ -1162,15 +1162,15 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 				}
 				triedb.Dereference(root.(common.Hash), common.Hash{})
 			}
-			if bc.Config().IsTIPRupX(block.Number()) && engine != nil {
+			if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
 				if rupXService := engine.GetRupXService(); rupXService != nil {
 					for !rupXService.GetTriegc().Empty() {
-						tomoRoot, number := rupXService.GetTriegc().Pop()
+						rupayaRoot, number := rupXService.GetTriegc().Pop()
 						if uint64(-number) > chosen {
-							rupXService.GetTriegc().Push(tomoRoot, number)
+							rupXService.GetTriegc().Push(rupayaRoot, number)
 							break
 						}
-						rupxTrieDb.Dereference(tomoRoot.(common.Hash), common.Hash{})
+						rupxTrieDb.Dereference(rupayaRoot.(common.Hash), common.Hash{})
 					}
 				}
 			}
@@ -1216,7 +1216,7 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 		bc.insert(block)
 	}
 	// save cache BlockSigners
-	if bc.chainConfig.Posv != nil && bc.chainConfig.IsTIPSigning(block.Number()) {
+	if bc.chainConfig.Posv != nil && bc.chainConfig.IsRIPSigning(block.Number()) {
 		engine, ok := bc.Engine().(*posv.Posv)
 		if ok {
 			engine.CacheSigner(block.Header().Hash(), block.Transactions())
@@ -1384,7 +1384,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 		}
 		// clear the previous dry-run cache
 		var rupxState *rupx_state.RupXStateDB
-		if bc.Config().IsTIPRupX(block.Number()) && engine != nil {
+		if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
 			if rupXService := engine.GetRupXService(); rupXService != nil {
 				txMatchBatchData, err := ExtractMatchingTransactions(block.Transactions())
 				if err != nil {
@@ -1466,7 +1466,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 			// Only count canonical blocks for GC processing time
 			bc.gcproc += proctime
 			bc.UpdateBlocksHashCache(block)
-			if bc.chainConfig.IsTIPRupX(block.Number()) {
+			if bc.chainConfig.IsRIPRupX(block.Number()) {
 				bc.logExchangeData(block)
 			}
 		case SideStatTy:
@@ -1615,7 +1615,7 @@ func (bc *BlockChain) getResultBlock(block *types.Block, verifiedM2 bool) (*Resu
 		return nil, err
 	}
 	var rupxState *rupx_state.RupXStateDB
-	if bc.Config().IsTIPRupX(block.Number()) && engine != nil {
+	if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
 		if rupXService := engine.GetRupXService(); rupXService != nil {
 			rupxState, err = rupXService.GetRupxState(parent)
 			if err != nil {
@@ -1750,7 +1750,7 @@ func (bc *BlockChain) insertBlock(block *types.Block) ([]interface{}, []*types.L
 		// Only count canonical blocks for GC processing time
 		bc.gcproc += result.proctime
 		bc.UpdateBlocksHashCache(block)
-		if bc.chainConfig.IsTIPRupX(block.Number()) {
+		if bc.chainConfig.IsRIPRupX(block.Number()) {
 			bc.logExchangeData(block)
 		}
 	case SideStatTy:
@@ -1943,7 +1943,7 @@ func (bc *BlockChain) reorg(oldBlock, newBlock *types.Block) error {
 			}
 		}()
 	}
-	if bc.chainConfig.IsTIPRupX(commonBlock.Number()) {
+	if bc.chainConfig.IsRIPRupX(commonBlock.Number()) {
 		bc.reorgTxMatches(deletedTxs, newChain)
 	}
 	return nil

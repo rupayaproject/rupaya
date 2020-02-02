@@ -37,7 +37,7 @@ contract RupxValidator {
     uint256 public voterWithdrawDelay;
 
     modifier onlyValidCandidateCap {
-        // anyone can deposit X TOMO to become a candidate
+        // anyone can deposit X RUPX to become a candidate
         require(msg.value >= minCandidateCap);
         _;
     }

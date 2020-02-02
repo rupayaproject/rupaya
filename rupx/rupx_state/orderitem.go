@@ -352,8 +352,8 @@ func VerifyPair(statedb *state.StateDB, exchangeAddress, baseToken, quoteToken c
 
 func VerifyBalance(statedb *state.StateDB, rupxStateDb *RupXStateDB, order *types.OrderTransaction, baseDecimal, quoteDecimal *big.Int) error {
 	var quotePrice *big.Int
-	if order.QuoteToken().String() != common.TomoNativeAddress {
-		quotePrice = rupxStateDb.GetPrice(GetOrderBookHash(order.QuoteToken(), common.HexToAddress(common.TomoNativeAddress)))
+	if order.QuoteToken().String() != common.RupayaNativeAddress {
+		quotePrice = rupxStateDb.GetPrice(GetOrderBookHash(order.QuoteToken(), common.HexToAddress(common.RupayaNativeAddress)))
 	}
 	feeRate := GetExRelayerFee(order.ExchangeAddress(), statedb)
 	balanceResult, err := GetSettleBalance(quotePrice, order.Side(), feeRate, order.BaseToken(), order.QuoteToken(), order.Price(), feeRate, baseDecimal, quoteDecimal, order.Quantity())

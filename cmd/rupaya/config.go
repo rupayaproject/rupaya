@@ -159,7 +159,7 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, rupayaConfig) {
 		common.RRC21IssuerSMC = common.RRC21IssuerSMCTestNet
 		cfg.Eth.NetworkId = 89
 		common.RelayerRegistrationSMC = common.RelayerRegistrationSMCTestnet
-		common.TIPRRC21Fee = common.TIPRupXTestnet
+		common.RIPRRC21Fee = common.RIPRupXTestnet
 	}
 
 	// Check rollback hash exist.

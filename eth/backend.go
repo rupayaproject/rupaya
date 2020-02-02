@@ -236,7 +236,7 @@ func New(ctx *node.ServiceContext, config *Config, rupXServ *rupx.RupX) (*Ethere
 			if !ok {
 				return nil
 			}
-			if block.NumberU64()%common.MergeSignRange == 0 || !eth.chainConfig.IsTIP2019(block.Number()) {
+			if block.NumberU64()%common.MergeSignRange == 0 || !eth.chainConfig.IsRIP2019(block.Number()) {
 				if err := contracts.CreateTransactionSign(chainConfig, eth.txPool, eth.accountManager, block, chainDb, eb); err != nil {
 					return fmt.Errorf("Fail to create tx sign for importing block: %v", err)
 				}
@@ -305,7 +305,7 @@ func New(ctx *node.ServiceContext, config *Config, rupXServ *rupx.RupX) (*Ethere
 				if len(penSigners) > 0 {
 					// Loop for each block to check missing sign.
 					for i := prevEpoc; i < blockNumberEpoc; i++ {
-						if i%common.MergeSignRange == 0 || !chainConfig.IsTIP2019(big.NewInt(int64(i))) {
+						if i%common.MergeSignRange == 0 || !chainConfig.IsRIP2019(big.NewInt(int64(i))) {
 							bheader := chain.GetHeaderByNumber(i)
 							bhash := bheader.Hash()
 							block := chain.GetBlock(bhash, i)
@@ -338,7 +338,7 @@ func New(ctx *node.ServiceContext, config *Config, rupXServ *rupx.RupX) (*Ethere
 		}
 
 		// Hook scans for bad masternodes and decide to penalty them
-		c.HookPenaltyTIPSigning = func(chain consensus.ChainReader, header *types.Header, candidates []common.Address) ([]common.Address, error) {
+		c.HookPenaltyRIPSigning = func(chain consensus.ChainReader, header *types.Header, candidates []common.Address) ([]common.Address, error) {
 			prevEpoc := header.Number.Uint64() - chain.Config().Posv.Epoch
 			combackEpoch := uint64(0)
 			comebackLength := (common.LimitPenaltyEpoch + 1) * chain.Config().Posv.Epoch
@@ -436,9 +436,9 @@ func New(ctx *node.ServiceContext, config *Config, rupXServ *rupx.RupX) (*Ethere
 					}
 				}
 
-				log.Debug("Time Calculated HookPenaltyTIPSigning ", "block", header.Number, "hash", header.Hash().Hex(), "pen comeback nodes", len(penComebacks), "not enough miner", len(penalties), "time", common.PrettyDuration(time.Since(start)))
+				log.Debug("Time Calculated HookPenaltyRIPSigning ", "block", header.Number, "hash", header.Hash().Hex(), "pen comeback nodes", len(penComebacks), "not enough miner", len(penalties), "time", common.PrettyDuration(time.Since(start)))
 				penalties = append(penalties, penComebacks...)
-				if chain.Config().IsTIPRandomize(header.Number) {
+				if chain.Config().IsRIPRandomize(header.Number) {
 					return penalties, nil
 				}
 				return penComebacks, nil

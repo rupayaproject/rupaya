@@ -51,7 +51,7 @@ func TestConsoleWelcome(t *testing.T) {
 	rupaya.SetTemplateFunc("goos", func() string { return runtime.GOOS })
 	rupaya.SetTemplateFunc("goarch", func() string { return runtime.GOARCH })
 	rupaya.SetTemplateFunc("gover", runtime.Version)
-	rupaya.SetTemplateFunc("tomover", func() string { return params.Version })
+	rupaya.SetTemplateFunc("rupayaver", func() string { return params.Version })
 	rupaya.SetTemplateFunc("niltime", func() string { return time.Unix(1544771829, 0).Format(time.RFC1123) })
 	rupaya.SetTemplateFunc("apis", func() string { return ipcAPIs })
 
@@ -59,7 +59,7 @@ func TestConsoleWelcome(t *testing.T) {
 	rupaya.Expect(`
 Welcome to the Rupaya JavaScript console!
 
-instance: rupaya/v{{tomover}}/{{goos}}-{{goarch}}/{{gover}}
+instance: rupaya/v{{rupayaver}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{.Etherbase}}
 at block: 0 ({{niltime}})
  datadir: {{.Datadir}}
@@ -135,7 +135,7 @@ func testAttachWelcome(t *testing.T, rupaya *testrupaya, endpoint, apis string) 
 	attach.SetTemplateFunc("goos", func() string { return runtime.GOOS })
 	attach.SetTemplateFunc("goarch", func() string { return runtime.GOARCH })
 	attach.SetTemplateFunc("gover", runtime.Version)
-	attach.SetTemplateFunc("tomover", func() string { return params.Version })
+	attach.SetTemplateFunc("rupayaver", func() string { return params.Version })
 	attach.SetTemplateFunc("etherbase", func() string { return rupaya.Etherbase })
 	attach.SetTemplateFunc("niltime", func() string { return time.Unix(1544771829, 0).Format(time.RFC1123) })
 	attach.SetTemplateFunc("ipc", func() bool { return strings.HasPrefix(endpoint, "ipc") })
@@ -146,7 +146,7 @@ func testAttachWelcome(t *testing.T, rupaya *testrupaya, endpoint, apis string) 
 	attach.Expect(`
 Welcome to the Rupaya JavaScript console!
 
-instance: rupaya/v{{tomover}}/{{goos}}-{{goarch}}/{{gover}}
+instance: rupaya/v{{rupayaver}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{etherbase}}
 at block: 0 ({{niltime}}){{if ipc}}
  datadir: {{datadir}}{{end}}

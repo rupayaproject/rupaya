@@ -41,7 +41,7 @@ func main() {
 	auth.Nonce = big.NewInt(int64(nonce + 1))
 
 	// init rrc20
-	rrc21TokenAddr, rrc21Token, err := rrc21issuer.DeployRRC21(auth, client, "TEST", "TOMO", 18, simulation.Cap, simulation.Fee)
+	rrc21TokenAddr, rrc21Token, err := rrc21issuer.DeployRRC21(auth, client, "TEST", "RUPX", 18, simulation.Cap, simulation.Fee)
 	if err != nil {
 		log.Fatal(err)
 	}

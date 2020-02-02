@@ -78,7 +78,7 @@ func testSendOrder(t *testing.T, amount, price *big.Int, side string, status str
 		Status:          status,
 		Side:            side,
 		Type:            "LO",
-		PairName:        "BTC/TOMO",
+		PairName:        "BTC/RUPX",
 	}
 	nonce, _ := getNonce(t, msg.UserAddress)
 	tx := types.NewOrderTransaction(nonce, msg.Quantity, msg.Price, msg.ExchangeAddress, msg.UserAddress, msg.BaseToken, msg.QuoteToken, msg.Status, msg.Side, msg.Type, msg.PairName, common.Hash{}, orderID)
@@ -93,7 +93,7 @@ func testSendOrder(t *testing.T, amount, price *big.Int, side string, status str
 	}
 }
 
-func testSendOrderTOMOUSD(t *testing.T, amount, price *big.Int, side string, status string, orderID uint64) {
+func testSendOrderRUPXUSD(t *testing.T, amount, price *big.Int, side string, status string, orderID uint64) {
 
 	client, err := ethclient.Dial("http://127.0.0.1:8501")
 	if err != nil {
@@ -114,7 +114,7 @@ func testSendOrderTOMOUSD(t *testing.T, amount, price *big.Int, side string, sta
 		Status:          status,
 		Side:            side,
 		Type:            "LO",
-		PairName:        "TOMO/USD",
+		PairName:        "RUPX/USD",
 	}
 	nonce, _ := getNonce(t, msg.UserAddress)
 	tx := types.NewOrderTransaction(nonce, msg.Quantity, msg.Price, msg.ExchangeAddress, msg.UserAddress, msg.BaseToken, msg.QuoteToken, msg.Status, msg.Side, msg.Type, msg.PairName, common.Hash{}, orderID)
@@ -209,9 +209,9 @@ func TestSendSellOrder(t *testing.T) {
 	testSendOrder(t, new(big.Int).SetUint64(1000000000000000000), new(big.Int).SetUint64(100000000000000000), "SELL", "NEW", 0)
 }
 func TestFilled(t *testing.T) {
-	//BTC/TOMO
+	//BTC/RUPX
 	price := new(big.Int).Mul(big.NewInt(1000000000000000000), big.NewInt(5000))
-	testSendOrderTOMOUSD(t, new(big.Int).Mul(big.NewInt(1000000000000000000), big.NewInt(5000)), price, "BUY", "NEW", 0)
+	testSendOrderRUPXUSD(t, new(big.Int).Mul(big.NewInt(1000000000000000000), big.NewInt(5000)), price, "BUY", "NEW", 0)
 	//ETH/BTC
 	price = new(big.Int).Mul(big.NewInt(10000000000000000), big.NewInt(20000))
 	testSendOrderBTCUSD(t, new(big.Int).SetUint64(1000000000), price, "BUY", "NEW", 0)

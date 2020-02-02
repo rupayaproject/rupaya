@@ -324,7 +324,7 @@ var (
 	TargetGasLimitFlag = cli.Uint64Flag{
 		Name:  "targetgaslimit",
 		Usage: "Target gas limit sets the artificial target gas floor for the blocks to mine",
-		Value: params.TomoGenesisGasLimit,
+		Value: params.RupayaGenesisGasLimit,
 	}
 	EtherbaseFlag = cli.StringFlag{
 		Name:  "etherbase",
@@ -546,7 +546,7 @@ var (
 	RupXDBNameFlag = cli.StringFlag{
 		Name:  "rupx.dbName",
 		Usage: "Database name for RupX",
-		Value: "tomodex",
+		Value: "rupayadex",
 	}
 	RupXDBConnectionUrlFlag = cli.StringFlag{
 		Name:  "rupx.dbConnectionUrl",

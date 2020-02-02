@@ -19,7 +19,7 @@ var (
 	rrc21TokenAddr = common.HexToAddress("0x80430A33EaB86890a346bCf64F86CFeAC73287f3")
 )
 
-func airDropTokenToAccountNoTomo() {
+func airDropTokenToAccountNoRupaya() {
 	client, err := ethclient.Dial(simulation.RpcEndpoint)
 	if err != nil {
 		fmt.Println(err, client)
@@ -49,7 +49,7 @@ func airDropTokenToAccountNoTomo() {
 		log.Fatal("can't transaction's receipt ", err, "hash", tx.Hash().Hex())
 	}
 	fee := big.NewInt(0).SetUint64(hexutil.MustDecodeUint64(receipt["gasUsed"].(string)))
-	if hexutil.MustDecodeUint64(receipt["blockNumber"].(string)) > common.TIPRRC21Fee.Uint64() {
+	if hexutil.MustDecodeUint64(receipt["blockNumber"].(string)) > common.RIPRRC21Fee.Uint64() {
 		fee = fee.Mul(fee, common.RRC21GasPrice)
 	}
 	fmt.Println("fee", fee.Uint64(), "number", hexutil.MustDecodeUint64(receipt["blockNumber"].(string)))
@@ -63,13 +63,13 @@ func airDropTokenToAccountNoTomo() {
 		log.Fatal("can't execute transferAmount in tr21:", err)
 	}
 }
-func testTransferRRC21TokenWithAccountNoTomo() {
+func testTransferRRC21TokenWithAccountNoRupaya() {
 	client, err := ethclient.Dial(simulation.RpcEndpoint)
 	if err != nil {
 		fmt.Println(err, client)
 	}
 
-	// access to address which received token rrc20 but dont have tomo
+	// access to address which received token rrc20 but dont have rupaya
 	nonce, _ := client.NonceAt(context.Background(), simulation.AirdropAddr, nil)
 	airDropAccount := bind.NewKeyedTransactor(simulation.AirdropKey)
 	airDropAccount.Nonce = big.NewInt(int64(nonce))
@@ -112,7 +112,7 @@ func testTransferRRC21TokenWithAccountNoTomo() {
 		log.Fatal("can't transaction's receipt ", err, "hash", tx.Hash().Hex())
 	}
 	fee := big.NewInt(0).SetUint64(hexutil.MustDecodeUint64(receipt["gasUsed"].(string)))
-	if hexutil.MustDecodeUint64(receipt["blockNumber"].(string)) > common.TIPRRC21Fee.Uint64() {
+	if hexutil.MustDecodeUint64(receipt["blockNumber"].(string)) > common.RIPRRC21Fee.Uint64() {
 		fee = fee.Mul(fee, common.RRC21GasPrice)
 	}
 	fmt.Println("fee", fee.Uint64(), "number", hexutil.MustDecodeUint64(receipt["blockNumber"].(string)))
@@ -179,7 +179,7 @@ func testTransferRrc21Fail() {
 		log.Fatal("can't transaction's receipt ", err, "hash", tx.Hash().Hex())
 	}
 	fee := big.NewInt(0).SetUint64(hexutil.MustDecodeUint64(receipt["gasUsed"].(string)))
-	if hexutil.MustDecodeUint64(receipt["blockNumber"].(string)) > common.TIPRRC21Fee.Uint64() {
+	if hexutil.MustDecodeUint64(receipt["blockNumber"].(string)) > common.RIPRRC21Fee.Uint64() {
 		fee = fee.Mul(fee, common.RRC21GasPrice)
 	}
 	fmt.Println("fee", fee.Uint64(), "number", hexutil.MustDecodeUint64(receipt["blockNumber"].(string)))
@@ -204,12 +204,12 @@ func main() {
 
 	start := time.Now()
 	for i := 0; i < 10000000; i++ {
-		airDropTokenToAccountNoTomo()
+		airDropTokenToAccountNoRupaya()
 		fmt.Println("Finish airdrop token to a account")
-		testTransferRRC21TokenWithAccountNoTomo()
-		fmt.Println("Finish transfer rrc21 token with a account no tomo")
+		testTransferRRC21TokenWithAccountNoRupaya()
+		fmt.Println("Finish transfer rrc21 token with a account no rupaya")
 		testTransferRrc21Fail()
-		fmt.Println("Finish testing ! Success transferAmount token rrc20 with a account no tomo")
+		fmt.Println("Finish testing ! Success transferAmount token rrc20 with a account no rupaya")
 	}
 	fmt.Println(common.PrettyDuration(time.Since(start)))
 }

@@ -244,7 +244,7 @@ type Posv struct {
 	BlockSigners               *lru.Cache
 	HookReward                 func(chain consensus.ChainReader, state *state.StateDB,parentState *state.StateDB, header *types.Header) (error, map[string]interface{})
 	HookPenalty                func(chain consensus.ChainReader, blockNumberEpoc uint64) ([]common.Address, error)
-	HookPenaltyTIPSigning      func(chain consensus.ChainReader, header *types.Header, candidate []common.Address) ([]common.Address, error)
+	HookPenaltyRIPSigning      func(chain consensus.ChainReader, header *types.Header, candidate []common.Address) ([]common.Address, error)
 	HookValidator              func(header *types.Header, signers []common.Address) ([]byte, error)
 	HookVerifyMNs              func(header *types.Header, signers []common.Address) error
 	GetRupXService            func() RupXService
@@ -452,10 +452,10 @@ func (c *Posv) checkSignersOnCheckpoint(chain consensus.ChainReader, header *typ
 		return nil
 	}
 	penPenalties := []common.Address{}
-	if c.HookPenalty != nil || c.HookPenaltyTIPSigning != nil {
+	if c.HookPenalty != nil || c.HookPenaltyRIPSigning != nil {
 		var err error
-		if chain.Config().IsTIPSigning(header.Number) {
-			penPenalties, err = c.HookPenaltyTIPSigning(chain, header, signers)
+		if chain.Config().IsRIPSigning(header.Number) {
+			penPenalties, err = c.HookPenaltyRIPSigning(chain, header, signers)
 		} else {
 			penPenalties, err = c.HookPenalty(chain, number)
 		}
@@ -863,11 +863,11 @@ func (c *Posv) Prepare(chain consensus.ChainReader, header *types.Header) error 
 	header.Extra = header.Extra[:extraVanity]
 	masternodes := snap.GetSigners()
 	if number >= c.config.Epoch && number%c.config.Epoch == 0 {
-		if c.HookPenalty != nil || c.HookPenaltyTIPSigning != nil {
+		if c.HookPenalty != nil || c.HookPenaltyRIPSigning != nil {
 			var penMasternodes []common.Address = nil
 			var err error = nil
-			if chain.Config().IsTIPSigning(header.Number) {
-				penMasternodes, err = c.HookPenaltyTIPSigning(chain, header, masternodes)
+			if chain.Config().IsRIPSigning(header.Number) {
+				penMasternodes, err = c.HookPenaltyRIPSigning(chain, header, masternodes)
 			} else {
 				penMasternodes, err = c.HookPenalty(chain, number)
 			}
@@ -1216,7 +1216,7 @@ func getM1M2(masternodes []common.Address, validators []int64, currentHeader *ty
 		return nil, moveM2, errors.New("len(m2) is less than len(m1)")
 	}
 	if maxMNs > 0 {
-		isForked := config.IsTIPRandomize(currentHeader.Number)
+		isForked := config.IsRIPRandomize(currentHeader.Number)
 		if isForked {
 			moveM2 = ((currentHeader.Number.Uint64() % config.Posv.Epoch) / uint64(maxMNs)) % uint64(maxMNs)
 		}

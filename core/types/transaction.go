@@ -255,7 +255,7 @@ func (tx *Transaction) AsMessage(s Signer, balanceFee *big.Int, number *big.Int)
 	var err error
 	msg.from, err = Sender(s, tx)
 	if balanceFee != nil {
-		if number.Cmp(common.TIPRRC21Fee) > 0 {
+		if number.Cmp(common.RIPRRC21Fee) > 0 {
 			msg.gasPrice = common.RRC21GasPrice
 		} else {
 			msg.gasPrice = common.RRC21GasPriceBefore

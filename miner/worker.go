@@ -422,7 +422,7 @@ func (self *worker) wait() {
 					}
 				}
 				// Send tx sign to smart contract blockSigners.
-				if block.NumberU64()%common.MergeSignRange == 0 || !self.config.IsTIP2019(block.Number()) {
+				if block.NumberU64()%common.MergeSignRange == 0 || !self.config.IsRIP2019(block.Number()) {
 					if err := contracts.CreateTransactionSign(self.config, self.eth.TxPool(), self.eth.AccountManager(), block, self.chainDb, self.coinbase); err != nil {
 						log.Error("Fail to create tx sign for signer", "error", "err")
 					}
@@ -607,7 +607,7 @@ func (self *worker) commitNewWork() {
 	if self.config.DAOForkSupport && self.config.DAOForkBlock != nil && self.config.DAOForkBlock.Cmp(header.Number) == 0 {
 		misc.ApplyDAOHardFork(work.state)
 	}
-	if common.TIPSigning.Cmp(header.Number) == 0 {
+	if common.RIPSigning.Cmp(header.Number) == 0 {
 		work.state.DeleteAddress(common.HexToAddress(common.BlockSigners))
 	}
 	// won't grasp txs at checkpoint
@@ -633,7 +633,7 @@ func (self *worker) commitNewWork() {
 			log.Warn("Can't find coinbase account wallet", "coinbase", self.coinbase, "err", err)
 			return
 		}
-		if self.config.Posv != nil && header.Number.Uint64()%self.config.Posv.Epoch != 0 && self.chain.Config().IsTIPRupX(header.Number) {
+		if self.config.Posv != nil && header.Number.Uint64()%self.config.Posv.Epoch != 0 && self.chain.Config().IsRIPRupX(header.Number) {
 			rupX := self.eth.GetRupX()
 			if rupX != nil && header.Number.Uint64() > self.config.Posv.Epoch {
 				log.Debug("Start processing order pending")
@@ -807,7 +807,7 @@ func (env *Work) commitTransactions(mux *event.TypeMux, balanceFee map[common.Ad
 		}
 		if tokenFeeUsed {
 			fee := new(big.Int).SetUint64(gas)
-			if env.header.Number.Cmp(common.TIPRRC21Fee) > 0 {
+			if env.header.Number.Cmp(common.RIPRRC21Fee) > 0 {
 				fee = fee.Mul(fee, common.RRC21GasPrice)
 			}
 			balanceFee[*tx.To()] = new(big.Int).Sub(balanceFee[*tx.To()], fee)
@@ -906,7 +906,7 @@ func (env *Work) commitTransactions(mux *event.TypeMux, balanceFee map[common.Ad
 		}
 		if tokenFeeUsed {
 			fee := new(big.Int).SetUint64(gas)
-			if env.header.Number.Cmp(common.TIPRRC21Fee) > 0 {
+			if env.header.Number.Cmp(common.RIPRRC21Fee) > 0 {
 				fee = fee.Mul(fee, common.RRC21GasPrice)
 			}
 			balanceFee[*tx.To()] = new(big.Int).Sub(balanceFee[*tx.To()], fee)

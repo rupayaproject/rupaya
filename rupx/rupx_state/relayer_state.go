@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/pkg/errors"
 	"github.com/rupayaproject/go-rupaya/common"
 	"github.com/rupayaproject/go-rupaya/core/state"
 	"github.com/rupayaproject/go-rupaya/crypto"
 	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/pkg/errors"
 )
 
 func GetLocMappingAtKey(key common.Hash, slot uint64) *big.Int {
@@ -90,7 +90,7 @@ func SubRelayerFee(relayer common.Address, fee *big.Int, statedb *state.StateDB)
 	balance := statedb.GetState(common.HexToAddress(common.RelayerRegistrationSMC), locHashDeposit).Big()
 	log.Debug("ApplyRupXMatchedTransaction settle balance: SubRelayerFee BEFORE", "relayer", relayer.String(), "balance", balance)
 	if balance.Cmp(fee) < 0 {
-		return errors.Errorf("relayer %s isn't enough tomo fee", relayer.String())
+		return errors.Errorf("relayer %s isn't enough rupaya fee", relayer.String())
 	} else {
 		balance = new(big.Int).Sub(balance, fee)
 		statedb.SetState(common.HexToAddress(common.RelayerRegistrationSMC), locHashDeposit, common.BigToHash(balance))
@@ -107,19 +107,19 @@ func CheckRelayerFee(relayer common.Address, fee *big.Int, statedb *state.StateD
 	locBigDeposit := new(big.Int).SetUint64(uint64(0)).Add(locBig, RelayerStructMappingSlot["_deposit"])
 	locHashDeposit := common.BigToHash(locBigDeposit)
 	balance := statedb.GetState(common.HexToAddress(common.RelayerRegistrationSMC), locHashDeposit).Big()
-	if new(big.Int).Sub(balance,fee).Cmp(new(big.Int).Mul(common.BasePrice, common.RelayerLockedFund)) < 0 {
-		return errors.Errorf("relayer %s isn't enough tomo fee : balance %d , fee : %d ", relayer.Hex(), balance.Uint64(), fee.Uint64())
+	if new(big.Int).Sub(balance, fee).Cmp(new(big.Int).Mul(common.BasePrice, common.RelayerLockedFund)) < 0 {
+		return errors.Errorf("relayer %s isn't enough rupaya fee : balance %d , fee : %d ", relayer.Hex(), balance.Uint64(), fee.Uint64())
 	}
 	return nil
 }
 func AddTokenBalance(addr common.Address, value *big.Int, token common.Address, statedb *state.StateDB) error {
-	// TOMO native
-	if token.String() == common.TomoNativeAddress {
+	// RUPX native
+	if token.String() == common.RupayaNativeAddress {
 		balance := statedb.GetBalance(addr)
-		log.Debug("ApplyRupXMatchedTransaction settle balance: ADD TOKEN TOMO NATIVE BEFORE", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
+		log.Debug("ApplyRupXMatchedTransaction settle balance: ADD TOKEN RUPX NATIVE BEFORE", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
 		balance = balance.Add(balance, value)
 		statedb.SetBalance(addr, balance)
-		log.Debug("ApplyRupXMatchedTransaction settle balance: ADD TOMO NATIVE BALANCE AFTER", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
+		log.Debug("ApplyRupXMatchedTransaction settle balance: ADD RUPX NATIVE BALANCE AFTER", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
 
 		return nil
 	}
@@ -140,17 +140,17 @@ func AddTokenBalance(addr common.Address, value *big.Int, token common.Address, 
 }
 
 func SubTokenBalance(addr common.Address, value *big.Int, token common.Address, statedb *state.StateDB) error {
-	// TOMO native
-	if token.String() == common.TomoNativeAddress {
+	// RUPX native
+	if token.String() == common.RupayaNativeAddress {
 
 		balance := statedb.GetBalance(addr)
-		log.Debug("ApplyRupXMatchedTransaction settle balance: SUB TOMO NATIVE BALANCE BEFORE", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
+		log.Debug("ApplyRupXMatchedTransaction settle balance: SUB RUPX NATIVE BALANCE BEFORE", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
 		if balance.Cmp(value) < 0 {
 			return errors.Errorf("value %s in token %s not enough , have : %s , want : %s  ", addr.String(), token.String(), balance, value)
 		}
 		balance = balance.Sub(balance, value)
 		statedb.SetBalance(addr, balance)
-		log.Debug("ApplyRupXMatchedTransaction settle balance: SUB TOMO NATIVE BALANCE AFTER", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
+		log.Debug("ApplyRupXMatchedTransaction settle balance: SUB RUPX NATIVE BALANCE AFTER", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
 		return nil
 	}
 
@@ -173,8 +173,8 @@ func SubTokenBalance(addr common.Address, value *big.Int, token common.Address, 
 }
 
 func CheckSubTokenBalance(addr common.Address, value *big.Int, token common.Address, statedb *state.StateDB, mapBalances map[common.Address]map[common.Address]*big.Int) (*big.Int, error) {
-	// TOMO native
-	if token.String() == common.TomoNativeAddress {
+	// RUPX native
+	if token.String() == common.RupayaNativeAddress {
 		var balance *big.Int
 		if value := mapBalances[token][addr]; value != nil {
 			balance = value
@@ -185,7 +185,7 @@ func CheckSubTokenBalance(addr common.Address, value *big.Int, token common.Addr
 			return nil, errors.Errorf("value %s in token %s not enough , have : %s , want : %s  ", addr.String(), token.String(), balance, value)
 		}
 		newBalance := new(big.Int).Sub(balance, value)
-		log.Debug("CheckSubTokenBalance settle balance: SUB TOMO NATIVE BALANCE ", "token", token.String(), "address", addr.String(), "balance", balance, "value", value, "newBalance", newBalance)
+		log.Debug("CheckSubTokenBalance settle balance: SUB RUPX NATIVE BALANCE ", "token", token.String(), "address", addr.String(), "balance", balance, "value", value, "newBalance", newBalance)
 		return newBalance, nil
 	}
 	// TRC tokens
@@ -210,8 +210,8 @@ func CheckSubTokenBalance(addr common.Address, value *big.Int, token common.Addr
 }
 
 func CheckAddTokenBalance(addr common.Address, value *big.Int, token common.Address, statedb *state.StateDB, mapBalances map[common.Address]map[common.Address]*big.Int) (*big.Int, error) {
-	// TOMO native
-	if token.String() == common.TomoNativeAddress {
+	// RUPX native
+	if token.String() == common.RupayaNativeAddress {
 		var balance *big.Int
 		if value := mapBalances[token][addr]; value != nil {
 			balance = value
@@ -219,7 +219,7 @@ func CheckAddTokenBalance(addr common.Address, value *big.Int, token common.Addr
 			balance = statedb.GetBalance(addr)
 		}
 		newBalance := new(big.Int).Add(balance, value)
-		log.Debug("CheckAddTokenBalance settle balance: ADD TOMO NATIVE BALANCE ", "token", token.String(), "address", addr.String(), "balance", balance, "value", value, "newBalance", newBalance)
+		log.Debug("CheckAddTokenBalance settle balance: ADD RUPX NATIVE BALANCE ", "token", token.String(), "address", addr.String(), "balance", balance, "value", value, "newBalance", newBalance)
 		return newBalance, nil
 	}
 	// TRC tokens
@@ -255,15 +255,15 @@ func CheckSubRelayerFee(relayer common.Address, fee *big.Int, statedb *state.Sta
 	}
 	log.Debug("CheckSubRelayerFee settle balance: SubRelayerFee ", "relayer", relayer.String(), "balance", balance, "fee", fee)
 	if balance.Cmp(fee) < 0 {
-		return nil, errors.Errorf("relayer %s isn't enough tomo fee", relayer.String())
+		return nil, errors.Errorf("relayer %s isn't enough rupaya fee", relayer.String())
 	} else {
 		return new(big.Int).Sub(balance, fee), nil
 	}
 }
 
 func GetTokenBalance(addr common.Address, token common.Address, statedb *state.StateDB) *big.Int {
-	// TOMO native
-	if token.String() == common.TomoNativeAddress {
+	// RUPX native
+	if token.String() == common.RupayaNativeAddress {
 		return statedb.GetBalance(addr)
 	}
 	// TRC tokens
@@ -277,8 +277,8 @@ func GetTokenBalance(addr common.Address, token common.Address, statedb *state.S
 }
 
 func SetTokenBalance(addr common.Address, balance *big.Int, token common.Address, statedb *state.StateDB) error {
-	// TOMO native
-	if token.String() == common.TomoNativeAddress {
+	// RUPX native
+	if token.String() == common.RupayaNativeAddress {
 		statedb.SetBalance(addr, balance)
 		return nil
 	}

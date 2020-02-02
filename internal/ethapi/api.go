@@ -685,7 +685,7 @@ func (s *PublicBlockChainAPI) GetMasternodes(ctx context.Context, b *types.Block
 		curBlockNumber := b.Number().Uint64()
 		prevBlockNumber := curBlockNumber + (common.MergeSignRange - (curBlockNumber % common.MergeSignRange))
 		latestBlockNumber := s.b.CurrentBlock().Number().Uint64()
-		if prevBlockNumber >= latestBlockNumber || !s.b.ChainConfig().IsTIP2019(b.Number()) {
+		if prevBlockNumber >= latestBlockNumber || !s.b.ChainConfig().IsRIP2019(b.Number()) {
 			prevBlockNumber = curBlockNumber
 		}
 		if engine, ok := s.b.GetEngine().(*posv.Posv); ok {
@@ -1274,7 +1274,7 @@ func (s *PublicBlockChainAPI) findNearestSignedBlock(ctx context.Context, b *typ
 	signedBlockNumber := blockNumber + (common.MergeSignRange - (blockNumber % common.MergeSignRange))
 	latestBlockNumber := s.b.CurrentBlock().Number()
 
-	if signedBlockNumber >= latestBlockNumber.Uint64() || !s.b.ChainConfig().IsTIPSigning(b.Number()) {
+	if signedBlockNumber >= latestBlockNumber.Uint64() || !s.b.ChainConfig().IsRIPSigning(b.Number()) {
 		signedBlockNumber = blockNumber
 	}
 

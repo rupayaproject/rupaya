@@ -74,7 +74,7 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 	if p.config.DAOForkSupport && p.config.DAOForkBlock != nil && p.config.DAOForkBlock.Cmp(block.Number()) == 0 {
 		misc.ApplyDAOHardFork(statedb)
 	}
-	if common.TIPSigning.Cmp(header.Number) == 0 {
+	if common.RIPSigning.Cmp(header.Number) == 0 {
 		statedb.DeleteAddress(common.HexToAddress(common.BlockSigners))
 	}
 	parentState := statedb.Copy()
@@ -102,7 +102,7 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 		allLogs = append(allLogs, receipt.Logs...)
 		if tokenFeeUsed {
 			fee := new(big.Int).SetUint64(gas)
-			if block.Header().Number.Cmp(common.TIPRRC21Fee) > 0 {
+			if block.Header().Number.Cmp(common.RIPRRC21Fee) > 0 {
 				fee = fee.Mul(fee, common.RRC21GasPrice)
 			}
 			balanceFee[*tx.To()] = new(big.Int).Sub(balanceFee[*tx.To()], fee)
@@ -129,7 +129,7 @@ func (p *StateProcessor) ProcessBlockNoValidator(cBlock *CalculatedBlock, stated
 	if p.config.DAOForkSupport && p.config.DAOForkBlock != nil && p.config.DAOForkBlock.Cmp(block.Number()) == 0 {
 		misc.ApplyDAOHardFork(statedb)
 	}
-	if common.TIPSigning.Cmp(header.Number) == 0 {
+	if common.RIPSigning.Cmp(header.Number) == 0 {
 		statedb.DeleteAddress(common.HexToAddress(common.BlockSigners))
 	}
 	if cBlock.stop {
@@ -169,7 +169,7 @@ func (p *StateProcessor) ProcessBlockNoValidator(cBlock *CalculatedBlock, stated
 		allLogs = append(allLogs, receipt.Logs...)
 		if tokenFeeUsed {
 			fee := new(big.Int).SetUint64(gas)
-			if block.Header().Number.Cmp(common.TIPRRC21Fee) > 0 {
+			if block.Header().Number.Cmp(common.RIPRRC21Fee) > 0 {
 				fee = fee.Mul(fee, common.RRC21GasPrice)
 			}
 			balanceFee[*tx.To()] = new(big.Int).Sub(balanceFee[*tx.To()], fee)
@@ -188,13 +188,13 @@ func (p *StateProcessor) ProcessBlockNoValidator(cBlock *CalculatedBlock, stated
 // for the transaction, gas used and an error if the transaction failed,
 // indicating the block was invalid.
 func ApplyTransaction(config *params.ChainConfig, tokensFee map[common.Address]*big.Int, bc *BlockChain, author *common.Address, gp *GasPool, statedb *state.StateDB, header *types.Header, tx *types.Transaction, usedGas *uint64, cfg vm.Config) (*types.Receipt, uint64, error, bool) {
-	if tx.To() != nil && tx.To().String() == common.BlockSigners && config.IsTIPSigning(header.Number) {
+	if tx.To() != nil && tx.To().String() == common.BlockSigners && config.IsRIPSigning(header.Number) {
 		return ApplySignTransaction(config, statedb, header, tx, usedGas)
 	}
-	if tx.To() != nil && tx.To().String() == common.RupXStateAddr && config.IsTIPRupX(header.Number) {
+	if tx.To() != nil && tx.To().String() == common.RupXStateAddr && config.IsRIPRupX(header.Number) {
 		return ApplyEmptyTransaction(config, statedb, header, tx, usedGas)
 	}
-	if tx.IsMatchingTransaction() && config.IsTIPRupX(header.Number) {
+	if tx.IsMatchingTransaction() && config.IsRIPRupX(header.Number) {
 		return ApplyEmptyTransaction(config, statedb, header, tx, usedGas)
 	}
 	var balanceFee *big.Int

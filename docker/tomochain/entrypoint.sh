@@ -5,7 +5,7 @@
 # - PASSWORD (default to empty)
 # - PRIVATE_KEY (default to empty)
 # - BOOTNODES (default to empty)
-# - EXTIP (default to empty)
+# - EXRIP (default to empty)
 # - VERBOSITY (default to 3)
 # - MAXPEERS (default to 25)
 # - SYNC_MODE (default to 'full')
@@ -22,14 +22,14 @@ KEYSTORE_DIR="keystore"
 genesisPath=""
 params=""
 accountsCount=$(
-  tomo account list --datadir $DATA_DIR  --keystore $KEYSTORE_DIR \
+  rupaya account list --datadir $DATA_DIR  --keystore $KEYSTORE_DIR \
   2> /dev/null \
   | wc -l
 )
 
 # file to env
 for env in IDENTITY PASSWORD PRIVATE_KEY BOOTNODES WS_SECRET NETSTATS_HOST \
-           NETSTATS_PORT EXTIP SYNC_MODE NETWORK_ID ANNOUNCE_TXS STORE_REWARD DEBUG_MODE MAXPEERS; do
+           NETSTATS_PORT EXRIP SYNC_MODE NETWORK_ID ANNOUNCE_TXS STORE_REWARD DEBUG_MODE MAXPEERS; do
   file=$(eval echo "\$${env}_FILE")
   if [[ -f $file ]] && [[ ! -z $file ]]; then
     echo "Replacing $env by $file"
@@ -56,7 +56,7 @@ if [[ ! -z $NETWORK_ID ]]; then
       ;;
     89 )
       genesisPath="testnet.json"
-      params="$params --tomo-testnet --gcmode archive --rpcapi db,eth,net,web3,debug"
+      params="$params --rupaya-testnet --gcmode archive --rpcapi db,eth,net,web3,debug"
       ;;
     90 )
       genesisPath="devnet.json"
@@ -74,9 +74,9 @@ if [[ ! -z $GENESIS_PATH ]]; then
 fi
 
 # data dir
-if [[ ! -d $DATA_DIR/tomo ]]; then
+if [[ ! -d $DATA_DIR/rupaya ]]; then
   echo "No blockchain data, creating genesis block."
-  tomo init $genesisPath --datadir $DATA_DIR 2> /dev/null
+  rupaya init $genesisPath --datadir $DATA_DIR 2> /dev/null
 fi
 
 # identity
@@ -101,21 +101,21 @@ if [[ $accountsCount -le 0 ]]; then
   if [[ ! -z $PRIVATE_KEY ]]; then
     echo "Creating account from private key"
     echo "$PRIVATE_KEY" > ./private_key
-    tomo  account import ./private_key \
+    rupaya  account import ./private_key \
       --datadir $DATA_DIR \
       --keystore $KEYSTORE_DIR \
       --password ./password
     rm ./private_key
   else
     echo "Creating new account"
-    tomo account new \
+    rupaya account new \
       --datadir $DATA_DIR \
       --keystore $KEYSTORE_DIR \
       --password ./password
   fi
 fi
 account=$(
-  tomo account list --datadir $DATA_DIR  --keystore $KEYSTORE_DIR \
+  rupaya account list --datadir $DATA_DIR  --keystore $KEYSTORE_DIR \
   2> /dev/null \
   | head -n 1 \
   | cut -d"{" -f 2 | cut -d"}" -f 1
@@ -129,8 +129,8 @@ if [[ ! -z $BOOTNODES ]]; then
 fi
 
 # extip
-if [[ ! -z $EXTIP ]]; then
-  params="$params --nat extip:${EXTIP}"
+if [[ ! -z $EXRIP ]]; then
+  params="$params --nat extip:${EXRIP}"
 fi
 
 # syncmode
@@ -173,9 +173,9 @@ set -x
 
 echo '[
   "enode://5b65023779f99a6e7accd7931f9ecd460b7007a13fcf9ad89181d5cc49a16fc4df73752f7166d33d33bf9a3059a7286818b49fe40b8329150860502d88607b1e@159.89.199.223:30303"
-]' > $DATA_DIR/tomo/static-nodes.json
+]' > $DATA_DIR/rupaya/static-nodes.json
 
-exec tomo $params \
+exec rupaya $params \
   --verbosity $VERBOSITY \
   --datadir $DATA_DIR \
   --keystore $KEYSTORE_DIR \

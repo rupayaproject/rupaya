@@ -217,20 +217,20 @@ func (rupx *RupX) processOrderList(coinbase common.Address, chain consensus.Chai
 			maxTradedQuantity = rupx_state.CloneBigInt(amount)
 		}
 		var quotePrice *big.Int
-		if oldestOrder.QuoteToken.String() != common.TomoNativeAddress {
-			quotePrice = rupXstatedb.GetPrice(rupx_state.GetOrderBookHash(oldestOrder.QuoteToken, common.HexToAddress(common.TomoNativeAddress)))
-			log.Debug("TryGet quotePrice QuoteToken/TOMO", "quotePrice", quotePrice)
-			if (quotePrice == nil || quotePrice.Sign() == 0) && oldestOrder.BaseToken.String() != common.TomoNativeAddress {
-				inversePrice := rupXstatedb.GetPrice(rupx_state.GetOrderBookHash(common.HexToAddress(common.TomoNativeAddress), oldestOrder.QuoteToken))
+		if oldestOrder.QuoteToken.String() != common.RupayaNativeAddress {
+			quotePrice = rupXstatedb.GetPrice(rupx_state.GetOrderBookHash(oldestOrder.QuoteToken, common.HexToAddress(common.RupayaNativeAddress)))
+			log.Debug("TryGet quotePrice QuoteToken/RUPX", "quotePrice", quotePrice)
+			if (quotePrice == nil || quotePrice.Sign() == 0) && oldestOrder.BaseToken.String() != common.RupayaNativeAddress {
+				inversePrice := rupXstatedb.GetPrice(rupx_state.GetOrderBookHash(common.HexToAddress(common.RupayaNativeAddress), oldestOrder.QuoteToken))
 				quoteTokenDecimal, err := rupx.GetTokenDecimal(chain, statedb, coinbase, oldestOrder.QuoteToken)
 				if err != nil || quoteTokenDecimal.Sign() == 0 {
 					return nil, nil, nil, fmt.Errorf("Fail to get tokenDecimal. Token: %v . Err: %v", oldestOrder.QuoteToken.String(), err)
 				}
-				log.Debug("TryGet inversePrice TOMO/QuoteToken", "inversePrice", inversePrice)
+				log.Debug("TryGet inversePrice RUPX/QuoteToken", "inversePrice", inversePrice)
 				if inversePrice != nil && inversePrice.Sign() > 0 {
 					quotePrice = new(big.Int).Div(common.BasePrice, inversePrice)
 					quotePrice = new(big.Int).Mul(quotePrice, quoteTokenDecimal)
-					log.Debug("TryGet quotePrice after get inversePrice TOMO/QuoteToken", "quotePrice", quotePrice, "quoteTokenDecimal", quoteTokenDecimal)
+					log.Debug("TryGet quotePrice after get inversePrice RUPX/QuoteToken", "quotePrice", quotePrice, "quoteTokenDecimal", quoteTokenDecimal)
 				}
 			}
 		}
@@ -324,7 +324,7 @@ func (rupx *RupX) getTradeQuantity(quotePrice *big.Int, coinbase common.Address,
 	if err != nil || quoteTokenDecimal.Sign() == 0 {
 		return rupx_state.Zero, false, fmt.Errorf("Fail to get tokenDecimal. Token: %v . Err: %v", makerOrder.QuoteToken.String(), err)
 	}
-	if makerOrder.QuoteToken.String() == common.TomoNativeAddress {
+	if makerOrder.QuoteToken.String() == common.RupayaNativeAddress {
 		quotePrice = quoteTokenDecimal
 	}
 	if takerOrder.ExchangeAddress.String() == makerOrder.ExchangeAddress.String() {
@@ -611,14 +611,14 @@ func (rupx *RupX) ProcessCancelOrder(rupXstatedb *rupx_state.RupXStateDB, stated
 func getCancelFee(baseTokenDecimal *big.Int, feeRate *big.Int, order *rupx_state.OrderItem) *big.Int {
 	cancelFee := big.NewInt(0)
 	if order.Side == rupx_state.Ask {
-		// SELL 1 BTC => TOMO ,,
+		// SELL 1 BTC => RUPX ,,
 		// order.Quantity =1 && fee rate =2
 		// ==> cancel fee = 2/10000
 		baseTokenQuantity := new(big.Int).Mul(order.Quantity, baseTokenDecimal)
 		cancelFee = new(big.Int).Mul(baseTokenQuantity, feeRate)
 		cancelFee = new(big.Int).Div(cancelFee, common.RupXBaseCancelFee)
 	} else {
-		// BUY 1 BTC => TOMO with Price : 10000
+		// BUY 1 BTC => RUPX with Price : 10000
 		// quoteTokenQuantity = 10000 && fee rate =2
 		// => cancel fee =2
 		quoteTokenQuantity := new(big.Int).Mul(order.Quantity, order.Price)

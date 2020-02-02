@@ -24,14 +24,14 @@ import (
 )
 
 var (
-	RupayaMainnetGenesisHash = common.HexToHash("9326145f8a2c8c00bbe13afc7d7f3d9c868b5ef39d89f2f4e9390e9720298624") // Tomo Mainnet genesis hash to enforce below configs on
+	RupayaMainnetGenesisHash = common.HexToHash("9326145f8a2c8c00bbe13afc7d7f3d9c868b5ef39d89f2f4e9390e9720298624") // Rupaya Mainnet genesis hash to enforce below configs on
 	MainnetGenesisHash       = common.HexToHash("8d13370621558f4ed0da587934473c0404729f28b0ff1d50e5fdd840457a2f17") // Mainnet genesis hash to enforce below configs on
 	TestnetGenesisHash       = common.HexToHash("dffc8ae3b45965404b4fd73ce7f0e13e822ac0fc23ce7e95b42bc5f1e57023a5") // Testnet genesis hash to enforce below configs on
 )
 
 var (
-	// TomoChain mainnet config
-	TomoMainnetChainConfig = &ChainConfig{
+	// RupayaChain mainnet config
+	RupayaMainnetChainConfig = &ChainConfig{
 		ChainId:        big.NewInt(308),
 		HomesteadBlock: big.NewInt(1),
 		EIP150Block:    big.NewInt(2),
@@ -233,23 +233,23 @@ func (c *ChainConfig) IsConstantinople(num *big.Int) bool {
 	return isForked(c.ConstantinopleBlock, num)
 }
 
-func (c *ChainConfig) IsTIP2019(num *big.Int) bool {
-	return isForked(common.TIP2019Block, num)
+func (c *ChainConfig) IsRIP2019(num *big.Int) bool {
+	return isForked(common.RIP2019Block, num)
 }
 
-func (c *ChainConfig) IsTIPSigning(num *big.Int) bool {
-	return isForked(common.TIPSigning, num)
+func (c *ChainConfig) IsRIPSigning(num *big.Int) bool {
+	return isForked(common.RIPSigning, num)
 }
 
-func (c *ChainConfig) IsTIPRandomize(num *big.Int) bool {
-	return isForked(common.TIPRandomize, num)
+func (c *ChainConfig) IsRIPRandomize(num *big.Int) bool {
+	return isForked(common.RIPRandomize, num)
 }
 
-func (c *ChainConfig) IsTIPRupX(num *big.Int) bool {
+func (c *ChainConfig) IsRIPRupX(num *big.Int) bool {
 	if common.IsTestnet {
-		return isForked(common.TIPRupXTestnet, num)
+		return isForked(common.RIPRupXTestnet, num)
 	} else {
-		return isForked(common.TIPRupX, num)
+		return isForked(common.RIPRupX, num)
 	}
 }
 

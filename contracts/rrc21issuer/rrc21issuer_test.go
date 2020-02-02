@@ -23,7 +23,7 @@ var (
 	token = common.HexToAddress("0000000000000000000000000000000000000089")
 
 	delay    = big.NewInt(30 * 48)
-	minApply = big.NewInt(0).Mul(big.NewInt(1000), big.NewInt(100000000000000000)) // 100 TOMO
+	minApply = big.NewInt(0).Mul(big.NewInt(1000), big.NewInt(100000000000000000)) // 100 RUPX
 )
 
 func TestFeeTxWithRRC21Token(t *testing.T) {
@@ -45,7 +45,7 @@ func TestFeeTxWithRRC21Token(t *testing.T) {
 	cap := big.NewInt(0).Mul(big.NewInt(10000000), big.NewInt(10000000000000))
 	RRC21fee := big.NewInt(100)
 	//  deploy a RRC21 SMC
-	rrc21TokenAddr, rrc21, err := DeployRRC21(transactOpts, contractBackend, "TEST", "TOMO", 18, cap, RRC21fee)
+	rrc21TokenAddr, rrc21, err := DeployRRC21(transactOpts, contractBackend, "TEST", "RUPX", 18, cap, RRC21fee)
 	if err != nil {
 		t.Fatal("can't deploy smart contract: ", err)
 	}
@@ -71,7 +71,7 @@ func TestFeeTxWithRRC21Token(t *testing.T) {
 	}
 	rrc21Issuer.TransactOpts.Value = big.NewInt(0)
 	airDropAmount := big.NewInt(1000000000)
-	// airdrop token rrc21 to a address no tomo
+	// airdrop token rrc21 to a address no rupaya
 	tx, err := rrc21.Transfer(airdropAddr, airDropAmount)
 	if err != nil {
 		t.Fatal("can't execute transfer in tr20: ", err)
@@ -82,7 +82,7 @@ func TestFeeTxWithRRC21Token(t *testing.T) {
 		t.Fatal("can't transaction's receipt ", err, "hash", tx.Hash())
 	}
 	fee := big.NewInt(0).SetUint64(receipt.GasUsed)
-	if receipt.Logs[0].BlockNumber > common.TIPRRC21Fee.Uint64() {
+	if receipt.Logs[0].BlockNumber > common.RIPRRC21Fee.Uint64() {
 		fee = fee.Mul(fee, common.RRC21GasPrice)
 	}
 	remainFee := big.NewInt(0).Sub(minApply, fee)
@@ -104,7 +104,7 @@ func TestFeeTxWithRRC21Token(t *testing.T) {
 		t.Fatal("can't get balance token fee in  smart contract: ", err, "got", balanceIssuerFee, "wanted", remainFee)
 	}
 
-	// access to address which received token rrc21 but dont have tomo
+	// access to address which received token rrc21 but dont have rupaya
 	key1TransactOpts := bind.NewKeyedTransactor(airdropKey)
 	key1Trc20, _ := NewRRC21(key1TransactOpts, rrc21TokenAddr, contractBackend)
 
@@ -134,7 +134,7 @@ func TestFeeTxWithRRC21Token(t *testing.T) {
 		t.Fatal("can't transaction's receipt ", err, "hash", tx.Hash())
 	}
 	fee = big.NewInt(0).SetUint64(receipt.GasUsed)
-	if receipt.Logs[0].BlockNumber > common.TIPRRC21Fee.Uint64() {
+	if receipt.Logs[0].BlockNumber > common.RIPRRC21Fee.Uint64() {
 		fee = fee.Mul(fee, common.RRC21GasPrice)
 	}
 	remainFee = big.NewInt(0).Sub(remainFee, fee)

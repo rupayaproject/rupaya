@@ -25,21 +25,21 @@ const (
 	IgnoreSignerCheckBlock     = uint64(14458500)
 )
 
-var TIP2019Block = big.NewInt(0)
-var TIPSigning = big.NewInt(0)
-var TIPRandomize = big.NewInt(0)
+var RIP2019Block = big.NewInt(0)
+var RIPSigning = big.NewInt(0)
+var RIPRandomize = big.NewInt(0)
 var BlackListHFNumber = uint64(9349100)
-var TIPRupX = big.NewInt(0)
-var TIPRupXTestnet = big.NewInt(11303000)
+var RIPRupX = big.NewInt(0)
+var RIPRupXTestnet = big.NewInt(11303000)
 var IsTestnet bool = false
 var StoreRewardFolder string
 var RollbackHash Hash
 var BasePrice = big.NewInt(1000000000000000000) // 1
-var RelayerLockedFund = big.NewInt(20000)       // 20000 TOMO
+var RelayerLockedFund = big.NewInt(20000)       // 20000 RUPX
 var RelayerFee = big.NewInt(1000000000000000)   // 0.001
 var RupXBaseFee = big.NewInt(10000)
 var RelayerCancelFee = big.NewInt(100000000000000) // 0.0001
-var RupXBaseCancelFee = big.NewInt(10000)         // 1/10000
+var RupXBaseCancelFee = big.NewInt(10000)          // 1/10000
 
 var MinGasPrice = big.NewInt(DefaultMinGasPrice)
 var RRC21IssuerSMCTestNet = HexToAddress("0x7081C72c9DC44686C7B7EAB1d338EA137Fa9f0D3")
@@ -108,4 +108,4 @@ var Blacklist = map[Address]bool{
 	HexToAddress("0x3538a544021c07869c16b764424c5987409cba48"): true,
 	HexToAddress("0xe187cf86c2274b1f16e8225a7da9a75aba4f1f5f"): true,
 }
-var TIPRRC21Fee = big.NewInt(13523400)
+var RIPRRC21Fee = big.NewInt(13523400)
