@@ -21,7 +21,7 @@ import (
 	"github.com/rupayaproject/go-rupaya/core/state"
 	"github.com/rupayaproject/go-rupaya/core/types"
 	"github.com/rupayaproject/go-rupaya/core/vm"
-	"github.com/rupayaproject/go-rupaya/tomox/tomox_state"
+	"github.com/rupayaproject/go-rupaya/rupx/rupx_state"
 	"math/big"
 )
 
@@ -37,7 +37,7 @@ type Validator interface {
 	// gas used.
 	ValidateState(block, parent *types.Block, state *state.StateDB, receipts types.Receipts, usedGas uint64) error
 
-	ValidateMatchingOrder(statedb *state.StateDB, tomoxStatedb *tomox_state.TomoXStateDB, txMatchBatch tomox_state.TxMatchBatch, coinbase common.Address) error
+	ValidateMatchingOrder(statedb *state.StateDB, rupxStatedb *rupx_state.RupXStateDB, txMatchBatch rupx_state.TxMatchBatch, coinbase common.Address) error
 }
 
 // Processor is an interface for processing blocks using a given initial state.

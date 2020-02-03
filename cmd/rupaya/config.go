@@ -36,7 +36,7 @@ import (
 	"github.com/rupayaproject/go-rupaya/log"
 	"github.com/rupayaproject/go-rupaya/node"
 	"github.com/rupayaproject/go-rupaya/params"
-	"github.com/rupayaproject/go-rupaya/tomox"
+	"github.com/rupayaproject/go-rupaya/rupx"
 	whisper "github.com/rupayaproject/go-rupaya/whisper/whisperv6"
 )
 
@@ -93,7 +93,7 @@ type rupayaConfig struct {
 	Shh         whisper.Config
 	Node        node.Config
 	Ethstats    ethstatsConfig
-	TomoX       tomox.Config
+	RupX       rupx.Config
 	Account     account
 	StakeEnable bool
 	Bootnodes   Bootnodes
@@ -130,7 +130,7 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, rupayaConfig) {
 	cfg := rupayaConfig{
 		Eth:         eth.DefaultConfig,
 		Shh:         whisper.DefaultConfig,
-		TomoX:       tomox.DefaultConfig,
+		RupX:       rupx.DefaultConfig,
 		Node:        defaultNodeConfig(),
 		StakeEnable: true,
 		Verbosity:   3,
@@ -156,10 +156,10 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, rupayaConfig) {
 	// Check testnet is enable.
 	if ctx.GlobalBool(utils.RupayaTestnetFlag.Name) {
 		common.IsTestnet = true
-		common.TRC21IssuerSMC = common.TRC21IssuerSMCTestNet
+		common.RRC21IssuerSMC = common.RRC21IssuerSMCTestNet
 		cfg.Eth.NetworkId = 89
 		common.RelayerRegistrationSMC = common.RelayerRegistrationSMCTestnet
-		common.TIPTRC21Fee = common.TIPTomoXTestnet
+		common.RIPRRC21Fee = common.RIPRupXTestnet
 	}
 
 	// Check rollback hash exist.
@@ -201,7 +201,7 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, rupayaConfig) {
 	}
 
 	utils.SetShhConfig(ctx, stack, &cfg.Shh)
-	utils.SetTomoXConfig(ctx, &cfg.TomoX)
+	utils.SetRupXConfig(ctx, &cfg.RupX)
 
 	return stack, cfg
 }
@@ -232,9 +232,9 @@ func enableWhisper(ctx *cli.Context) bool {
 func makeFullNode(ctx *cli.Context) (*node.Node, rupayaConfig) {
 	stack, cfg := makeConfigNode(ctx)
 
-	// Register TomoX's OrderBook service if requested.
+	// Register RupX's OrderBook service if requested.
 	// enable in default
-	utils.RegisterTomoXService(stack, &cfg.TomoX)
+	utils.RegisterRupXService(stack, &cfg.RupX)
 
 	utils.RegisterEthService(stack, &cfg.Eth)
 

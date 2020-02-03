@@ -5,7 +5,7 @@
 # - PASSWORD (default to empty)
 # - PRIVATE_KEY (default to empty)
 # - BOOTNODES (default to empty)
-# - EXTIP (default to empty)
+# - EXRIP (default to empty)
 # - VERBOSITY (default to 3)
 # - MAXPEERS (default to 25)
 # - SYNC_MODE (default to 'full')
@@ -29,7 +29,7 @@ accountsCount=$(
 
 # file to env
 for env in IDENTITY PASSWORD PRIVATE_KEY BOOTNODES WS_SECRET NETSTATS_HOST \
-           NETSTATS_PORT EXTIP SYNC_MODE NETWORK_ID ANNOUNCE_TXS STORE_REWARD DEBUG_MODE MAXPEERS; do
+           NETSTATS_PORT EXRIP SYNC_MODE NETWORK_ID ANNOUNCE_TXS STORE_REWARD DEBUG_MODE MAXPEERS; do
   file=$(eval echo "\$${env}_FILE")
   if [[ -f $file ]] && [[ ! -z $file ]]; then
     echo "Replacing $env by $file"
@@ -129,8 +129,8 @@ if [[ ! -z $BOOTNODES ]]; then
 fi
 
 # extip
-if [[ ! -z $EXTIP ]]; then
-  params="$params --nat extip:${EXTIP}"
+if [[ ! -z $EXRIP ]]; then
+  params="$params --nat extip:${EXRIP}"
 fi
 
 # syncmode

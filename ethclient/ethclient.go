@@ -495,7 +495,7 @@ func (ec *Client) SendOrderTransaction(ctx context.Context, tx *types.OrderTrans
 	if err != nil {
 		return err
 	}
-	return ec.c.CallContext(ctx, nil, "tomox_sendOrderRawTransaction", common.ToHex(data))
+	return ec.c.CallContext(ctx, nil, "rupx_sendOrderRawTransaction", common.ToHex(data))
 }
 
 func toCallArg(msg ethereum.CallMsg) interface{} {

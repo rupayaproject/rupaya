@@ -255,10 +255,10 @@ func (tx *Transaction) AsMessage(s Signer, balanceFee *big.Int, number *big.Int)
 	var err error
 	msg.from, err = Sender(s, tx)
 	if balanceFee != nil {
-		if number.Cmp(common.TIPTRC21Fee) > 0 {
-			msg.gasPrice = common.TRC21GasPrice
+		if number.Cmp(common.RIPRRC21Fee) > 0 {
+			msg.gasPrice = common.RRC21GasPrice
 		} else {
-			msg.gasPrice = common.TRC21GasPriceBefore
+			msg.gasPrice = common.RRC21GasPriceBefore
 		}
 	}
 	return msg, err
@@ -284,8 +284,8 @@ func (tx *Transaction) Cost() *big.Int {
 }
 
 // Cost returns amount + gasprice * gaslimit.
-func (tx *Transaction) TRC21Cost() *big.Int {
-	total := new(big.Int).Mul(common.TRC21GasPrice, new(big.Int).SetUint64(tx.data.GasLimit))
+func (tx *Transaction) RRC21Cost() *big.Int {
+	total := new(big.Int).Mul(common.RRC21GasPrice, new(big.Int).SetUint64(tx.data.GasLimit))
 	total.Add(total, tx.data.Amount)
 	return total
 }
@@ -306,7 +306,7 @@ func (tx *Transaction) IsMatchingTransaction() bool {
 		return false
 	}
 
-	if tx.To().String() != common.TomoXAddr {
+	if tx.To().String() != common.RupXAddr {
 		return false
 	}
 
@@ -317,7 +317,7 @@ func (tx *Transaction) IsSkipNonceTransaction() bool {
 	if tx.To() == nil {
 		return false
 	}
-	if tx.To().String() == common.TomoXAddr || tx.To().String() == common.TomoXStateAddr {
+	if tx.To().String() == common.RupXAddr || tx.To().String() == common.RupXStateAddr {
 		return true
 	}
 	return false
@@ -489,14 +489,14 @@ func (s TxByPrice) Less(i, j int) bool {
 	i_price := s.txs[i].data.Price
 	if s.txs[i].To() != nil {
 		if _, ok := s.payersSwap[*s.txs[i].To()]; ok {
-			i_price = common.TRC21GasPrice
+			i_price = common.RRC21GasPrice
 		}
 	}
 
 	j_price := s.txs[j].data.Price
 	if s.txs[j].To() != nil {
 		if _, ok := s.payersSwap[*s.txs[j].To()]; ok {
-			j_price = common.TRC21GasPrice
+			j_price = common.RRC21GasPrice
 		}
 	}
 	return i_price.Cmp(j_price) > 0
@@ -616,7 +616,7 @@ type Message struct {
 
 func NewMessage(from common.Address, to *common.Address, nonce uint64, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte, checkNonce bool, balanceTokenFee *big.Int) Message {
 	if balanceTokenFee != nil {
-		gasPrice = common.TRC21GasPrice
+		gasPrice = common.RRC21GasPrice
 	}
 	return Message{
 		from:            from,

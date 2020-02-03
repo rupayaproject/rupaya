@@ -31,7 +31,7 @@ import (
 )
 
 const (
-	ipcAPIs  = "admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 posv:1.0 rpc:1.0 tomox:1.0 txpool:1.0 web3:1.0"
+	ipcAPIs  = "admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 posv:1.0 rpc:1.0 rupx:1.0 txpool:1.0 web3:1.0"
 	httpAPIs = "eth:1.0 net:1.0 rpc:1.0 web3:1.0"
 )
 
@@ -42,7 +42,7 @@ func TestConsoleWelcome(t *testing.T) {
 
 	// Start a rupaya console, make sure it's cleaned up and terminate the console
 	rupaya := runRupaya(t,
-		"--tomox.datadir", tmpdir(t)+"tomox/"+time.Now().String(),
+		"--rupx.datadir", tmpdir(t)+"rupx/"+time.Now().String(),
 		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
 		"--etherbase", coinbase,
 		"console")
@@ -51,7 +51,7 @@ func TestConsoleWelcome(t *testing.T) {
 	rupaya.SetTemplateFunc("goos", func() string { return runtime.GOOS })
 	rupaya.SetTemplateFunc("goarch", func() string { return runtime.GOARCH })
 	rupaya.SetTemplateFunc("gover", runtime.Version)
-	rupaya.SetTemplateFunc("tomover", func() string { return params.Version })
+	rupaya.SetTemplateFunc("rupayaver", func() string { return params.Version })
 	rupaya.SetTemplateFunc("niltime", func() string { return time.Unix(1544771829, 0).Format(time.RFC1123) })
 	rupaya.SetTemplateFunc("apis", func() string { return ipcAPIs })
 
@@ -59,7 +59,7 @@ func TestConsoleWelcome(t *testing.T) {
 	rupaya.Expect(`
 Welcome to the Rupaya JavaScript console!
 
-instance: rupaya/v{{tomover}}/{{goos}}-{{goarch}}/{{gover}}
+instance: rupaya/v{{rupayaver}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{.Etherbase}}
 at block: 0 ({{niltime}})
  datadir: {{.Datadir}}
@@ -83,7 +83,7 @@ func TestIPCAttachWelcome(t *testing.T) {
 		ipc = filepath.Join(ws, "rupaya.ipc")
 	}
 	rupaya := runRupaya(t,
-		"--tomox.datadir", tmpdir(t)+"tomox/"+time.Now().String(),
+		"--rupx.datadir", tmpdir(t)+"rupx/"+time.Now().String(),
 		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
 		"--etherbase", coinbase, "--ipcpath", ipc)
 
@@ -98,7 +98,7 @@ func TestHTTPAttachWelcome(t *testing.T) {
 	coinbase := "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
 	port := strconv.Itoa(trulyRandInt(1024, 65536)) // Yeah, sometimes this will fail, sorry :P
 	rupaya := runRupaya(t,
-		"--tomox.datadir", tmpdir(t)+"tomox/"+time.Now().String(),
+		"--rupx.datadir", tmpdir(t)+"rupx/"+time.Now().String(),
 		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
 		"--etherbase", coinbase, "--rpc", "--rpcport", port)
 
@@ -114,7 +114,7 @@ func TestWSAttachWelcome(t *testing.T) {
 	port := strconv.Itoa(trulyRandInt(1024, 65536)) // Yeah, sometimes this will fail, sorry :P
 
 	rupaya := runRupaya(t,
-		"--tomox.datadir", tmpdir(t)+"tomox/"+time.Now().String(),
+		"--rupx.datadir", tmpdir(t)+"rupx/"+time.Now().String(),
 		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
 		"--etherbase", coinbase, "--ws", "--wsport", port)
 
@@ -135,7 +135,7 @@ func testAttachWelcome(t *testing.T, rupaya *testrupaya, endpoint, apis string) 
 	attach.SetTemplateFunc("goos", func() string { return runtime.GOOS })
 	attach.SetTemplateFunc("goarch", func() string { return runtime.GOARCH })
 	attach.SetTemplateFunc("gover", runtime.Version)
-	attach.SetTemplateFunc("tomover", func() string { return params.Version })
+	attach.SetTemplateFunc("rupayaver", func() string { return params.Version })
 	attach.SetTemplateFunc("etherbase", func() string { return rupaya.Etherbase })
 	attach.SetTemplateFunc("niltime", func() string { return time.Unix(1544771829, 0).Format(time.RFC1123) })
 	attach.SetTemplateFunc("ipc", func() bool { return strings.HasPrefix(endpoint, "ipc") })
@@ -146,7 +146,7 @@ func testAttachWelcome(t *testing.T, rupaya *testrupaya, endpoint, apis string) 
 	attach.Expect(`
 Welcome to the Rupaya JavaScript console!
 
-instance: rupaya/v{{tomover}}/{{goos}}-{{goarch}}/{{gover}}
+instance: rupaya/v{{rupayaver}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{etherbase}}
 at block: 0 ({{niltime}}){{if ipc}}
  datadir: {{datadir}}{{end}}

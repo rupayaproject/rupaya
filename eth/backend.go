@@ -59,7 +59,7 @@ import (
 	"github.com/rupayaproject/go-rupaya/p2p"
 	"github.com/rupayaproject/go-rupaya/params"
 	"github.com/rupayaproject/go-rupaya/rpc"
-	"github.com/rupayaproject/go-rupaya/tomox"
+	"github.com/rupayaproject/go-rupaya/rupx"
 )
 
 type LesServer interface {
@@ -105,7 +105,7 @@ type Ethereum struct {
 	netRPCService *ethapi.PublicNetAPI
 
 	lock  sync.RWMutex // Protects the variadic fields (e.g. gas price and etherbase)
-	TomoX *tomox.TomoX
+	RupX *rupx.RupX
 }
 
 func (s *Ethereum) AddLesServer(ls LesServer) {
@@ -115,7 +115,7 @@ func (s *Ethereum) AddLesServer(ls LesServer) {
 
 // New creates a new Ethereum object (including the
 // initialisation of the common Ethereum object)
-func New(ctx *node.ServiceContext, config *Config, tomoXServ *tomox.TomoX) (*Ethereum, error) {
+func New(ctx *node.ServiceContext, config *Config, rupXServ *rupx.RupX) (*Ethereum, error) {
 	if config.SyncMode == downloader.LightSync {
 		return nil, errors.New("can't run eth.Ethereum in light sync mode, use les.LightEthereum")
 	}
@@ -149,9 +149,9 @@ func New(ctx *node.ServiceContext, config *Config, tomoXServ *tomox.TomoX) (*Eth
 		bloomRequests:  make(chan chan *bloombits.Retrieval),
 		bloomIndexer:   NewBloomIndexer(chainDb, params.BloomBitsBlocks),
 	}
-	// Inject TomoX Service into main Eth Service.
-	if tomoXServ != nil {
-		eth.TomoX = tomoXServ
+	// Inject RupX Service into main Eth Service.
+	if rupXServ != nil {
+		eth.RupX = rupXServ
 	}
 	log.Info("Initialising Ethereum protocol", "versions", ProtocolVersions, "network", config.NetworkId)
 
@@ -168,11 +168,11 @@ func New(ctx *node.ServiceContext, config *Config, tomoXServ *tomox.TomoX) (*Eth
 	)
 	if eth.chainConfig.Posv != nil {
 		c := eth.engine.(*posv.Posv)
-		c.GetTomoXService = func() posv.TomoXService {
-			return eth.TomoX
+		c.GetRupXService = func() posv.RupXService {
+			return eth.RupX
 		}
 	}
-	eth.blockchain, err = core.NewBlockChainEx(chainDb, tomoXServ.GetDB(), cacheConfig, eth.chainConfig, eth.engine, vmConfig)
+	eth.blockchain, err = core.NewBlockChainEx(chainDb, rupXServ.GetDB(), cacheConfig, eth.chainConfig, eth.engine, vmConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -236,7 +236,7 @@ func New(ctx *node.ServiceContext, config *Config, tomoXServ *tomox.TomoX) (*Eth
 			if !ok {
 				return nil
 			}
-			if block.NumberU64()%common.MergeSignRange == 0 || !eth.chainConfig.IsTIP2019(block.Number()) {
+			if block.NumberU64()%common.MergeSignRange == 0 || !eth.chainConfig.IsRIP2019(block.Number()) {
 				if err := contracts.CreateTransactionSign(chainConfig, eth.txPool, eth.accountManager, block, chainDb, eb); err != nil {
 					return fmt.Errorf("Fail to create tx sign for importing block: %v", err)
 				}
@@ -305,7 +305,7 @@ func New(ctx *node.ServiceContext, config *Config, tomoXServ *tomox.TomoX) (*Eth
 				if len(penSigners) > 0 {
 					// Loop for each block to check missing sign.
 					for i := prevEpoc; i < blockNumberEpoc; i++ {
-						if i%common.MergeSignRange == 0 || !chainConfig.IsTIP2019(big.NewInt(int64(i))) {
+						if i%common.MergeSignRange == 0 || !chainConfig.IsRIP2019(big.NewInt(int64(i))) {
 							bheader := chain.GetHeaderByNumber(i)
 							bhash := bheader.Hash()
 							block := chain.GetBlock(bhash, i)
@@ -338,7 +338,7 @@ func New(ctx *node.ServiceContext, config *Config, tomoXServ *tomox.TomoX) (*Eth
 		}
 
 		// Hook scans for bad masternodes and decide to penalty them
-		c.HookPenaltyTIPSigning = func(chain consensus.ChainReader, header *types.Header, candidates []common.Address) ([]common.Address, error) {
+		c.HookPenaltyRIPSigning = func(chain consensus.ChainReader, header *types.Header, candidates []common.Address) ([]common.Address, error) {
 			prevEpoc := header.Number.Uint64() - chain.Config().Posv.Epoch
 			combackEpoch := uint64(0)
 			comebackLength := (common.LimitPenaltyEpoch + 1) * chain.Config().Posv.Epoch
@@ -436,9 +436,9 @@ func New(ctx *node.ServiceContext, config *Config, tomoXServ *tomox.TomoX) (*Eth
 					}
 				}
 
-				log.Debug("Time Calculated HookPenaltyTIPSigning ", "block", header.Number, "hash", header.Hash().Hex(), "pen comeback nodes", len(penComebacks), "not enough miner", len(penalties), "time", common.PrettyDuration(time.Since(start)))
+				log.Debug("Time Calculated HookPenaltyRIPSigning ", "block", header.Number, "hash", header.Hash().Hex(), "pen comeback nodes", len(penComebacks), "not enough miner", len(penalties), "time", common.PrettyDuration(time.Since(start)))
 				penalties = append(penalties, penComebacks...)
-				if chain.Config().IsTIPRandomize(header.Number) {
+				if chain.Config().IsRIPRandomize(header.Number) {
 					return penalties, nil
 				}
 				return penComebacks, nil
@@ -456,7 +456,7 @@ func New(ctx *node.ServiceContext, config *Config, tomoXServ *tomox.TomoX) (*Eth
 				return nil, err
 			}
 			addr := common.HexToAddress(common.MasternodeVotingSMC)
-			validator, err := contractValidator.NewTomoValidator(addr, client)
+			validator, err := contractValidator.NewRupxValidator(addr, client)
 			if err != nil {
 				return nil, err
 			}
@@ -934,8 +934,8 @@ func (s *Ethereum) GetPeer() int {
 	return len(s.protocolManager.peers.peers)
 }
 
-func (s *Ethereum) GetTomoX() *tomox.TomoX {
-	return s.TomoX
+func (s *Ethereum) GetRupX() *rupx.RupX {
+	return s.RupX
 }
 
 func (s *Ethereum) OrderPool() *core.OrderPool {

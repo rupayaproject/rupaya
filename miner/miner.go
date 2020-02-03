@@ -32,7 +32,7 @@ import (
 	"github.com/rupayaproject/go-rupaya/event"
 	"github.com/rupayaproject/go-rupaya/log"
 	"github.com/rupayaproject/go-rupaya/params"
-	"github.com/rupayaproject/go-rupaya/tomox"
+	"github.com/rupayaproject/go-rupaya/rupx"
 )
 
 // Backend wraps all methods required for mining.
@@ -41,7 +41,7 @@ type Backend interface {
 	BlockChain() *core.BlockChain
 	TxPool() *core.TxPool
 	ChainDb() ethdb.Database
-	GetTomoX() *tomox.TomoX
+	GetRupX() *rupx.RupX
 	OrderPool() *core.OrderPool
 }
 

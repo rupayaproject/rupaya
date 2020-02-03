@@ -52,7 +52,7 @@ import (
 	"github.com/rupayaproject/go-rupaya/p2p/nat"
 	"github.com/rupayaproject/go-rupaya/p2p/netutil"
 	"github.com/rupayaproject/go-rupaya/params"
-	"github.com/rupayaproject/go-rupaya/tomox"
+	"github.com/rupayaproject/go-rupaya/rupx"
 	whisper "github.com/rupayaproject/go-rupaya/whisper/whisperv6"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -205,10 +205,10 @@ var (
 		Name:  "lightkdf",
 		Usage: "Reduce key-derivation RAM & CPU usage at some expense of KDF strength",
 	}
-	// TomoX settings
-	TomoXEnabledFlag = cli.BoolFlag{
-		Name:  "tomox",
-		Usage: "Enable the tomoX protocol",
+	// RupX settings
+	RupXEnabledFlag = cli.BoolFlag{
+		Name:  "rupx",
+		Usage: "Enable the rupX protocol",
 	}
 	// Ethash settings
 	EthashCacheDirFlag = DirectoryFlag{
@@ -324,7 +324,7 @@ var (
 	TargetGasLimitFlag = cli.Uint64Flag{
 		Name:  "targetgaslimit",
 		Usage: "Target gas limit sets the artificial target gas floor for the blocks to mine",
-		Value: params.TomoGenesisGasLimit,
+		Value: params.RupayaGenesisGasLimit,
 	}
 	EtherbaseFlag = cli.StringFlag{
 		Name:  "etherbase",
@@ -533,28 +533,28 @@ var (
 		Usage: "Minimum POW accepted",
 		Value: whisper.DefaultMinimumPoW,
 	}
-	TomoXDataDirFlag = DirectoryFlag{
-		Name:  "tomox.datadir",
-		Usage: "Data directory for the TomoX databases",
+	RupXDataDirFlag = DirectoryFlag{
+		Name:  "rupx.datadir",
+		Usage: "Data directory for the RupX databases",
 		Value: DirectoryString{node.DefaultDataDir()},
 	}
-	TomoXDBEngineFlag = cli.StringFlag{
-		Name:  "tomox.dbengine",
-		Usage: "Database engine for TomoX (leveldb, mongodb)",
+	RupXDBEngineFlag = cli.StringFlag{
+		Name:  "rupx.dbengine",
+		Usage: "Database engine for RupX (leveldb, mongodb)",
 		Value: "leveldb",
 	}
-	TomoXDBNameFlag = cli.StringFlag{
-		Name:  "tomox.dbName",
-		Usage: "Database name for TomoX",
-		Value: "tomodex",
+	RupXDBNameFlag = cli.StringFlag{
+		Name:  "rupx.dbName",
+		Usage: "Database name for RupX",
+		Value: "rupayadex",
 	}
-	TomoXDBConnectionUrlFlag = cli.StringFlag{
-		Name:  "tomox.dbConnectionUrl",
+	RupXDBConnectionUrlFlag = cli.StringFlag{
+		Name:  "rupx.dbConnectionUrl",
 		Usage: "ConnectionUrl to database if dbEngine is mongodb. Host:port. If there are multiple instances, separated by comma. Eg: localhost:27017,localhost:27018",
 		Value: "localhost:27017",
 	}
-	TomoXDBReplicaSetNameFlag = cli.StringFlag{
-		Name:  "tomox.dbReplicaSetName",
+	RupXDBReplicaSetNameFlag = cli.StringFlag{
+		Name:  "rupx.dbReplicaSetName",
 		Usage: "ReplicaSetName if Master-Slave is setup",
 	}
 	RupayaSlaveModeFlag = cli.BoolFlag{
@@ -1045,31 +1045,31 @@ func SetShhConfig(ctx *cli.Context, stack *node.Node, cfg *whisper.Config) {
 	}
 }
 
-func SetTomoXConfig(ctx *cli.Context, cfg *tomox.Config) {
+func SetRupXConfig(ctx *cli.Context, cfg *rupx.Config) {
 	if len(cfg.DataDir) == 0 {
-		if ctx.GlobalIsSet(TomoXDataDirFlag.Name) {
-			cfg.DataDir = ctx.GlobalString(TomoXDataDirFlag.Name)
+		if ctx.GlobalIsSet(RupXDataDirFlag.Name) {
+			cfg.DataDir = ctx.GlobalString(RupXDataDirFlag.Name)
 		} else {
-			cfg.DataDir = TomoXDataDirFlag.Value.String()
+			cfg.DataDir = RupXDataDirFlag.Value.String()
 		}
 	}
-	if ctx.GlobalIsSet(TomoXDBEngineFlag.Name) {
-		cfg.DBEngine = ctx.GlobalString(TomoXDBEngineFlag.Name)
+	if ctx.GlobalIsSet(RupXDBEngineFlag.Name) {
+		cfg.DBEngine = ctx.GlobalString(RupXDBEngineFlag.Name)
 	} else {
-		cfg.DBEngine = TomoXDBEngineFlag.Value
+		cfg.DBEngine = RupXDBEngineFlag.Value
 	}
-	if ctx.GlobalIsSet(TomoXDBNameFlag.Name) {
-		cfg.DBName = ctx.GlobalString(TomoXDBNameFlag.Name)
+	if ctx.GlobalIsSet(RupXDBNameFlag.Name) {
+		cfg.DBName = ctx.GlobalString(RupXDBNameFlag.Name)
 	} else {
-		cfg.DBName = TomoXDBNameFlag.Value
+		cfg.DBName = RupXDBNameFlag.Value
 	}
-	if ctx.GlobalIsSet(TomoXDBConnectionUrlFlag.Name) {
-		cfg.ConnectionUrl = ctx.GlobalString(TomoXDBConnectionUrlFlag.Name)
+	if ctx.GlobalIsSet(RupXDBConnectionUrlFlag.Name) {
+		cfg.ConnectionUrl = ctx.GlobalString(RupXDBConnectionUrlFlag.Name)
 	} else {
-		cfg.ConnectionUrl = TomoXDBConnectionUrlFlag.Value
+		cfg.ConnectionUrl = RupXDBConnectionUrlFlag.Value
 	}
-	if ctx.GlobalIsSet(TomoXDBReplicaSetNameFlag.Name) {
-		cfg.ReplicaSetName = ctx.GlobalString(TomoXDBReplicaSetNameFlag.Name)
+	if ctx.GlobalIsSet(RupXDBReplicaSetNameFlag.Name) {
+		cfg.ReplicaSetName = ctx.GlobalString(RupXDBReplicaSetNameFlag.Name)
 	}
 }
 

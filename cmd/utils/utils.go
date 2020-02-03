@@ -6,7 +6,7 @@ import (
 	"github.com/rupayaproject/go-rupaya/ethstats"
 	"github.com/rupayaproject/go-rupaya/les"
 	"github.com/rupayaproject/go-rupaya/node"
-	"github.com/rupayaproject/go-rupaya/tomox"
+	"github.com/rupayaproject/go-rupaya/rupx"
 	whisper "github.com/rupayaproject/go-rupaya/whisper/whisperv6"
 )
 
@@ -19,10 +19,10 @@ func RegisterEthService(stack *node.Node, cfg *eth.Config) {
 		})
 	} else {
 		err = stack.Register(func(ctx *node.ServiceContext) (node.Service, error) {
-			var tomoXServ *tomox.TomoX
-			ctx.Service(&tomoXServ)
+			var rupXServ *rupx.RupX
+			ctx.Service(&rupXServ)
 
-			fullNode, err := eth.New(ctx, cfg, tomoXServ)
+			fullNode, err := eth.New(ctx, cfg, rupXServ)
 			if fullNode != nil && cfg.LightServ > 0 {
 				ls, _ := les.NewLesServer(fullNode, cfg)
 				fullNode.AddLesServer(ls)
@@ -61,10 +61,10 @@ func RegisterEthStatsService(stack *node.Node, url string) {
 	}
 }
 
-func RegisterTomoXService(stack *node.Node, cfg *tomox.Config) {
+func RegisterRupXService(stack *node.Node, cfg *rupx.Config) {
 	if err := stack.Register(func(n *node.ServiceContext) (node.Service, error) {
-		return tomox.New(cfg), nil
+		return rupx.New(cfg), nil
 	}); err != nil {
-		Fatalf("Failed to register the TomoX service: %v", err)
+		Fatalf("Failed to register the RupX service: %v", err)
 	}
 }

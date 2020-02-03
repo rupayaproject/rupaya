@@ -73,7 +73,7 @@ func TestSetupGenesis(t *testing.T) {
 				return SetupGenesisBlock(db, nil)
 			},
 			wantHash:   params.RupayaMainnetGenesisHash,
-			wantConfig: params.TomoMainnetChainConfig,
+			wantConfig: params.RupayaMainnetChainConfig,
 		},
 		{
 			name: "mainnet block in DB, genesis == nil",
@@ -82,7 +82,7 @@ func TestSetupGenesis(t *testing.T) {
 				return SetupGenesisBlock(db, nil)
 			},
 			wantHash:   params.RupayaMainnetGenesisHash,
-			wantConfig: params.TomoMainnetChainConfig,
+			wantConfig: params.RupayaMainnetChainConfig,
 		},
 		{
 			name: "custom block in DB, genesis == nil",

@@ -21,7 +21,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/rupayaproject/go-rupaya/tomox/tomox_state"
+	"github.com/rupayaproject/go-rupaya/rupx/rupx_state"
 	"math/big"
 	"sort"
 	"strings"
@@ -685,7 +685,7 @@ func (s *PublicBlockChainAPI) GetMasternodes(ctx context.Context, b *types.Block
 		curBlockNumber := b.Number().Uint64()
 		prevBlockNumber := curBlockNumber + (common.MergeSignRange - (curBlockNumber % common.MergeSignRange))
 		latestBlockNumber := s.b.CurrentBlock().Number().Uint64()
-		if prevBlockNumber >= latestBlockNumber || !s.b.ChainConfig().IsTIP2019(b.Number()) {
+		if prevBlockNumber >= latestBlockNumber || !s.b.ChainConfig().IsRIP2019(b.Number()) {
 			prevBlockNumber = curBlockNumber
 		}
 		if engine, ok := s.b.GetEngine().(*posv.Posv); ok {
@@ -982,7 +982,7 @@ func (s *PublicBlockChainAPI) getCandidatesFromSmartContract() ([]posv.Masternod
 	}
 
 	addr := common.HexToAddress(common.MasternodeVotingSMC)
-	validator, err := contractValidator.NewTomoValidator(addr, client)
+	validator, err := contractValidator.NewRupxValidator(addr, client)
 	if err != nil {
 		return []posv.Masternode{}, err
 	}
@@ -1274,7 +1274,7 @@ func (s *PublicBlockChainAPI) findNearestSignedBlock(ctx context.Context, b *typ
 	signedBlockNumber := blockNumber + (common.MergeSignRange - (blockNumber % common.MergeSignRange))
 	latestBlockNumber := s.b.CurrentBlock().Number()
 
-	if signedBlockNumber >= latestBlockNumber.Uint64() || !s.b.ChainConfig().IsTIPSigning(b.Number()) {
+	if signedBlockNumber >= latestBlockNumber.Uint64() || !s.b.ChainConfig().IsRIPSigning(b.Number()) {
 		signedBlockNumber = blockNumber
 	}
 
@@ -1502,7 +1502,7 @@ type PublicTransactionPoolAPI struct {
 }
 
 // PublicTransactionPoolAPI exposes methods for the RPC interface
-type PublicTomoXTransactionPoolAPI struct {
+type PublicRupXTransactionPoolAPI struct {
 	b         Backend
 	nonceLock *AddrLocker
 }
@@ -1513,8 +1513,8 @@ func NewPublicTransactionPoolAPI(b Backend, nonceLock *AddrLocker) *PublicTransa
 }
 
 // NewPublicTransactionPoolAPI creates a new RPC service with methods specific for the transaction pool.
-func NewPublicTomoXTransactionPoolAPI(b Backend, nonceLock *AddrLocker) *PublicTomoXTransactionPoolAPI {
-	return &PublicTomoXTransactionPoolAPI{b, nonceLock}
+func NewPublicRupXTransactionPoolAPI(b Backend, nonceLock *AddrLocker) *PublicRupXTransactionPoolAPI {
+	return &PublicRupXTransactionPoolAPI{b, nonceLock}
 }
 
 // GetBlockTransactionCountByNumber returns the number of transactions in the block with the given block number.
@@ -1822,7 +1822,7 @@ func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encod
 
 // SendOrderRawTransaction will add the signed transaction to the transaction pool.
 // The sender is responsible for signing the transaction and using the correct nonce.
-func (s *PublicTomoXTransactionPoolAPI) SendOrderRawTransaction(ctx context.Context, encodedTx hexutil.Bytes) (common.Hash, error) {
+func (s *PublicRupXTransactionPoolAPI) SendOrderRawTransaction(ctx context.Context, encodedTx hexutil.Bytes) (common.Hash, error) {
 	tx := new(types.OrderTransaction)
 	if err := rlp.DecodeBytes(encodedTx, tx); err != nil {
 		return common.Hash{}, err
@@ -1859,14 +1859,14 @@ type PriceVolume struct {
 
 // SendOrder will add the signed transaction to the transaction pool.
 // The sender is responsible for signing the transaction and using the correct nonce.
-func (s *PublicTomoXTransactionPoolAPI) SendOrder(ctx context.Context, msg OrderMsg) (common.Hash, error) {
+func (s *PublicRupXTransactionPoolAPI) SendOrder(ctx context.Context, msg OrderMsg) (common.Hash, error) {
 	tx := types.NewOrderTransaction(msg.AccountNonce, msg.Quantity, msg.Price, msg.ExchangeAddress, msg.UserAddress, msg.BaseToken, msg.QuoteToken, msg.Status, msg.Side, msg.Type, msg.PairName, msg.Hash, msg.OrderID)
 	tx = tx.ImportSignature(msg.V, msg.R, msg.S)
 	return submitOrderTransaction(ctx, s.b, tx)
 }
 
 // GetOrderCount returns the number of transactions the given address has sent for the given block number
-func (s *PublicTomoXTransactionPoolAPI) GetOrderCount(ctx context.Context, addr common.Address) (*hexutil.Uint64, error) {
+func (s *PublicRupXTransactionPoolAPI) GetOrderCount(ctx context.Context, addr common.Address) (*hexutil.Uint64, error) {
 
 	nonce, err := s.b.GetOrderNonce(addr.Hash())
 	if err != nil {
@@ -1875,126 +1875,126 @@ func (s *PublicTomoXTransactionPoolAPI) GetOrderCount(ctx context.Context, addr 
 	return (*hexutil.Uint64)(&nonce), err
 }
 
-func (s *PublicTomoXTransactionPoolAPI) GetBestBid(ctx context.Context, baseToken, quoteToken common.Address) (PriceVolume, error) {
+func (s *PublicRupXTransactionPoolAPI) GetBestBid(ctx context.Context, baseToken, quoteToken common.Address) (PriceVolume, error) {
 
 	result := PriceVolume{}
 	block := s.b.CurrentBlock()
 	if block == nil {
 		return result, errors.New("Current block not found")
 	}
-	tomoxService := s.b.TomoxService()
-	if tomoxService == nil {
-		return result, errors.New("TomoX service not found")
+	rupxService := s.b.RupxService()
+	if rupxService == nil {
+		return result, errors.New("RupX service not found")
 	}
 
-	tomoxState, err := tomoxService.GetTomoxState(block)
+	rupxState, err := rupxService.GetRupxState(block)
 	if err != nil {
 		return result, err
 	}
-	result.Price, result.Volume = tomoxState.GetBestBidPrice(tomox_state.GetOrderBookHash(baseToken, quoteToken))
+	result.Price, result.Volume = rupxState.GetBestBidPrice(rupx_state.GetOrderBookHash(baseToken, quoteToken))
 	if result.Price.Sign() == 0 {
 		return result, errors.New("Bid tree not found")
 	}
 	return result, nil
 }
 
-func (s *PublicTomoXTransactionPoolAPI) GetBestAsk(ctx context.Context, baseToken, quoteToken common.Address) (PriceVolume, error) {
+func (s *PublicRupXTransactionPoolAPI) GetBestAsk(ctx context.Context, baseToken, quoteToken common.Address) (PriceVolume, error) {
 	result := PriceVolume{}
 	block := s.b.CurrentBlock()
 	if block == nil {
 		return result, errors.New("Current block not found")
 	}
-	tomoxService := s.b.TomoxService()
-	if tomoxService == nil {
-		return result, errors.New("TomoX service not found")
+	rupxService := s.b.RupxService()
+	if rupxService == nil {
+		return result, errors.New("RupX service not found")
 	}
 
-	tomoxState, err := tomoxService.GetTomoxState(block)
+	rupxState, err := rupxService.GetRupxState(block)
 	if err != nil {
 		return result, err
 	}
-	result.Price, result.Volume = tomoxState.GetBestAskPrice(tomox_state.GetOrderBookHash(baseToken, quoteToken))
+	result.Price, result.Volume = rupxState.GetBestAskPrice(rupx_state.GetOrderBookHash(baseToken, quoteToken))
 	if result.Price.Sign() == 0 {
 		return result, errors.New("Ask tree not found")
 	}
 	return result, nil
 }
 
-func (s *PublicTomoXTransactionPoolAPI) GetBidTree(ctx context.Context, baseToken, quoteToken common.Address) (map[*big.Int]tomox_state.DumpOrderList, error) {
+func (s *PublicRupXTransactionPoolAPI) GetBidTree(ctx context.Context, baseToken, quoteToken common.Address) (map[*big.Int]rupx_state.DumpOrderList, error) {
 	block := s.b.CurrentBlock()
 	if block == nil {
 		return nil, errors.New("Current block not found")
 	}
-	tomoxService := s.b.TomoxService()
-	if tomoxService == nil {
-		return nil, errors.New("TomoX service not found")
+	rupxService := s.b.RupxService()
+	if rupxService == nil {
+		return nil, errors.New("RupX service not found")
 	}
-	tomoxState, err := tomoxService.GetTomoxState(block)
+	rupxState, err := rupxService.GetRupxState(block)
 	if err != nil {
 		return nil, err
 	}
-	result, err := tomoxState.DumpBidTrie(tomox_state.GetOrderBookHash(baseToken, quoteToken))
+	result, err := rupxState.DumpBidTrie(rupx_state.GetOrderBookHash(baseToken, quoteToken))
 	if err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (s *PublicTomoXTransactionPoolAPI) GetPrice(ctx context.Context, baseToken, quoteToken common.Address) (*big.Int, error) {
+func (s *PublicRupXTransactionPoolAPI) GetPrice(ctx context.Context, baseToken, quoteToken common.Address) (*big.Int, error) {
 	block := s.b.CurrentBlock()
 	if block == nil {
 		return nil, errors.New("Current block not found")
 	}
-	tomoxService := s.b.TomoxService()
-	if tomoxService == nil {
-		return nil, errors.New("TomoX service not found")
+	rupxService := s.b.RupxService()
+	if rupxService == nil {
+		return nil, errors.New("RupX service not found")
 	}
-	tomoxState, err := tomoxService.GetTomoxState(block)
+	rupxState, err := rupxService.GetRupxState(block)
 	if err != nil {
 		return nil, err
 	}
-	price := tomoxState.GetPrice(tomox_state.GetOrderBookHash(baseToken, quoteToken))
+	price := rupxState.GetPrice(rupx_state.GetOrderBookHash(baseToken, quoteToken))
 	if price == nil || price.Sign() == 0 {
 		return common.Big0, errors.New("Order book's price not found")
 	}
 	return price, nil
 }
 
-func (s *PublicTomoXTransactionPoolAPI) GetAskTree(ctx context.Context, baseToken, quoteToken common.Address) (map[*big.Int]tomox_state.DumpOrderList, error) {
+func (s *PublicRupXTransactionPoolAPI) GetAskTree(ctx context.Context, baseToken, quoteToken common.Address) (map[*big.Int]rupx_state.DumpOrderList, error) {
 	block := s.b.CurrentBlock()
 	if block == nil {
 		return nil, errors.New("Current block not found")
 	}
-	tomoxService := s.b.TomoxService()
-	if tomoxService == nil {
-		return nil, errors.New("TomoX service not found")
+	rupxService := s.b.RupxService()
+	if rupxService == nil {
+		return nil, errors.New("RupX service not found")
 	}
-	tomoxState, err := tomoxService.GetTomoxState(block)
+	rupxState, err := rupxService.GetRupxState(block)
 	if err != nil {
 		return nil, err
 	}
-	result, err := tomoxState.DumpAskTrie(tomox_state.GetOrderBookHash(baseToken, quoteToken))
+	result, err := rupxState.DumpAskTrie(rupx_state.GetOrderBookHash(baseToken, quoteToken))
 	if err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (s *PublicTomoXTransactionPoolAPI) GetOrderById(ctx context.Context, baseToken, quoteToken common.Address, orderId uint64) (interface{}, error) {
+func (s *PublicRupXTransactionPoolAPI) GetOrderById(ctx context.Context, baseToken, quoteToken common.Address, orderId uint64) (interface{}, error) {
 	block := s.b.CurrentBlock()
 	if block == nil {
 		return nil, errors.New("Current block not found")
 	}
-	tomoxService := s.b.TomoxService()
-	if tomoxService == nil {
-		return nil, errors.New("TomoX service not found")
+	rupxService := s.b.RupxService()
+	if rupxService == nil {
+		return nil, errors.New("RupX service not found")
 	}
-	tomoxState, err := tomoxService.GetTomoxState(block)
+	rupxState, err := rupxService.GetRupxState(block)
 	if err != nil {
 		return nil, err
 	}
 	orderIdHash := common.BigToHash(new(big.Int).SetUint64(orderId))
-	orderitem := tomoxState.GetOrder(tomox_state.GetOrderBookHash(baseToken, quoteToken), orderIdHash)
+	orderitem := rupxState.GetOrder(rupx_state.GetOrderBookHash(baseToken, quoteToken), orderIdHash)
 	if orderitem.Quantity == nil || orderitem.Quantity.Sign() == 0 {
 		return nil, errors.New("Order not found")
 	}

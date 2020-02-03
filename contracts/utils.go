@@ -230,7 +230,7 @@ func GetSignersByExecutingEVM(addrBlockSigner common.Address, client bind.Contra
 
 // Get random from randomize contract.
 func GetRandomizeFromContract(client bind.ContractBackend, addrMasternode common.Address) (int64, error) {
-	randomize, err := randomizeContract.NewTomoRandomize(common.HexToAddress(common.RandomizeSMC), client)
+	randomize, err := randomizeContract.NewRupayaRandomize(common.HexToAddress(common.RandomizeSMC), client)
 	if err != nil {
 		log.Error("Fail to get instance of randomize", "error", err)
 	}
@@ -335,7 +335,7 @@ func GetRewardForCheckpoint(c *posv.Posv, chain consensus.ChainReader, header *t
 			log.Debug("Failed get from cached", "hash", header.Hash().String(), "number", i)
 			block := chain.GetBlock(header.Hash(), i)
 			txs := block.Transactions()
-			if !chain.Config().IsTIPSigning(header.Number) {
+			if !chain.Config().IsRIPSigning(header.Number) {
 				receipts := core.GetBlockReceipts(c.GetDb(), header.Hash(), i)
 				signData = c.CacheData(header, txs, receipts)
 			} else {
@@ -353,7 +353,7 @@ func GetRewardForCheckpoint(c *posv.Posv, chain consensus.ChainReader, header *t
 	masternodes := posv.GetMasternodesFromCheckpointHeader(header)
 
 	for i := startBlockNumber; i <= endBlockNumber; i++ {
-		if i%common.MergeSignRange == 0 || !chain.Config().IsTIP2019(big.NewInt(int64(i))) {
+		if i%common.MergeSignRange == 0 || !chain.Config().IsRIP2019(big.NewInt(int64(i))) {
 			addrs := data[mapBlkHash[i]]
 			// Filter duplicate address.
 			if len(addrs) > 0 {
@@ -442,7 +442,7 @@ func GetRewardBalancesRate(foundationWalletAddr common.Address, state *state.Sta
 		// Get voters capacities.
 		voterCaps := make(map[common.Address]*big.Int)
 		for _, voteAddr := range voters {
-			if _, ok := voterCaps[voteAddr]; ok && common.TIP2019Block.Uint64() <= blockNumber {
+			if _, ok := voterCaps[voteAddr]; ok && common.RIP2019Block.Uint64() <= blockNumber {
 				continue
 			}
 			voterCap := stateDatabase.GetVoterCap(state, masterAddr, voteAddr)

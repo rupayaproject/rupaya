@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/rupayaproject/go-rupaya/tomox/tomox_state"
+	"github.com/rupayaproject/go-rupaya/rupx/rupx_state"
 	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
 	"io/ioutil"
 	"math/big"
@@ -62,14 +62,14 @@ type Masternode struct {
 	Stake   *big.Int
 }
 
-type TomoXService interface {
-	GetTomoxStateRoot(block *types.Block) (common.Hash, error)
-	GetTomoxState(block *types.Block) (*tomox_state.TomoXStateDB, error)
-	GetStateCache() tomox_state.Database
+type RupXService interface {
+	GetRupxStateRoot(block *types.Block) (common.Hash, error)
+	GetRupxState(block *types.Block) (*rupx_state.RupXStateDB, error)
+	GetStateCache() rupx_state.Database
 	GetTriegc() *prque.Prque
-	ApplyOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, tomoXstatedb *tomox_state.TomoXStateDB, orderBook common.Hash, order *tomox_state.OrderItem) ([]map[string]string, []*tomox_state.OrderItem, error)
+	ApplyOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, rupXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error)
 	IsSDKNode() bool
-	SyncDataToSDKNode(takerOrder *tomox_state.OrderItem, txHash common.Hash, txMatchTime time.Time, statedb *state.StateDB, trades []map[string]string, rejectedOrders []*tomox_state.OrderItem, dirtyOrderCount *uint64) error
+	SyncDataToSDKNode(takerOrder *rupx_state.OrderItem, txHash common.Hash, txMatchTime time.Time, statedb *state.StateDB, trades []map[string]string, rejectedOrders []*rupx_state.OrderItem, dirtyOrderCount *uint64) error
 	RollbackReorgTxMatch(txhash common.Hash)
 	GetTokenDecimal(chain consensus.ChainContext, statedb *state.StateDB, coinbase common.Address, tokenAddr common.Address) (*big.Int, error)
 }
@@ -244,10 +244,10 @@ type Posv struct {
 	BlockSigners               *lru.Cache
 	HookReward                 func(chain consensus.ChainReader, state *state.StateDB,parentState *state.StateDB, header *types.Header) (error, map[string]interface{})
 	HookPenalty                func(chain consensus.ChainReader, blockNumberEpoc uint64) ([]common.Address, error)
-	HookPenaltyTIPSigning      func(chain consensus.ChainReader, header *types.Header, candidate []common.Address) ([]common.Address, error)
+	HookPenaltyRIPSigning      func(chain consensus.ChainReader, header *types.Header, candidate []common.Address) ([]common.Address, error)
 	HookValidator              func(header *types.Header, signers []common.Address) ([]byte, error)
 	HookVerifyMNs              func(header *types.Header, signers []common.Address) error
-	GetTomoXService            func() TomoXService
+	GetRupXService            func() RupXService
 	HookGetSignersFromContract func(blockHash common.Hash) ([]common.Address, error)
 }
 
@@ -452,10 +452,10 @@ func (c *Posv) checkSignersOnCheckpoint(chain consensus.ChainReader, header *typ
 		return nil
 	}
 	penPenalties := []common.Address{}
-	if c.HookPenalty != nil || c.HookPenaltyTIPSigning != nil {
+	if c.HookPenalty != nil || c.HookPenaltyRIPSigning != nil {
 		var err error
-		if chain.Config().IsTIPSigning(header.Number) {
-			penPenalties, err = c.HookPenaltyTIPSigning(chain, header, signers)
+		if chain.Config().IsRIPSigning(header.Number) {
+			penPenalties, err = c.HookPenaltyRIPSigning(chain, header, signers)
 		} else {
 			penPenalties, err = c.HookPenalty(chain, number)
 		}
@@ -863,11 +863,11 @@ func (c *Posv) Prepare(chain consensus.ChainReader, header *types.Header) error 
 	header.Extra = header.Extra[:extraVanity]
 	masternodes := snap.GetSigners()
 	if number >= c.config.Epoch && number%c.config.Epoch == 0 {
-		if c.HookPenalty != nil || c.HookPenaltyTIPSigning != nil {
+		if c.HookPenalty != nil || c.HookPenaltyRIPSigning != nil {
 			var penMasternodes []common.Address = nil
 			var err error = nil
-			if chain.Config().IsTIPSigning(header.Number) {
-				penMasternodes, err = c.HookPenaltyTIPSigning(chain, header, masternodes)
+			if chain.Config().IsRIPSigning(header.Number) {
+				penMasternodes, err = c.HookPenaltyRIPSigning(chain, header, masternodes)
 			} else {
 				penMasternodes, err = c.HookPenalty(chain, number)
 			}
@@ -1216,7 +1216,7 @@ func getM1M2(masternodes []common.Address, validators []int64, currentHeader *ty
 		return nil, moveM2, errors.New("len(m2) is less than len(m1)")
 	}
 	if maxMNs > 0 {
-		isForked := config.IsTIPRandomize(currentHeader.Number)
+		isForked := config.IsRIPRandomize(currentHeader.Number)
 		if isForked {
 			moveM2 = ((currentHeader.Number.Uint64() % config.Posv.Epoch) / uint64(maxMNs)) % uint64(maxMNs)
 		}
