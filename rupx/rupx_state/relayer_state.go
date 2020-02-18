@@ -116,10 +116,10 @@ func AddTokenBalance(addr common.Address, value *big.Int, token common.Address, 
 	// RUPX native
 	if token.String() == common.RupayaNativeAddress {
 		balance := statedb.GetBalance(addr)
-		log.Debug("ApplyRupXMatchedTransaction settle balance: ADD TOKEN RUPX NATIVE BEFORE", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
-		balance = balance.Add(balance, value)
-		statedb.SetBalance(addr, balance)
-		log.Debug("ApplyRupXMatchedTransaction settle balance: ADD RUPX NATIVE BALANCE AFTER", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
+		log.Debug("ApplyRupXMatchedTransaction settle balance: ADD TOKEN TOMO NATIVE BEFORE", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
+		balance = big.NewInt(0).Add(balance, value)
+		statedb.AddBalance(addr, value)
+		log.Debug("ApplyRupXMatchedTransaction settle balance: ADD TOMO NATIVE BALANCE AFTER", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
 
 		return nil
 	}
@@ -142,7 +142,6 @@ func AddTokenBalance(addr common.Address, value *big.Int, token common.Address, 
 func SubTokenBalance(addr common.Address, value *big.Int, token common.Address, statedb *state.StateDB) error {
 	// RUPX native
 	if token.String() == common.RupayaNativeAddress {
-
 		balance := statedb.GetBalance(addr)
 		log.Debug("ApplyRupXMatchedTransaction settle balance: SUB RUPX NATIVE BALANCE BEFORE", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
 		if balance.Cmp(value) < 0 {
@@ -150,7 +149,8 @@ func SubTokenBalance(addr common.Address, value *big.Int, token common.Address, 
 		}
 		balance = balance.Sub(balance, value)
 		statedb.SetBalance(addr, balance)
-		log.Debug("ApplyRupXMatchedTransaction settle balance: SUB RUPX NATIVE BALANCE AFTER", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
+		log.Debug("ApplyRupXMatchedTransaction settle balance: SUB TOMO NATIVE BALANCE AFTER", "token", token.String(), "address", addr.String(), "balance", balance, "orderValue", value)
+
 		return nil
 	}
 

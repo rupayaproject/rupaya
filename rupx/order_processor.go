@@ -570,21 +570,25 @@ func (rupx *RupX) ProcessCancelOrder(rupXstatedb *rupx_state.RupXStateDB, stated
 		log.Debug("Fail to get tokenDecimal ", "Token", order.BaseToken.String(), "err", err)
 		return err, false
 	}
+	// order: basic order information (includes orderId, orderHash, baseToken, quoteToken) which user send to rupx to cancel order
+	// originOrder: full order information getting from order trie
 	originOrder := rupXstatedb.GetOrder(orderBook, common.BigToHash(new(big.Int).SetUint64(order.OrderID)))
-
+	if originOrder == rupx_state.EmptyOrder {
+		return fmt.Errorf("order not found. OrderId: %v. Base: %s. Quote: %s", order.OrderID, order.BaseToken, order.QuoteToken), false
+	}
 	var tokenBalance *big.Int
 	switch originOrder.Side {
 	case rupx_state.Ask:
-		tokenBalance = rupx_state.GetTokenBalance(order.UserAddress, order.BaseToken, statedb)
+		tokenBalance = rupx_state.GetTokenBalance(originOrder.UserAddress, originOrder.BaseToken, statedb)
 	case rupx_state.Bid:
-		tokenBalance = rupx_state.GetTokenBalance(order.UserAddress, order.QuoteToken, statedb)
+		tokenBalance = rupx_state.GetTokenBalance(originOrder.UserAddress, originOrder.QuoteToken, statedb)
 	default:
 		log.Debug("Not found order side", "Side", originOrder.Side)
 		return nil, false
 	}
-	log.Debug("ProcessCancelOrder", "baseToken", order.BaseToken, "quoteToken", order.QuoteToken)
-	feeRate := rupx_state.GetExRelayerFee(order.ExchangeAddress, statedb)
-	tokenCancelFee := getCancelFee(baseTokenDecimal, feeRate, order)
+	log.Debug("ProcessCancelOrder", "baseToken", originOrder.BaseToken, "quoteToken", originOrder.QuoteToken)
+	feeRate := rupx_state.GetExRelayerFee(originOrder.ExchangeAddress, statedb)
+	tokenCancelFee := getCancelFee(baseTokenDecimal, feeRate, &originOrder)
 	if tokenBalance.Cmp(tokenCancelFee) < 0 {
 		log.Debug("User not enough balance when cancel order", "Side", originOrder.Side, "balance", tokenBalance, "fee", tokenCancelFee)
 		return nil, true
@@ -595,16 +599,24 @@ func (rupx *RupX) ProcessCancelOrder(rupXstatedb *rupx_state.RupXStateDB, stated
 		log.Debug("Error when cancel order", "order", order)
 		return err, false
 	}
-	rupx_state.SubRelayerFee(order.ExchangeAddress, common.RelayerCancelFee, statedb)
+	// relayers pay RUPAYA for masternode
+	rupx_state.SubRelayerFee(originOrder.ExchangeAddress, common.RelayerCancelFee, statedb)
+	masternodeOwner := statedb.GetOwner(coinbase)
+	// relayers pay RUPAYA for masternode
+	statedb.AddBalance(masternodeOwner, common.RelayerCancelFee)
+
+	relayerOwner := rupx_state.GetRelayerOwner(originOrder.ExchangeAddress, statedb)
 	switch originOrder.Side {
 	case rupx_state.Ask:
-		rupx_state.SubTokenBalance(order.UserAddress, tokenCancelFee, order.BaseToken, statedb)
+		// users pay token (which they have) for relayer
+		rupx_state.SubTokenBalance(originOrder.UserAddress, tokenCancelFee, originOrder.BaseToken, statedb)
+		rupx_state.AddTokenBalance(relayerOwner, tokenCancelFee, originOrder.BaseToken, statedb)
 	case rupx_state.Bid:
-		rupx_state.SubTokenBalance(order.UserAddress, tokenCancelFee, order.QuoteToken, statedb)
+		// users pay token (which they have) for relayer
+		rupx_state.SubTokenBalance(originOrder.UserAddress, tokenCancelFee, originOrder.QuoteToken, statedb)
+		rupx_state.AddTokenBalance(relayerOwner, tokenCancelFee, originOrder.QuoteToken, statedb)
 	default:
 	}
-	masternodeOwner := statedb.GetOwner(coinbase)
-	statedb.AddBalance(masternodeOwner, common.RelayerCancelFee)
 	return nil, false
 }
 
@@ -614,8 +626,8 @@ func getCancelFee(baseTokenDecimal *big.Int, feeRate *big.Int, order *rupx_state
 		// SELL 1 BTC => RUPX ,,
 		// order.Quantity =1 && fee rate =2
 		// ==> cancel fee = 2/10000
-		baseTokenQuantity := new(big.Int).Mul(order.Quantity, baseTokenDecimal)
-		cancelFee = new(big.Int).Mul(baseTokenQuantity, feeRate)
+		// order.Quantity already included baseToken decimal
+		cancelFee = new(big.Int).Mul(order.Quantity, feeRate)
 		cancelFee = new(big.Int).Div(cancelFee, common.RupXBaseCancelFee)
 	} else {
 		// BUY 1 BTC => RUPX with Price : 10000

@@ -105,7 +105,7 @@ func main() {
 	fromTokens = append(fromTokens, simulation.RUPXNative)
 	toTokens = append(toTokens, tokenList[0]["address"].(common.Address))
 
-	// RUPX/USD
+	// RUPX/USDT
 	fromTokens = append(fromTokens, simulation.RUPXNative)
 	toTokens = append(toTokens, tokenList[9]["address"].(common.Address))
 
@@ -142,11 +142,11 @@ func main() {
 	fromTokens = append(fromTokens, tokenList[2]["address"].(common.Address))
 	toTokens = append(toTokens, tokenList[0]["address"].(common.Address))
 
-	// BTC/USD
+	// BTC/USDT
 	fromTokens = append(fromTokens, tokenList[0]["address"].(common.Address))
 	toTokens = append(toTokens, tokenList[9]["address"].(common.Address))
 
-	// ETH/USD
+	// ETH/USDT
 	fromTokens = append(fromTokens, tokenList[1]["address"].(common.Address))
 	toTokens = append(toTokens, tokenList[9]["address"].(common.Address))
 
@@ -163,7 +163,7 @@ func initRRC21(auth *bind.TransactOpts, client *ethclient.Client, nonce uint64, 
 	for _, tokenName := range tokenNameList {
 		auth.Nonce = big.NewInt(int64(nonce))
 		d := uint8(18)
-		if tokenName == "USD" {
+		if tokenName == "USDT" {
 			d = 8
 		}
 		tokenAddr, _, err := rupx.DeployRRC21(auth, client, tokenName, tokenName, d, simulation.RRC21TokenCap, simulation.RRC21TokenFee)

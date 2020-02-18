@@ -188,6 +188,12 @@ func (rupx *RupX) ProcessOrderPending(coinbase common.Address, chain consensus.C
 			},
 			PairName: tx.PairName(),
 		}
+		// make sure order is valid before running matching engine
+		if err := order.VerifyOrder(statedb); err != nil {
+			log.Debug("rupx processOrderPending: invalid order", "err", err, "order", rupx_state.ToJSON(order))
+			txs.Shift()
+			continue
+		}
 		cancel := false
 		if order.Status == OrderStatusCancelled {
 			cancel = true
