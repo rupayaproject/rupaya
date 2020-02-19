@@ -232,7 +232,7 @@ func (w *wizard) makeGenesis() {
 		storage = make(map[common.Hash]common.Hash)
 		contractBackend.ForEachStorageAt(ctx, multiSignWalletAddr, nil, f)
 		fBalance := big.NewInt(0) // 16m
-		fBalance.Add(fBalance, big.NewInt(16*1000*1000))
+		fBalance.Add(fBalance, big.NewInt(0*1000*1000))
 		fBalance.Mul(fBalance, big.NewInt(1000000000000000000))
 		genesis.Alloc[common.HexToAddress(common.FoudationAddr)] = core.GenesisAccount{
 			Balance: fBalance,
@@ -300,10 +300,10 @@ func (w *wizard) makeGenesis() {
 
 		// Team balance.
 		balance := big.NewInt(0) // 1m
-		balance.Add(balance, big.NewInt(1*1000*1000))
+		balance.Add(balance, big.NewInt(2*1000*1000))
 		balance.Mul(balance, big.NewInt(1000000000000000000))
 		subBalance := big.NewInt(0) // i * 50k
-		subBalance.Add(subBalance, big.NewInt(int64(len(signers))*50*1000))
+		subBalance.Add(subBalance, big.NewInt(int64(len(signers))*500*1000))
 		subBalance.Mul(subBalance, big.NewInt(1000000000000000000))
 		balance.Sub(balance, subBalance) // 1m - i * 50k
 		genesis.Alloc[common.HexToAddress(common.TeamAddr)] = core.GenesisAccount{
