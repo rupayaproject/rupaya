@@ -16,10 +16,11 @@
 package validator
 
 import (
+	"math/big"
+
 	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
 	"github.com/rupayaproject/go-rupaya/common"
 	"github.com/rupayaproject/go-rupaya/contracts/validator/contract"
-	"math/big"
 )
 
 type Validator struct {
@@ -44,10 +45,10 @@ func NewValidator(transactOpts *bind.TransactOpts, contractAddr common.Address, 
 
 func DeployValidator(transactOpts *bind.TransactOpts, contractBackend bind.ContractBackend, validatorAddress []common.Address, caps []*big.Int, ownerAddress common.Address) (common.Address, *Validator, error) {
 	minDeposit := new(big.Int)
-	minDeposit.SetString("50000000000000000000000", 10)
+	minDeposit.SetString("500000000000000000000000", 10)
 	minVoterCap := new(big.Int)
 	minVoterCap.SetString("10000000000000000000", 10)
-	// Deposit 50K RUPX
+	// Deposit 500K RUPX
 	// Min Voter Cap 10 RUPX
 	// 150 masternodes
 	// Candidate Delay Withdraw 30 days = 1296000 blocks
