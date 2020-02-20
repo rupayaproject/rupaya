@@ -90,6 +90,7 @@ github.com/elastic/gosigar v0.10.5 h1:GzPQ+78RaAb4J63unidA/JavQRKrB6s8IOzN6Ib59j
 github.com/elastic/gosigar v0.10.5/go.mod h1:cdorVVzy1fhmEqmtgqkoE3bYtCfSCkVyjTyCIo22xvs=
 github.com/ethereum/go-ethereum v1.9.10 h1:jooX7tWcscpC7ytufk73t9JMCeJQ7aJF2YmZJQEuvFo=
 github.com/ethereum/go-ethereum v1.9.10/go.mod h1:lXHkVo/MTvsEXfYsmNzelZ8R1e0DTvdk/wMZJIRpaRw=
+github.com/ethereum/go-ethereum v1.9.11 h1:Z0jugPDfuI5qsPY1XgBGVwikpdFK/ANqP7MrYvkmk+A=
 github.com/fatih/color v1.3.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
 github.com/fatih/color v1.6.0 h1:66qjqZk8kalYAvDRtM1AdAJQI0tj4Wrue3Eq3B3pmFU=
 github.com/fatih/color v1.6.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=

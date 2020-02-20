@@ -489,6 +489,11 @@ func (pool *OrderPool) validateOrder(tx *types.OrderTransaction) error {
 		if tx.OrderID() == 0 {
 			return ErrInvalidCancelledOrder
 		}
+		originOrder := cloneRupXStateDb.GetOrder(rupx_state.GetOrderBookHash(tx.BaseToken(), tx.QuoteToken()), common.BigToHash(new(big.Int).SetUint64(tx.OrderID())))
+		if originOrder == rupx_state.EmptyOrder {
+			log.Debug("Order not found ", "OrderId", tx.OrderID(), "BaseToken", tx.BaseToken().Hex(), "QuoteToken", tx.QuoteToken().Hex())
+			return ErrInvalidCancelledOrder
+		}
 	}
 
 	from, _ := types.OrderSender(pool.signer, tx)
