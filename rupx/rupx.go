@@ -3,14 +3,15 @@ package rupx
 import (
 	"errors"
 	"fmt"
+	"math/big"
+	"strconv"
+	"time"
+
 	"github.com/rupayaproject/go-rupaya/consensus"
 	"github.com/rupayaproject/go-rupaya/core/types"
 	"github.com/rupayaproject/go-rupaya/p2p"
 	"github.com/rupayaproject/go-rupaya/rupx/rupx_state"
 	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
-	"math/big"
-	"strconv"
-	"time"
 
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/rupayaproject/go-rupaya/common"
@@ -49,7 +50,7 @@ type RupX struct {
 	// Order related
 	db         OrderDao
 	mongodb    OrderDao
-	Triegc     *prque.Prque         // Priority queue mapping block numbers to tries to gc
+	Triegc     *prque.Prque        // Priority queue mapping block numbers to tries to gc
 	StateCache rupx_state.Database // State database to reuse between imports (contains state cache)    *rupx_state.RupXStateDB
 
 	orderNonce map[common.Address]*big.Int
@@ -187,12 +188,6 @@ func (rupx *RupX) ProcessOrderPending(coinbase common.Address, chain consensus.C
 				S: common.BigToHash(S),
 			},
 			PairName: tx.PairName(),
-		}
-		// make sure order is valid before running matching engine
-		if err := order.VerifyOrder(statedb); err != nil {
-			log.Debug("rupx processOrderPending: invalid order", "err", err, "order", rupx_state.ToJSON(order))
-			txs.Shift()
-			continue
 		}
 		cancel := false
 		if order.Status == OrderStatusCancelled {

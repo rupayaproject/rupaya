@@ -16,10 +16,11 @@
 package validator
 
 import (
+	"math/big"
+
 	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
 	"github.com/rupayaproject/go-rupaya/common"
 	"github.com/rupayaproject/go-rupaya/contracts/validator/contract"
-	"math/big"
 )
 
 type Validator struct {
@@ -44,15 +45,15 @@ func NewValidator(transactOpts *bind.TransactOpts, contractAddr common.Address, 
 
 func DeployValidator(transactOpts *bind.TransactOpts, contractBackend bind.ContractBackend, validatorAddress []common.Address, caps []*big.Int, ownerAddress common.Address) (common.Address, *Validator, error) {
 	minDeposit := new(big.Int)
-	minDeposit.SetString("50000000000000000000000", 10)
+	minDeposit.SetString("500000000000000000000000", 10)
 	minVoterCap := new(big.Int)
-	minVoterCap.SetString("10000000000000000000", 10)
-	// Deposit 50K RUPX
+	minVoterCap.SetString("100000000000000000000", 10)
+	// Deposit 500K RUPX
 	// Min Voter Cap 10 RUPX
 	// 150 masternodes
-	// Candidate Delay Withdraw 30 days = 1296000 blocks
-	// Voter Delay Withdraw 2 days = 86400 blocks
-	validatorAddr, _, _, err := contract.DeployRupxValidator(transactOpts, contractBackend, validatorAddress, caps, ownerAddress, minDeposit, minVoterCap, big.NewInt(150), big.NewInt(1296000), big.NewInt(86400))
+	// Candidate Delay Withdraw 90 days = 3888000 blocks
+	// Voter Delay Withdraw 30 days = 1296000 blocks
+	validatorAddr, _, _, err := contract.DeployRupxValidator(transactOpts, contractBackend, validatorAddress, caps, ownerAddress, minDeposit, minVoterCap, big.NewInt(150), big.NewInt(3888000), big.NewInt(1296000))
 	if err != nil {
 		return validatorAddr, nil, err
 	}
