@@ -1832,23 +1832,23 @@ func (s *PublicRupXTransactionPoolAPI) SendOrderRawTransaction(ctx context.Conte
 }
 
 // GetOrderTxMatchByHash returns the bytes of the transaction for the given hash.
-func (s *PublicTomoXTransactionPoolAPI) GetOrderTxMatchByHash(ctx context.Context, hash common.Hash) ([]*tomox_state.OrderItem, error) {
+func (s *PublicRupXTransactionPoolAPI) GetOrderTxMatchByHash(ctx context.Context, hash common.Hash) ([]*rupx_state.OrderItem, error) {
 	var tx *types.Transaction
-	orders := []*tomox_state.OrderItem{}
+	orders := []*rupx_state.OrderItem{}
 	if tx, _, _, _ = core.GetTransaction(s.b.ChainDb(), hash); tx == nil {
 		if tx = s.b.GetPoolTransaction(hash); tx == nil {
-			return []*tomox_state.OrderItem{}, nil
+			return []*rupx_state.OrderItem{}, nil
 		}
 	}
 
-	batch, err := tomox_state.DecodeTxMatchesBatch(tx.Data())
+	batch, err := rupx_state.DecodeTxMatchesBatch(tx.Data())
 	if err != nil {
-		return []*tomox_state.OrderItem{}, err
+		return []*rupx_state.OrderItem{}, err
 	}
 	for _, txMatch := range batch.Data {
 		order, err := txMatch.DecodeOrder()
 		if err != nil {
-			return []*tomox_state.OrderItem{}, err
+			return []*rupx_state.OrderItem{}, err
 		}
 		orders = append(orders, order)
 	}
