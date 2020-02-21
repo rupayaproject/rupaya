@@ -543,7 +543,7 @@ func (rupx *RupX) RollbackReorgTxMatch(txhash common.Hash) {
 		if !ok {
 			log.Debug("Rupx reorg: remove order due to no orderCache", "order", rupx_state.ToJSON(order))
 			if err := db.DeleteObject(order.Hash); err != nil {
-				log.Error("SDKNode: failed to remove reorg order", "err", err.Error(), "order", rupx_state.ToJSON(order))
+				log.Crit("SDKNode: failed to remove reorg order", "err", err.Error(), "order", rupx_state.ToJSON(order))
 			}
 			continue
 		}
@@ -552,7 +552,7 @@ func (rupx *RupX) RollbackReorgTxMatch(txhash common.Hash) {
 		if (orderHistoryItem == rupx_state.OrderHistoryItem{}) {
 			log.Debug("Rupx reorg: remove order due to empty orderHistory", "order", rupx_state.ToJSON(order))
 			if err := db.DeleteObject(order.Hash); err != nil {
-				log.Error("SDKNode: failed to remove reorg order", "err", err.Error(), "order", rupx_state.ToJSON(order))
+				log.Crit("SDKNode: failed to remove reorg order", "err", err.Error(), "order", rupx_state.ToJSON(order))
 			}
 			continue
 		}
@@ -562,7 +562,7 @@ func (rupx *RupX) RollbackReorgTxMatch(txhash common.Hash) {
 		order.UpdatedAt = orderHistoryItem.UpdatedAt
 		log.Debug("Rupx reorg: update order to the last orderHistoryItem", "order", rupx_state.ToJSON(order), "orderHistoryItem", rupx_state.ToJSON(orderHistoryItem))
 		if err := db.PutObject(order.Hash, order); err != nil {
-			log.Error("SDKNode: failed to update reorg order", "err", err.Error(), "order", rupx_state.ToJSON(order))
+			log.Crit("SDKNode: failed to update reorg order", "err", err.Error(), "order", rupx_state.ToJSON(order))
 		}
 	}
 	log.Debug("Rupx reorg: DeleteTradeByTxHash", "txhash", txhash.Hex())

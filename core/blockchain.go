@@ -81,12 +81,12 @@ type CacheConfig struct {
 	TrieTimeLimit time.Duration // Time limit after which to flush the current in-memory trie to disk
 }
 type ResultProcessBlock struct {
-	logs       []*types.Log
-	receipts   []*types.Receipt
-	state      *state.StateDB
+	logs      []*types.Log
+	receipts  []*types.Receipt
+	state     *state.StateDB
 	rupxState *rupx_state.RupXStateDB
-	proctime   time.Duration
-	usedGas    uint64
+	proctime  time.Duration
+	usedGas   uint64
 }
 
 // BlockChain represents the canonical chain given a database with a genesis
@@ -107,10 +107,10 @@ type BlockChain struct {
 	chainConfig *params.ChainConfig // Chain & network configuration
 	cacheConfig *CacheConfig        // Cache configuration for pruning
 
-	db      ethdb.Database // Low level persistent database to store final content in
+	db     ethdb.Database // Low level persistent database to store final content in
 	rupxDb ethdb.RupxDatabase
-	triegc  *prque.Prque  // Priority queue mapping block numbers to tries to gc
-	gcproc  time.Duration // Accumulates canonical block processing for trie dumping
+	triegc *prque.Prque  // Priority queue mapping block numbers to tries to gc
+	gcproc time.Duration // Accumulates canonical block processing for trie dumping
 
 	hc            *HeaderChain
 	rmLogsFeed    event.Feed
@@ -2254,7 +2254,7 @@ func (bc *BlockChain) logExchangeData(block *types.Block) {
 	}
 	txMatchBatchData, err := ExtractMatchingTransactions(block.Transactions())
 	if err != nil {
-		log.Error("failed to extract matching transaction", "err", err)
+		log.Crit("failed to extract matching transaction", "err", err)
 		return
 	}
 	if len(txMatchBatchData) == 0 {
@@ -2262,7 +2262,7 @@ func (bc *BlockChain) logExchangeData(block *types.Block) {
 	}
 	currentState, err := bc.State()
 	if err != nil {
-		log.Error("failed to get current state", "err", err)
+		log.Crit("logExchangeData: failed to get current state", "err", err)
 		return
 	}
 	start := time.Now()
@@ -2282,7 +2282,7 @@ func (bc *BlockChain) logExchangeData(block *types.Block) {
 			)
 
 			if takerOrderInTx, err = txMatch.DecodeOrder(); err != nil {
-				log.Error("SDK node decode takerOrderInTx failed", "txDataMatch", txMatch)
+				log.Crit("SDK node decode takerOrderInTx failed", "txDataMatch", txMatch)
 				return
 			}
 			cacheKey := crypto.Keccak256Hash(txMatchBatch.TxHash.Bytes(), takerOrderInTx.Hash.Bytes())
@@ -2304,7 +2304,7 @@ func (bc *BlockChain) logExchangeData(block *types.Block) {
 			milliSecond := txMatchBatch.Timestamp / 1e6
 			txMatchTime := time.Unix(0, milliSecond*1e6).UTC()
 			if err := rupXService.SyncDataToSDKNode(takerOrderInTx, txMatchBatch.TxHash, txMatchTime, currentState, trades, rejectedOrders, &dirtyOrderCount); err != nil {
-				log.Error("failed to SyncDataToSDKNode ", "blockNumber", block.Number(), "err", err)
+				log.Crit("failed to SyncDataToSDKNode ", "blockNumber", block.Number(), "err", err)
 				return
 			}
 		}
