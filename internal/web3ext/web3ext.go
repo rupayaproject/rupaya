@@ -29,7 +29,7 @@ var Modules = map[string]string{
 	"personal":   Personal_JS,
 	"rpc":        RPC_JS,
 	"shh":        Shh_JS,
-	"rupx":      RupX_JS,
+	"rupx":       RupX_JS,
 	"swarmfs":    SWARMFS_JS,
 	"txpool":     TxPool_JS,
 }
@@ -711,6 +711,11 @@ web3._extend({
 		new web3._extend.Method({
             name: 'sendOrderTransaction',
             call: 'rupx_sendOrder',
+            params: 1
+		}),
+		new web3._extend.Method({
+            name: 'getOrderTxMatchByHash',
+            call: 'rupx_getOrderTxMatchByHash',
             params: 1
 		}),
 		new web3._extend.Method({
