@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	RupayaMainnetGenesisHash = common.HexToHash("42e36fb1b90901ff7cb3c0ba42929ba27036ebc508f92c071bbf15f71c61297a") // Rupaya Mainnet genesis hash to enforce below configs on
+	RupayaMainnetGenesisHash = common.HexToHash("c0b6e55dae3d2392048ce77a63333c097990ab8e812c2d7e0d9397c97ce28bd6") // Rupaya Mainnet genesis hash to enforce below configs on
 	MainnetGenesisHash       = common.HexToHash("8d13370621558f4ed0da587934473c0404729f28b0ff1d50e5fdd840457a2f17") // Mainnet genesis hash to enforce below configs on
 	TestnetGenesisHash       = common.HexToHash("dffc8ae3b45965404b4fd73ce7f0e13e822ac0fc23ce7e95b42bc5f1e57023a5") // Testnet genesis hash to enforce below configs on
 )
@@ -32,7 +32,7 @@ var (
 var (
 	// RupayaChain mainnet config
 	RupayaMainnetChainConfig = &ChainConfig{
-		ChainId:        big.NewInt(308),
+		ChainId:        big.NewInt(77),
 		HomesteadBlock: big.NewInt(1),
 		EIP150Block:    big.NewInt(2),
 		EIP150Hash:     common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),

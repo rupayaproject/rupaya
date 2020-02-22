@@ -52,14 +52,14 @@ func TestConsoleWelcome(t *testing.T) {
 	rupaya.SetTemplateFunc("goarch", func() string { return runtime.GOARCH })
 	rupaya.SetTemplateFunc("gover", runtime.Version)
 	rupaya.SetTemplateFunc("rupayaver", func() string { return params.Version })
-	rupaya.SetTemplateFunc("niltime", func() string { return time.Unix(1544771829, 0).Format(time.RFC1123) })
+	rupaya.SetTemplateFunc("niltime", func() string { return time.Unix(1582241211, 0).Format(time.RFC1123) })
 	rupaya.SetTemplateFunc("apis", func() string { return ipcAPIs })
 
 	// Verify the actual welcome message to the required template
 	rupaya.Expect(`
 Welcome to the Rupaya JavaScript console!
 
-instance: rupaya/v{{rupayaver}}/{{goos}}-{{goarch}}/{{gover}}
+instance: rupx/v{{rupayaver}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{.Etherbase}}
 at block: 0 ({{niltime}})
  datadir: {{.Datadir}}
@@ -137,7 +137,7 @@ func testAttachWelcome(t *testing.T, rupaya *testrupaya, endpoint, apis string) 
 	attach.SetTemplateFunc("gover", runtime.Version)
 	attach.SetTemplateFunc("rupayaver", func() string { return params.Version })
 	attach.SetTemplateFunc("etherbase", func() string { return rupaya.Etherbase })
-	attach.SetTemplateFunc("niltime", func() string { return time.Unix(1544771829, 0).Format(time.RFC1123) })
+	attach.SetTemplateFunc("niltime", func() string { return time.Unix(1582241211, 0).Format(time.RFC1123) })
 	attach.SetTemplateFunc("ipc", func() bool { return strings.HasPrefix(endpoint, "ipc") })
 	attach.SetTemplateFunc("datadir", func() string { return rupaya.Datadir })
 	attach.SetTemplateFunc("apis", func() string { return apis })
@@ -146,7 +146,7 @@ func testAttachWelcome(t *testing.T, rupaya *testrupaya, endpoint, apis string) 
 	attach.Expect(`
 Welcome to the Rupaya JavaScript console!
 
-instance: rupaya/v{{rupayaver}}/{{goos}}-{{goarch}}/{{gover}}
+instance: rupx/v{{rupayaver}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{etherbase}}
 at block: 0 ({{niltime}}){{if ipc}}
  datadir: {{datadir}}{{end}}
