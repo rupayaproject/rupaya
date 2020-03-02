@@ -65,6 +65,6 @@ func RegisterRupXService(stack *node.Node, cfg *rupx.Config) {
 	if err := stack.Register(func(n *node.ServiceContext) (node.Service, error) {
 		return rupx.New(cfg), nil
 	}); err != nil {
-		Fatalf("Failed to register the RupX service: %v", err)
+		Fatalf("Failed to register the TomoX service: %v", err)
 	}
 }

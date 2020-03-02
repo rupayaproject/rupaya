@@ -49,27 +49,28 @@ func (rupx *RupX) ApplyOrder(coinbase common.Address, chain consensus.ChainConte
 	dbSnap := statedb.Snapshot()
 	defer func() {
 		if err != nil {
-			return nil, nil, err
+			rupXstatedb.RevertToSnapshot(rupxSnap)
+			statedb.RevertToSnapshot(dbSnap)
 		}
-		if reject {
+	}()
+	if order.Status == OrderStatusCancelled {
+		err, reject := rupx.ProcessCancelOrder(rupXstatedb, statedb, chain, coinbase, orderBook, order)
+		if err != nil || reject {
+			log.Debug("Reject cancelled order", "err", err)
 			rejects = append(rejects, order)
 		}
-		log.Debug("Exchange add user nonce:", "address", order.UserAddress, "status", order.Status, "nonce", nonce+1)
-		rupXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
 		return trades, rejects, nil
 	}
 	if order.Type != rupx_state.Market {
 		if order.Price.Sign() == 0 || common.BigToHash(order.Price).Big().Cmp(order.Price) != 0 {
 			log.Debug("Reject order price invalid", "price", order.Price)
 			rejects = append(rejects, order)
-			rupXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
 			return trades, rejects, nil
 		}
 	}
 	if order.Quantity.Sign() == 0 || common.BigToHash(order.Quantity).Big().Cmp(order.Quantity) != 0 {
 		log.Debug("Reject order quantity invalid", "quantity", order.Quantity)
 		rejects = append(rejects, order)
-		rupXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
 		return trades, rejects, nil
 	}
 	orderType := order.Type
@@ -78,7 +79,9 @@ func (rupx *RupX) ApplyOrder(coinbase common.Address, chain consensus.ChainConte
 		log.Debug("Process maket order", "side", order.Side, "quantity", order.Quantity, "price", order.Price)
 		trades, rejects, err = rupx.processMarketOrder(coinbase, chain, statedb, rupXstatedb, orderBook, order)
 		if err != nil {
-			return nil, nil, err
+			log.Debug("Reject market order", "err", err, "order", rupx_state.ToJSON(order))
+			trades = []map[string]string{}
+			rejects = append(rejects, order)
 		}
 	} else {
 		log.Debug("Process limit order", "side", order.Side, "quantity", order.Quantity, "price", order.Price)
@@ -90,8 +93,6 @@ func (rupx *RupX) ApplyOrder(coinbase common.Address, chain consensus.ChainConte
 		}
 	}
 
-	log.Debug("Exchange add user nonce:", "address", order.UserAddress, "status", order.Status, "nonce", nonce+1)
-	rupXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
 	return trades, rejects, nil
 }
 
