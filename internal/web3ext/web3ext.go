@@ -662,12 +662,12 @@ web3._extend({
 		}),
 		new web3._extend.Method({
             name: 'getOrderPoolContent',
-            call: 'tomox_getOrderPoolContent',
+            call: 'rupx_getOrderPoolContent',
             params: 0
 		}),
 		new web3._extend.Method({
             name: 'getOrderStats',
-            call: 'tomox_getOrderStats',
+            call: 'rupx_getOrderStats',
             params: 0
 		}),
 		new web3._extend.Method({
