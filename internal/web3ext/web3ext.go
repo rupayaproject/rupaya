@@ -640,68 +640,10 @@ web3._extend({
 			params: 0
 		}),
 		new web3._extend.Method({
-            name: 'markTrustedPeer',
-            call: 'rupx_markTrustedPeer',
-            params: 1
-        }),
-		new web3._extend.Method({
-            name: 'createOrder',
-            call: 'rupx_createOrder',
-            params: 1,
-            inputFormatter: [null]
-        }),
-        new web3._extend.Method({
-            name: 'cancelOrder',
-            call: 'rupx_cancelOrder',
-            params: 1,
-            inputFormatter: [null]
-        }),
-		new web3._extend.Method({
-            name: 'newTopic',
-            call: 'rupx_newTopic',
-            params: 1
-        }),
-        new web3._extend.Method({
-            name: 'deleteTopic',
-            call: 'rupx_deleteTopic',
-            params: 1
-        }),
-        new web3._extend.Method({
-            name: 'getOrders',
-            call: 'rupx_getOrders',
-            params: 1
-        }),
-		new web3._extend.Method({
-            name: 'getOrderNonce',
-            call: 'rupx_getOrderNonce',
-            params: 1,
-            inputFormatter: [web3._extend.formatters.inputAddressFormatter]
-		}),
-		new web3._extend.Method({
             name: 'GetFeeByEpoch',
             call: 'rupX_GetFeeByEpoch',
             params: 1,
             inputFormatter: [null, web3._extend.formatters.inputAddressFormatter]
-        }),
-		new web3._extend.Method({
-            name: 'getPendingOrders',
-            call: 'rupx_getPendingOrders',
-            params: 1
-        }),
-		new web3._extend.Method({
-            name: 'getAllPendingHashes',
-            call: 'rupx_getAllPendingHashes',
-            params: 0
-        }),
-		new web3._extend.Method({
-            name: 'purgePendingOrders',
-            call: 'rupx_purgePendingOrders',
-            params: 0
-        }),
-		new web3._extend.Method({
-            name: 'getProcessedHashes',
-            call: 'rupx_getProcessedHashes',
-            params: 0
         }),
 		new web3._extend.Method({
             name: 'sendOrderRawTransaction',
@@ -717,6 +659,16 @@ web3._extend({
             name: 'getOrderTxMatchByHash',
             call: 'rupx_getOrderTxMatchByHash',
             params: 1
+		}),
+		new web3._extend.Method({
+            name: 'getOrderPoolContent',
+            call: 'tomox_getOrderPoolContent',
+            params: 0
+		}),
+		new web3._extend.Method({
+            name: 'getOrderStats',
+            call: 'tomox_getOrderStats',
+            params: 0
 		}),
 		new web3._extend.Method({
             name: 'getOrderCount',

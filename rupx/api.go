@@ -3,12 +3,8 @@ package rupx
 import (
 	"context"
 	"errors"
-	"github.com/rupayaproject/go-rupaya/rupx/rupx_state"
-	"math/big"
 	"sync"
 	"time"
-
-	"github.com/rupayaproject/go-rupaya/common"
 )
 
 const (
@@ -43,17 +39,4 @@ func NewPublicRupXAPI(t *RupX) *PublicRupXAPI {
 // Version returns the RupX sub-protocol version.
 func (api *PublicRupXAPI) Version(ctx context.Context) string {
 	return ProtocolVersionStr
-}
-
-// GetOrderNonce returns the latest orderNonce of the given address
-func (api *PublicRupXAPI) GetOrderNonce(address common.Address) (*big.Int, error) {
-	//TODO: getOrderNonce from state
-	return big.NewInt(0), nil
-}
-
-// GetPendingOrders returns pending orders of the given pair
-func (api *PublicRupXAPI) GetPendingOrders(pairName string) ([]*rupx_state.OrderItem, error) {
-	result := []*rupx_state.OrderItem{}
-	//TODO: get pending orders from orderpool
-	return result, nil
 }

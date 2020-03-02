@@ -20,10 +20,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/rupayaproject/go-rupaya/rupx"
 	"io/ioutil"
 	"math/big"
 	"path/filepath"
+
+	"github.com/rupayaproject/go-rupaya/rupx"
 
 	"github.com/rupayaproject/go-rupaya/accounts"
 	"github.com/rupayaproject/go-rupaya/common"
@@ -137,6 +138,13 @@ func (b *LesApiBackend) Stats() (pending int, queued int) {
 
 func (b *LesApiBackend) TxPoolContent() (map[common.Address]types.Transactions, map[common.Address]types.Transactions) {
 	return b.eth.txPool.Content()
+}
+
+func (b *LesApiBackend) OrderTxPoolContent() (map[common.Address]types.OrderTransactions, map[common.Address]types.OrderTransactions) {
+	return make(map[common.Address]types.OrderTransactions), make(map[common.Address]types.OrderTransactions)
+}
+func (b *LesApiBackend) OrderStats() (pending int, queued int) {
+	return 0, 0
 }
 
 func (b *LesApiBackend) SubscribeTxPreEvent(ch chan<- core.TxPreEvent) event.Subscription {

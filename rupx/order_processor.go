@@ -1,12 +1,14 @@
 package rupx
 
 import (
-	"github.com/rupayaproject/go-rupaya/consensus"
 	"math/big"
 	"strconv"
 	"time"
 
+	"github.com/rupayaproject/go-rupaya/consensus"
+
 	"fmt"
+
 	"github.com/rupayaproject/go-rupaya/common"
 	"github.com/rupayaproject/go-rupaya/core/state"
 	"github.com/rupayaproject/go-rupaya/log"
@@ -34,12 +36,18 @@ func (rupx *RupX) ApplyOrder(coinbase common.Address, chain consensus.ChainConte
 	nonce := rupXstatedb.GetNonce(order.UserAddress.Hash())
 	log.Debug("ApplyOrder", "addr", order.UserAddress, "statenonce", nonce, "ordernonce", order.Nonce)
 	if big.NewInt(int64(nonce)).Cmp(order.Nonce) == -1 {
+		log.Debug("ApplyOrder ErrNonceTooHigh", "nonce", order.Nonce)
 		return nil, nil, ErrNonceTooHigh
 	} else if big.NewInt(int64(nonce)).Cmp(order.Nonce) == 1 {
+		log.Debug("ApplyOrder ErrNonceTooLow", "nonce", order.Nonce)
 		return nil, nil, ErrNonceTooLow
 	}
-	if order.Status == OrderStatusCancelled {
-		err, reject := rupx.ProcessCancelOrder(rupXstatedb, statedb, chain, coinbase, orderBook, order)
+	// increase nonce
+	log.Debug("ApplyOrder setnonce", "nonce", nonce+1, "addr", order.UserAddress.Hex(), "status", order.Status, "oldnonce", nonce)
+	rupXstatedb.SetNonce(order.UserAddress.Hash(), nonce+1)
+	rupxSnap := rupXstatedb.Snapshot()
+	dbSnap := statedb.Snapshot()
+	defer func() {
 		if err != nil {
 			return nil, nil, err
 		}
@@ -76,7 +84,9 @@ func (rupx *RupX) ApplyOrder(coinbase common.Address, chain consensus.ChainConte
 		log.Debug("Process limit order", "side", order.Side, "quantity", order.Quantity, "price", order.Price)
 		trades, rejects, err = rupx.processLimitOrder(coinbase, chain, statedb, rupXstatedb, orderBook, order)
 		if err != nil {
-			return nil, nil, err
+			log.Debug("Reject limit order", "err", err, "order", rupx_state.ToJSON(order))
+			trades = []map[string]string{}
+			rejects = append(rejects, order)
 		}
 	}
 
@@ -574,7 +584,7 @@ func (rupx *RupX) ProcessCancelOrder(rupXstatedb *rupx_state.RupXStateDB, stated
 	// originOrder: full order information getting from order trie
 	originOrder := rupXstatedb.GetOrder(orderBook, common.BigToHash(new(big.Int).SetUint64(order.OrderID)))
 	if originOrder == rupx_state.EmptyOrder {
-		return fmt.Errorf("order not found. OrderId: %v. Base: %s. Quote: %s", order.OrderID, order.BaseToken, order.QuoteToken), false
+		return fmt.Errorf("order not found. OrderId: %v. Base: %s. Quote: %s", order.OrderID, order.BaseToken.Hex(), order.QuoteToken.Hex()), false
 	}
 	var tokenBalance *big.Int
 	switch originOrder.Side {
