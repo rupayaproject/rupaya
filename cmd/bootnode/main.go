@@ -24,13 +24,13 @@ import (
 	"net"
 	"os"
 
-	"github.com/rupayaproject/go-rupaya/cmd/utils"
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
-	"github.com/rupayaproject/go-rupaya/p2p/discv5"
-	"github.com/rupayaproject/go-rupaya/p2p/nat"
-	"github.com/rupayaproject/go-rupaya/p2p/netutil"
+	"github.com/rupayaproject/rupaya/cmd/utils"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/p2p/discv5"
+	"github.com/rupayaproject/rupaya/p2p/nat"
+	"github.com/rupayaproject/rupaya/p2p/netutil"
 )
 
 func main() {

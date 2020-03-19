@@ -19,19 +19,19 @@ package console
 import (
 	"bytes"
 	"errors"
-	"github.com/rupayaproject/go-rupaya/rupx"
+	"github.com/rupayaproject/rupaya/rupx"
 	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/consensus/ethash"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/eth"
-	"github.com/rupayaproject/go-rupaya/internal/jsre"
-	"github.com/rupayaproject/go-rupaya/node"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/consensus/ethash"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/eth"
+	"github.com/rupayaproject/rupaya/internal/jsre"
+	"github.com/rupayaproject/rupaya/node"
 )
 
 const (

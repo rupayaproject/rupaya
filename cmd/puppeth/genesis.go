@@ -21,11 +21,11 @@ import (
 	"errors"
 	"math"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/hexutil"
-	"github.com/rupayaproject/go-rupaya/consensus/ethash"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/hexutil"
+	"github.com/rupayaproject/rupaya/consensus/ethash"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 // cppEthereumGenesisSpec represents the genesis specification format used by the

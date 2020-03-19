@@ -25,7 +25,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 const (

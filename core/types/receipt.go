@@ -22,9 +22,9 @@ import (
 	"io"
 	"unsafe"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/hexutil"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/hexutil"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 //go:generate gencodec -type Receipt -field-override receiptMarshaling -out gen_receipt_json.go

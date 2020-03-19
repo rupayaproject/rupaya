@@ -19,7 +19,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // ensureVirtualHost checks whether a reverse-proxy is running on the specified

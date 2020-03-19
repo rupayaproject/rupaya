@@ -29,15 +29,15 @@ import (
 	"unicode"
 
 	"github.com/naoina/toml"
-	"github.com/rupayaproject/go-rupaya/cmd/utils"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/eth"
-	"github.com/rupayaproject/go-rupaya/internal/debug"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/node"
-	"github.com/rupayaproject/go-rupaya/params"
-	"github.com/rupayaproject/go-rupaya/rupx"
-	whisper "github.com/rupayaproject/go-rupaya/whisper/whisperv6"
+	"github.com/rupayaproject/rupaya/cmd/utils"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/eth"
+	"github.com/rupayaproject/rupaya/internal/debug"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/node"
+	"github.com/rupayaproject/rupaya/params"
+	"github.com/rupayaproject/rupaya/rupx"
+	whisper "github.com/rupayaproject/rupaya/whisper/whisperv6"
 )
 
 var (

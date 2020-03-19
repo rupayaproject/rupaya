@@ -17,7 +17,7 @@
 package rupx_state
 
 import (
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 	"math/big"
 )
 

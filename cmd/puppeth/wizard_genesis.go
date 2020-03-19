@@ -24,22 +24,22 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/params"
 
 	"context"
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind/backends"
-	blockSignerContract "github.com/rupayaproject/go-rupaya/contracts/blocksigner"
-	multiSignWalletContract "github.com/rupayaproject/go-rupaya/contracts/multisigwallet"
-	randomizeContract "github.com/rupayaproject/go-rupaya/contracts/randomize"
-	validatorContract "github.com/rupayaproject/go-rupaya/contracts/validator"
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind/backends"
+	blockSignerContract "github.com/rupayaproject/rupaya/contracts/blocksigner"
+	multiSignWalletContract "github.com/rupayaproject/rupaya/contracts/multisigwallet"
+	randomizeContract "github.com/rupayaproject/rupaya/contracts/randomize"
+	validatorContract "github.com/rupayaproject/rupaya/contracts/validator"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 // makeGenesis creates a new genesis struct based on some user input.

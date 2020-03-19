@@ -27,13 +27,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common/mclock"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/p2p"
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
-	"github.com/rupayaproject/go-rupaya/p2p/discv5"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/common/mclock"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/p2p/discv5"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 const (

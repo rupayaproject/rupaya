@@ -32,9 +32,9 @@ import (
 	"io/ioutil"
 	"sync"
 
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/metrics"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/metrics"
+	"github.com/rupayaproject/rupaya/rlp"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/iterator"
 )

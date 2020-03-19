@@ -25,7 +25,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/ethdb"
 )
 
 func newTestLDB() (*ethdb.LDBDatabase, func()) {

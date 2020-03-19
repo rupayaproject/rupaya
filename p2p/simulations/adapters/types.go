@@ -25,11 +25,11 @@ import (
 	"os"
 
 	"github.com/docker/docker/pkg/reexec"
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/node"
-	"github.com/rupayaproject/go-rupaya/p2p"
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/node"
+	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/rpc"
 )
 
 // Node represents a node in a simulation network which is created by a

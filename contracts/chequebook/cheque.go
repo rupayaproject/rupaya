@@ -36,14 +36,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/hexutil"
-	"github.com/rupayaproject/go-rupaya/contracts/chequebook/contract"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/swarm/services/swap/swap"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/hexutil"
+	"github.com/rupayaproject/rupaya/contracts/chequebook/contract"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/swarm/services/swap/swap"
 )
 
 // TODO(zelig): watch peer solvency and notify of bouncing cheques

@@ -25,8 +25,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/crypto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -244,7 +244,7 @@ func unpackTestEventData(dest interface{}, hexData string, jsonEvent []byte, ass
 
 /*
 Taken from
-https://github.com/rupayaproject/go-rupaya/pull/15568
+https://github.com/rupayaproject/rupaya/pull/15568
 */
 
 type testResult struct {

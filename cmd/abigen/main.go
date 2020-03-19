@@ -24,8 +24,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/common/compiler"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/common/compiler"
 )
 
 var (

@@ -23,15 +23,15 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/light"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/rlp"
-	"github.com/rupayaproject/go-rupaya/trie"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/light"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/rlp"
+	"github.com/rupayaproject/rupaya/trie"
 )
 
 var (

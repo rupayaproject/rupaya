@@ -26,11 +26,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/swarm/api"
-	swarm "github.com/rupayaproject/go-rupaya/swarm/api/client"
-	"github.com/rupayaproject/go-rupaya/swarm/storage"
-	"github.com/rupayaproject/go-rupaya/swarm/testutil"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/swarm/api"
+	swarm "github.com/rupayaproject/rupaya/swarm/api/client"
+	"github.com/rupayaproject/rupaya/swarm/storage"
+	"github.com/rupayaproject/rupaya/swarm/testutil"
 )
 
 func TestBzzGetPath(t *testing.T) {

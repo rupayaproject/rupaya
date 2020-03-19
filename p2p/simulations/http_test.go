@@ -27,12 +27,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/event"
-	"github.com/rupayaproject/go-rupaya/node"
-	"github.com/rupayaproject/go-rupaya/p2p"
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
-	"github.com/rupayaproject/go-rupaya/p2p/simulations/adapters"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/event"
+	"github.com/rupayaproject/rupaya/node"
+	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/p2p/simulations/adapters"
+	"github.com/rupayaproject/rupaya/rpc"
 )
 
 // testService implements the node.Service interface and provides protocols

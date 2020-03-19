@@ -22,15 +22,15 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/hexutil"
-	"github.com/rupayaproject/go-rupaya/common/math"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/core/state"
-	"github.com/rupayaproject/go-rupaya/core/vm"
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/hexutil"
+	"github.com/rupayaproject/rupaya/common/math"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/core/state"
+	"github.com/rupayaproject/rupaya/core/vm"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 // VMTest checks EVM execution without block or transaction context.

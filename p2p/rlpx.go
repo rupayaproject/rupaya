@@ -35,12 +35,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/crypto/ecies"
-	"github.com/rupayaproject/go-rupaya/crypto/secp256k1"
-	"github.com/rupayaproject/go-rupaya/crypto/sha3"
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/crypto/ecies"
+	"github.com/rupayaproject/rupaya/crypto/secp256k1"
+	"github.com/rupayaproject/rupaya/crypto/sha3"
+	"github.com/rupayaproject/rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/rlp"
 	"github.com/golang/snappy"
 )
 

@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 	"golang.org/x/crypto/pbkdf2"
 )
 

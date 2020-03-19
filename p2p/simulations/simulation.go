@@ -20,7 +20,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/p2p/discover"
 )
 
 // Simulation provides a framework for running actions in a simulated network

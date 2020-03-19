@@ -22,10 +22,10 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/accounts/abi"
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/rupaya/accounts/abi"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/types"
 )
 
 // Signer is an interaface defining the callback when a contract requires a

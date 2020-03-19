@@ -17,7 +17,7 @@
 package api
 
 import (
-	"github.com/rupayaproject/go-rupaya/swarm/network"
+	"github.com/rupayaproject/rupaya/swarm/network"
 )
 
 type Control struct {

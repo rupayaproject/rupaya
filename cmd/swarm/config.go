@@ -29,12 +29,12 @@ import (
 	cli "gopkg.in/urfave/cli.v1"
 
 	"github.com/naoina/toml"
-	"github.com/rupayaproject/go-rupaya/cmd/utils"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/node"
+	"github.com/rupayaproject/rupaya/cmd/utils"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/node"
 
-	bzzapi "github.com/rupayaproject/go-rupaya/swarm/api"
+	bzzapi "github.com/rupayaproject/rupaya/swarm/api"
 )
 
 var (
@@ -84,7 +84,7 @@ var tomlSettings = toml.Config{
 	MissingField: func(rt reflect.Type, field string) error {
 		link := ""
 		if unicode.IsUpper(rune(rt.Name()[0])) && rt.PkgPath() != "main" {
-			link = fmt.Sprintf(", check github.com/rupayaproject/go-rupaya/swarm/api/config.go for available fields")
+			link = fmt.Sprintf(", check github.com/rupayaproject/rupaya/swarm/api/config.go for available fields")
 		}
 		return fmt.Errorf("field '%s' is not defined in %s%s", field, rt.String(), link)
 	},

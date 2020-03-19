@@ -20,10 +20,10 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 // NodeSet stores a set of trie nodes. It implements trie.Database and can also

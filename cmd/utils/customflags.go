@@ -27,7 +27,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/common/math"
+	"github.com/rupayaproject/rupaya/common/math"
 	"gopkg.in/urfave/cli.v1"
 )
 

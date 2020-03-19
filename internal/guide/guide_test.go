@@ -30,8 +30,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/accounts/keystore"
-	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/rupaya/accounts/keystore"
+	"github.com/rupayaproject/rupaya/core/types"
 )
 
 // Tests that the account management snippets work correctly.

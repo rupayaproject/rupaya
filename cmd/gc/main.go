@@ -13,14 +13,14 @@ import (
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/util"
-	"github.com/rupayaproject/go-rupaya/cmd/utils"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/core/state"
-	"github.com/rupayaproject/go-rupaya/eth"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/rlp"
-	"github.com/rupayaproject/go-rupaya/trie"
+	"github.com/rupayaproject/rupaya/cmd/utils"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/core/state"
+	"github.com/rupayaproject/rupaya/eth"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/rlp"
+	"github.com/rupayaproject/rupaya/trie"
 )
 
 var (

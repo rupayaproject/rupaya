@@ -20,9 +20,9 @@ import (
 	"container/list"
 	"fmt"
 
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/event"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/event"
 )
 
 // Implement our EthTest Manager

@@ -21,7 +21,7 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 type Address common.Hash

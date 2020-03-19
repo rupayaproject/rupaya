@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/rupayaproject/go-rupaya/accounts/keystore"
-	"github.com/rupayaproject/go-rupaya/cmd/utils"
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/accounts/keystore"
+	"github.com/rupayaproject/rupaya/cmd/utils"
+	"github.com/rupayaproject/rupaya/crypto"
 	"gopkg.in/urfave/cli.v1"
 )
 

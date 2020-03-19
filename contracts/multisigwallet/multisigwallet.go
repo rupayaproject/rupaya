@@ -16,9 +16,9 @@
 package multisigwallet
 
 import (
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/contracts/multisigwallet/contract"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/contracts/multisigwallet/contract"
 	"math/big"
 )
 

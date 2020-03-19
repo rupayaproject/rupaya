@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // deployExplorer creates a new block explorer based on some user input.

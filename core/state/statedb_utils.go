@@ -3,10 +3,10 @@ package state
 import (
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/types"
 
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/crypto"
 )
 
 var (

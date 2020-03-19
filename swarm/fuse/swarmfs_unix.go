@@ -29,9 +29,9 @@ import (
 
 	"bazil.org/fuse"
 	"bazil.org/fuse/fs"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/swarm/api"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/swarm/api"
 )
 
 var (

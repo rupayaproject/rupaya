@@ -26,13 +26,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/rupayaproject/go-rupaya/accounts"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/event"
-	"github.com/rupayaproject/go-rupaya/internal/debug"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/p2p"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/accounts"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/event"
+	"github.com/rupayaproject/rupaya/internal/debug"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/rpc"
 	"github.com/prometheus/prometheus/util/flock"
 )
 

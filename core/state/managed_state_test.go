@@ -19,8 +19,8 @@ package state
 import (
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/ethdb"
 )
 
 var addr = common.BytesToAddress([]byte("test"))

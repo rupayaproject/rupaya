@@ -19,9 +19,9 @@ package types
 import (
 	"bytes"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/rlp"
-	"github.com/rupayaproject/go-rupaya/trie"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/rlp"
+	"github.com/rupayaproject/rupaya/trie"
 )
 
 type DerivableList interface {

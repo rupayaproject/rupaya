@@ -26,7 +26,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 	"golang.org/x/tools/imports"
 )
 

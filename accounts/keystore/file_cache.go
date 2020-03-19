@@ -24,7 +24,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 	mapset "github.com/deckarep/golang-set"
 )
 

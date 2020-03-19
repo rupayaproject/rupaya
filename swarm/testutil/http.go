@@ -22,9 +22,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/swarm/api"
-	httpapi "github.com/rupayaproject/go-rupaya/swarm/api/http"
-	"github.com/rupayaproject/go-rupaya/swarm/storage"
+	"github.com/rupayaproject/rupaya/swarm/api"
+	httpapi "github.com/rupayaproject/rupaya/swarm/api/http"
+	"github.com/rupayaproject/rupaya/swarm/storage"
 )
 
 func NewTestSwarmServer(t *testing.T) *TestSwarmServer {

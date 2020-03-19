@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/swarm/storage"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/swarm/storage"
 )
 
 // syncer parameters (global, not peer specific) default values

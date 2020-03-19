@@ -25,7 +25,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // ethstatsDockerfile is the Dockerfile required to build an ethstats backend

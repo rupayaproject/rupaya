@@ -1,13 +1,13 @@
 package utils
 
 import (
-	"github.com/rupayaproject/go-rupaya/eth"
-	"github.com/rupayaproject/go-rupaya/eth/downloader"
-	"github.com/rupayaproject/go-rupaya/ethstats"
-	"github.com/rupayaproject/go-rupaya/les"
-	"github.com/rupayaproject/go-rupaya/node"
-	"github.com/rupayaproject/go-rupaya/rupx"
-	whisper "github.com/rupayaproject/go-rupaya/whisper/whisperv6"
+	"github.com/rupayaproject/rupaya/eth"
+	"github.com/rupayaproject/rupaya/eth/downloader"
+	"github.com/rupayaproject/rupaya/ethstats"
+	"github.com/rupayaproject/rupaya/les"
+	"github.com/rupayaproject/rupaya/node"
+	"github.com/rupayaproject/rupaya/rupx"
+	whisper "github.com/rupayaproject/rupaya/whisper/whisperv6"
 )
 
 // RegisterEthService adds an Ethereum client to the stack.

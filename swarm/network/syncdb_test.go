@@ -25,9 +25,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/swarm/storage"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/swarm/storage"
 )
 
 func init() {

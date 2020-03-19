@@ -25,14 +25,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/mclock"
-	"github.com/rupayaproject/go-rupaya/event"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
-	"github.com/rupayaproject/go-rupaya/p2p/discv5"
-	"github.com/rupayaproject/go-rupaya/p2p/nat"
-	"github.com/rupayaproject/go-rupaya/p2p/netutil"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/mclock"
+	"github.com/rupayaproject/rupaya/event"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/p2p/discv5"
+	"github.com/rupayaproject/rupaya/p2p/nat"
+	"github.com/rupayaproject/rupaya/p2p/netutil"
 )
 
 const (

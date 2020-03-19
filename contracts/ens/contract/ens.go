@@ -6,12 +6,12 @@ package contract
 import (
 	"strings"
 
-	ethereum "github.com/rupayaproject/go-rupaya"
-	"github.com/rupayaproject/go-rupaya/accounts/abi"
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/event"
+	ethereum "github.com/rupayaproject/rupaya"
+	"github.com/rupayaproject/rupaya/accounts/abi"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/event"
 )
 
 // ENSABI is the input ABI used to generate the binding from.

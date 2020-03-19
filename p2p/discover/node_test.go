@@ -28,8 +28,8 @@ import (
 	"testing/quick"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/crypto"
 )
 
 func ExampleNewNode() {

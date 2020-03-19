@@ -25,17 +25,17 @@ import (
 	"os"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/hexutil"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/core/state"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/miner"
-	"github.com/rupayaproject/go-rupaya/params"
-	"github.com/rupayaproject/go-rupaya/rlp"
-	"github.com/rupayaproject/go-rupaya/rpc"
-	"github.com/rupayaproject/go-rupaya/trie"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/hexutil"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/core/state"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/miner"
+	"github.com/rupayaproject/rupaya/params"
+	"github.com/rupayaproject/rupaya/rlp"
+	"github.com/rupayaproject/rupaya/rpc"
+	"github.com/rupayaproject/rupaya/trie"
 )
 
 // PublicEthereumAPI provides an API to access Ethereum full node-related

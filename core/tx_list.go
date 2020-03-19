@@ -22,9 +22,9 @@ import (
 	"math/big"
 	"sort"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // nonceHeap is a heap.Interface implementation over 64bit unsigned integers for

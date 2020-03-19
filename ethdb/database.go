@@ -22,8 +22,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/metrics"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/metrics"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/errors"
 	"github.com/syndtr/goleveldb/leveldb/filter"

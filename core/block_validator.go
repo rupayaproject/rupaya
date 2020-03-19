@@ -18,15 +18,15 @@ package core
 
 import (
 	"fmt"
-	"github.com/rupayaproject/go-rupaya/consensus/posv"
-	"github.com/rupayaproject/go-rupaya/rupx/rupx_state"
+	"github.com/rupayaproject/rupaya/consensus/posv"
+	"github.com/rupayaproject/rupaya/rupx/rupx_state"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/consensus"
-	"github.com/rupayaproject/go-rupaya/core/state"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/consensus"
+	"github.com/rupayaproject/rupaya/core/state"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 // BlockValidator is responsible for validating block headers, uncles and

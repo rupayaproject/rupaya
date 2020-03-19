@@ -16,9 +16,9 @@
 package randomize
 
 import (
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/contracts/randomize/contract"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/contracts/randomize/contract"
 )
 
 type Randomize struct {

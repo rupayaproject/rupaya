@@ -24,7 +24,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 func TestPack(t *testing.T) {

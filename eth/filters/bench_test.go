@@ -23,14 +23,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/bitutil"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/core/bloombits"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/event"
-	"github.com/rupayaproject/go-rupaya/node"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/bitutil"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/core/bloombits"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/event"
+	"github.com/rupayaproject/rupaya/node"
 )
 
 func BenchmarkBloomBits512(b *testing.B) {

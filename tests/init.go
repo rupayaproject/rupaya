@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 // This table defines supported forks and their chain config.

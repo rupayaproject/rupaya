@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/rupayaproject/go-rupaya/cmd/evm/internal/compiler"
+	"github.com/rupayaproject/rupaya/cmd/evm/internal/compiler"
 
 	cli "gopkg.in/urfave/cli.v1"
 )

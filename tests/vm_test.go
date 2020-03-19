@@ -19,7 +19,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/core/vm"
+	"github.com/rupayaproject/rupaya/core/vm"
 )
 
 func TestVM(t *testing.T) {

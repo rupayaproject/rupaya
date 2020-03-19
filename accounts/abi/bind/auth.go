@@ -22,10 +22,10 @@ import (
 	"io"
 	"io/ioutil"
 
-	"github.com/rupayaproject/go-rupaya/accounts/keystore"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/accounts/keystore"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/crypto"
 )
 
 // NewTransactor is a utility method to easily create a transaction signer from

@@ -22,8 +22,8 @@ import (
 	"io"
 	"sort"
 
-	"github.com/rupayaproject/go-rupaya/cmd/utils"
-	"github.com/rupayaproject/go-rupaya/internal/debug"
+	"github.com/rupayaproject/rupaya/cmd/utils"
+	"github.com/rupayaproject/rupaya/internal/debug"
 	"gopkg.in/urfave/cli.v1"
 )
 

@@ -25,9 +25,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/hexutil"
-	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/hexutil"
+	"github.com/rupayaproject/rupaya/core/types"
 )
 
 // Tests whether the dataset size calculator works correctly by cross checking the

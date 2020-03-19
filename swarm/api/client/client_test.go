@@ -25,8 +25,8 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/swarm/api"
-	"github.com/rupayaproject/go-rupaya/swarm/testutil"
+	"github.com/rupayaproject/rupaya/swarm/api"
+	"github.com/rupayaproject/rupaya/swarm/testutil"
 )
 
 // TestClientUploadDownloadRaw test uploading and downloading raw data to swarm

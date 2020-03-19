@@ -24,8 +24,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/swarm/storage"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/swarm/storage"
 )
 
 var testDownloadDir, _ = ioutil.TempDir(os.TempDir(), "bzz-test")

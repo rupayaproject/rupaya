@@ -18,11 +18,11 @@ package rupx_state
 
 import (
 	"fmt"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/trie"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/trie"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // RupXTrie wraps a trie with key hashing. In a secure trie, all

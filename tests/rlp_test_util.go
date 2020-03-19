@@ -24,7 +24,7 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 // RLPTest is the JSON structure of a single RLP test.

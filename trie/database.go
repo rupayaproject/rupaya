@@ -20,9 +20,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // secureKeyPrefix is the database key prefix used to store trie node preimages.

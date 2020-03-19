@@ -23,13 +23,13 @@ import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/rupayaproject/go-rupaya/consensus/ethash"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/core/state"
-	"github.com/rupayaproject/go-rupaya/core/vm"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/params"
-	"github.com/rupayaproject/go-rupaya/trie"
+	"github.com/rupayaproject/rupaya/consensus/ethash"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/core/state"
+	"github.com/rupayaproject/rupaya/core/vm"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/params"
+	"github.com/rupayaproject/rupaya/trie"
 )
 
 func TestNodeIterator(t *testing.T) {

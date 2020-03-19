@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/metrics"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/metrics"
 )
 
 //metrics variables

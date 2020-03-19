@@ -19,10 +19,10 @@ package metrics
 import (
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/cmd/utils"
-	"github.com/rupayaproject/go-rupaya/log"
-	gethmetrics "github.com/rupayaproject/go-rupaya/metrics"
-	"github.com/rupayaproject/go-rupaya/metrics/influxdb"
+	"github.com/rupayaproject/rupaya/cmd/utils"
+	"github.com/rupayaproject/rupaya/log"
+	gethmetrics "github.com/rupayaproject/rupaya/metrics"
+	"github.com/rupayaproject/rupaya/metrics/influxdb"
 	"gopkg.in/urfave/cli.v1"
 )
 

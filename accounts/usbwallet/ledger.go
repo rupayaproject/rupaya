@@ -28,12 +28,12 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/accounts"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/hexutil"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/accounts"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/hexutil"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 // ledgerOpcode is an enumeration encoding the supported Ledger opcodes.

@@ -1,4 +1,4 @@
-module github.com/rupayaproject/go-rupaya
+module github.com/rupayaproject/rupaya
 
 go 1.13
 

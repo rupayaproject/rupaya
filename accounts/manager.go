@@ -21,7 +21,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/rupayaproject/go-rupaya/event"
+	"github.com/rupayaproject/rupaya/event"
 )
 
 // Manager is an overarching account manager that can communicate with various

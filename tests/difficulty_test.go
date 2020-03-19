@@ -21,8 +21,8 @@ import (
 
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 var (

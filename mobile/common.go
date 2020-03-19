@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 // Hash represents the 32 byte Keccak256 hash of arbitrary data.

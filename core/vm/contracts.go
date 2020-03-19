@@ -21,11 +21,11 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/math"
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/crypto/bn256"
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/math"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/crypto/bn256"
+	"github.com/rupayaproject/rupaya/params"
 	"golang.org/x/crypto/ripemd160"
 )
 

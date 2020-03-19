@@ -16,7 +16,7 @@
 
 package ethclient
 
-import "github.com/rupayaproject/go-rupaya"
+import "github.com/rupayaproject/rupaya"
 
 // Verify that Client implements the ethereum interfaces.
 var (

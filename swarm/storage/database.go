@@ -22,7 +22,7 @@ package storage
 import (
 	"fmt"
 
-	"github.com/rupayaproject/go-rupaya/compression/rle"
+	"github.com/rupayaproject/rupaya/compression/rle"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/iterator"
 	"github.com/syndtr/goleveldb/leveldb/opt"

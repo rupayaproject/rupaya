@@ -21,12 +21,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/eth"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/light"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/eth"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/light"
 )
 
 var testBankSecureTrieKey = secAddr(testBankAddress)

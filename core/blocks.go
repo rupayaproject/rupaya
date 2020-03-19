@@ -16,7 +16,7 @@
 
 package core
 
-import "github.com/rupayaproject/go-rupaya/common"
+import "github.com/rupayaproject/rupaya/common"
 
 // BadHashes represent a set of manually tracked bad hashes (usually hard forks)
 var BadHashes = map[common.Hash]bool{

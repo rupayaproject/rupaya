@@ -27,8 +27,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/swarm/api"
-	"github.com/rupayaproject/go-rupaya/swarm/storage"
+	"github.com/rupayaproject/rupaya/swarm/api"
+	"github.com/rupayaproject/rupaya/swarm/storage"
 )
 
 type fileInfo struct {

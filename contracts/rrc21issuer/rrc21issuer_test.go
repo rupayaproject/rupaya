@@ -1,11 +1,11 @@
 package rrc21issuer
 
 import (
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind/backends"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind/backends"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/crypto"
 	"math/big"
 	"testing"
 )

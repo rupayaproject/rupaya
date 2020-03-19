@@ -22,7 +22,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 func TestHexOrDecimal256(t *testing.T) {

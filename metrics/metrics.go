@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // Enabled is checked by the constructor functions for all of the

@@ -22,7 +22,7 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 // A BigInt represents a signed multi-precision integer.

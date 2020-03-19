@@ -26,13 +26,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/eth"
-	"github.com/rupayaproject/go-rupaya/les/flowcontrol"
-	"github.com/rupayaproject/go-rupaya/light"
-	"github.com/rupayaproject/go-rupaya/p2p"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/eth"
+	"github.com/rupayaproject/rupaya/les/flowcontrol"
+	"github.com/rupayaproject/rupaya/light"
+	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 var (

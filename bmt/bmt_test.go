@@ -28,7 +28,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/crypto/sha3"
+	"github.com/rupayaproject/rupaya/crypto/sha3"
 )
 
 const (

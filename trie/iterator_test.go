@@ -22,8 +22,8 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/ethdb"
 )
 
 func TestIterator(t *testing.T) {

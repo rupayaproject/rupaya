@@ -25,7 +25,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // explorerDockerfile is the Dockerfile required to run a block explorer.

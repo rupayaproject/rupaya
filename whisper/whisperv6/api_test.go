@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 	mapset "github.com/deckarep/golang-set"
 )
 

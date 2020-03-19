@@ -25,11 +25,11 @@ import (
 	"net"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/p2p/nat"
-	"github.com/rupayaproject/go-rupaya/p2p/netutil"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/p2p/nat"
+	"github.com/rupayaproject/rupaya/p2p/netutil"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 const Version = 4

@@ -21,8 +21,8 @@ package geth
 import (
 	"errors"
 
-	ethereum "github.com/rupayaproject/go-rupaya"
-	"github.com/rupayaproject/go-rupaya/common"
+	ethereum "github.com/rupayaproject/rupaya"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 // Subscription represents an event subscription where events are

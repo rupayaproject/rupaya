@@ -19,7 +19,7 @@
 package downloader
 
 import (
-	"github.com/rupayaproject/go-rupaya/metrics"
+	"github.com/rupayaproject/rupaya/metrics"
 )
 
 var (

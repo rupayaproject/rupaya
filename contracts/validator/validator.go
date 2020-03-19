@@ -18,9 +18,9 @@ package validator
 import (
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/contracts/validator/contract"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/contracts/validator/contract"
 )
 
 type Validator struct {

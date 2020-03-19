@@ -19,8 +19,8 @@ package vm
 import (
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/types"
 )
 
 // StateDB is an EVM database for full state querying.

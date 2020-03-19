@@ -19,8 +19,8 @@ package les
 import (
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common/bitutil"
-	"github.com/rupayaproject/go-rupaya/light"
+	"github.com/rupayaproject/rupaya/common/bitutil"
+	"github.com/rupayaproject/rupaya/light"
 )
 
 const (

@@ -26,8 +26,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // nodeDockerfile is the Dockerfile required to run an Ethereum node.

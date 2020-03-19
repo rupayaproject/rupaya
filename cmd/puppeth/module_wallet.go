@@ -25,7 +25,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // walletDockerfile is the Dockerfile required to run a web wallet.

@@ -22,7 +22,7 @@ package geth
 import (
 	"errors"
 
-	"github.com/rupayaproject/go-rupaya/p2p/discv5"
+	"github.com/rupayaproject/rupaya/p2p/discv5"
 )
 
 // Enode represents a host on the network.

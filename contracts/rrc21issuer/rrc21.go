@@ -1,9 +1,9 @@
 package rrc21issuer
 
 import (
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/contracts/rrc21issuer/contract"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/contracts/rrc21issuer/contract"
 	"math/big"
 )
 

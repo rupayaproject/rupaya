@@ -1,13 +1,13 @@
 package rupx
 
 import (
-	"github.com/rupayaproject/go-rupaya/rupx/rupx_state"
+	"github.com/rupayaproject/rupaya/rupx/rupx_state"
 	"math/big"
 	"time"
 
 	"github.com/globalsign/mgo/bson"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/crypto/sha3"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/crypto/sha3"
 )
 
 const (

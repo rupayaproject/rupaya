@@ -19,7 +19,7 @@ package state
 import (
 	"sync"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 type account struct {

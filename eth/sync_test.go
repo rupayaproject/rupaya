@@ -21,9 +21,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/eth/downloader"
-	"github.com/rupayaproject/go-rupaya/p2p"
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/eth/downloader"
+	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/p2p/discover"
 )
 
 // Tests that fast sync gets disabled as soon as a real block is successfully

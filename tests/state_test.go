@@ -22,7 +22,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/core/vm"
+	"github.com/rupayaproject/rupaya/core/vm"
 )
 
 func TestState(t *testing.T) {

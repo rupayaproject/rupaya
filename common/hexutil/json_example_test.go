@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/rupayaproject/go-rupaya/common/hexutil"
+	"github.com/rupayaproject/rupaya/common/hexutil"
 )
 
 type MyType [5]byte

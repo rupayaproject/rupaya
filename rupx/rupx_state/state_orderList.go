@@ -22,8 +22,8 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 // stateObject represents an Ethereum orderId which is being modified.

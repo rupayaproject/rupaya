@@ -19,7 +19,7 @@ package vm
 import (
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/common/math"
+	"github.com/rupayaproject/rupaya/common/math"
 )
 
 func memorySha3(stack *Stack) *big.Int {

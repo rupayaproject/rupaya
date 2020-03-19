@@ -19,9 +19,9 @@ package keystore
 import (
 	"math/big"
 
-	ethereum "github.com/rupayaproject/go-rupaya"
-	"github.com/rupayaproject/go-rupaya/accounts"
-	"github.com/rupayaproject/go-rupaya/core/types"
+	ethereum "github.com/rupayaproject/rupaya"
+	"github.com/rupayaproject/rupaya/accounts"
+	"github.com/rupayaproject/rupaya/core/types"
 )
 
 // keystoreWallet implements the accounts.Wallet interface for the original

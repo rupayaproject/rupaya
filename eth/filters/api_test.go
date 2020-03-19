@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/rpc"
 )
 
 func TestUnmarshalJSONNewFilterArgs(t *testing.T) {

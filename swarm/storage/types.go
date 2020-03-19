@@ -24,9 +24,9 @@ import (
 	"io"
 	"sync"
 
-	"github.com/rupayaproject/go-rupaya/bmt"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/crypto/sha3"
+	"github.com/rupayaproject/rupaya/bmt"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/crypto/sha3"
 )
 
 type Hasher func() hash.Hash

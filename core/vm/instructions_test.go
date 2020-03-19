@@ -20,8 +20,8 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 type twoOperandTest struct {

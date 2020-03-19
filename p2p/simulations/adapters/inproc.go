@@ -23,12 +23,12 @@ import (
 	"net"
 	"sync"
 
-	"github.com/rupayaproject/go-rupaya/event"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/node"
-	"github.com/rupayaproject/go-rupaya/p2p"
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/event"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/node"
+	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/rpc"
 )
 
 // SimAdapter is a NodeAdapter which creates in-memory simulation nodes and

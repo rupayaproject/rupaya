@@ -21,7 +21,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common/hexutil"
+	"github.com/rupayaproject/rupaya/common/hexutil"
 )
 
 // Tests that data bitset encoding and decoding works and is bijective.

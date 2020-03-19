@@ -17,9 +17,9 @@
 package vm
 
 import (
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/math"
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/math"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 // memoryGasCosts calculates the quadratic gas for memory expansion. It does so

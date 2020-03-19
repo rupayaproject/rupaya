@@ -2,16 +2,16 @@ package rupx
 
 import (
 	"context"
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 	"math/big"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya"
-	"github.com/rupayaproject/go-rupaya/accounts/abi"
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind/backends"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/consensus"
-	"github.com/rupayaproject/go-rupaya/core/state"
+	"github.com/rupayaproject/rupaya"
+	"github.com/rupayaproject/rupaya/accounts/abi"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind/backends"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/consensus"
+	"github.com/rupayaproject/rupaya/core/state"
 )
 
 const tokenAbi = `

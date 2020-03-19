@@ -21,11 +21,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/accounts/abi"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core/state"
-	"github.com/rupayaproject/go-rupaya/core/vm"
-	"github.com/rupayaproject/go-rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/accounts/abi"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/state"
+	"github.com/rupayaproject/rupaya/core/vm"
+	"github.com/rupayaproject/rupaya/ethdb"
 )
 
 func TestDefaults(t *testing.T) {

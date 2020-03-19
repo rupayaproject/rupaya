@@ -21,9 +21,9 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core/types"
+	"github.com/rupayaproject/rupaya"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/types"
 )
 
 var (

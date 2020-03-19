@@ -42,7 +42,7 @@ import (
 	"fmt"
 	"hash"
 
-	ethcrypto "github.com/rupayaproject/go-rupaya/crypto"
+	ethcrypto "github.com/rupayaproject/rupaya/crypto"
 )
 
 var (
