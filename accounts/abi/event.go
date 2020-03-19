@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/crypto"
 )
 
 // Event is an event potentially triggered by the EVM's LOG mechanism. The Event

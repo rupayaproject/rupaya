@@ -34,8 +34,8 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 type allocItem struct{ Addr, Balance *big.Int }

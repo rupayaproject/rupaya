@@ -20,7 +20,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/rupayaproject/go-rupaya/core/asm"
+	"github.com/rupayaproject/rupaya/core/asm"
 )
 
 func Compile(fn string, src []byte, debug bool) (string, error) {

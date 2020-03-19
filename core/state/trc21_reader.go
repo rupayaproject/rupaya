@@ -5,7 +5,7 @@ import (
 	"math/big"
 
 	lru "github.com/hashicorp/golang-lru"
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 var (

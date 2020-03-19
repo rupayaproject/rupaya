@@ -30,8 +30,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/cmd/utils"
-	swarm "github.com/rupayaproject/go-rupaya/swarm/api/client"
+	"github.com/rupayaproject/rupaya/cmd/utils"
+	swarm "github.com/rupayaproject/rupaya/swarm/api/client"
 	"gopkg.in/urfave/cli.v1"
 )
 

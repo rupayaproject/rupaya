@@ -19,10 +19,10 @@ package les
 import (
 	"context"
 
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/light"
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/light"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // LesOdr implements light.OdrBackend

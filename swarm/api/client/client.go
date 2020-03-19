@@ -33,7 +33,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/swarm/api"
+	"github.com/rupayaproject/rupaya/swarm/api"
 )
 
 var (

@@ -21,7 +21,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 // precompiledTest defines the input/output pairs for precompiled contract tests.

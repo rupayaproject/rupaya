@@ -33,10 +33,10 @@ import (
 	"unsafe"
 
 	mmap "github.com/edsrzf/mmap-go"
-	"github.com/rupayaproject/go-rupaya/consensus"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/metrics"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/consensus"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/metrics"
+	"github.com/rupayaproject/rupaya/rpc"
 	"github.com/hashicorp/golang-lru/simplelru"
 )
 

@@ -23,10 +23,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/rupayaproject/go-rupaya/core/state"
-	"github.com/rupayaproject/go-rupaya/core/vm"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/tests"
+	"github.com/rupayaproject/rupaya/core/state"
+	"github.com/rupayaproject/rupaya/core/vm"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/tests"
 
 	cli "gopkg.in/urfave/cli.v1"
 )

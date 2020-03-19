@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/mclock"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/mclock"
 )
 
 func TestTopicRadius(t *testing.T) {

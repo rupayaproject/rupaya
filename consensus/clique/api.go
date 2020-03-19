@@ -17,10 +17,10 @@
 package clique
 
 import (
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/consensus"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/consensus"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/rpc"
 )
 
 // API is a user facing RPC API to allow controlling the signer and voting

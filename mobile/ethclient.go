@@ -21,8 +21,8 @@ package geth
 import (
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/ethclient"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/ethclient"
 )
 
 // EthereumClient provides access to the Ethereum APIs.

@@ -17,7 +17,7 @@
 package fuse
 
 import (
-	"github.com/rupayaproject/go-rupaya/swarm/api"
+	"github.com/rupayaproject/rupaya/swarm/api"
 	"sync"
 	"time"
 )

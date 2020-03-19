@@ -45,12 +45,12 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/p2p"
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
-	"github.com/rupayaproject/go-rupaya/p2p/simulations"
-	"github.com/rupayaproject/go-rupaya/p2p/simulations/adapters"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/p2p/simulations"
+	"github.com/rupayaproject/rupaya/p2p/simulations/adapters"
+	"github.com/rupayaproject/rupaya/rpc"
 	"gopkg.in/urfave/cli.v1"
 )
 

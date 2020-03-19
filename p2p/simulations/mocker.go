@@ -24,8 +24,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/p2p/discover"
 )
 
 //a map of mocker names to its function

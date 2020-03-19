@@ -29,7 +29,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 var (

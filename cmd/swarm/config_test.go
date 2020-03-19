@@ -25,9 +25,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/rpc"
-	"github.com/rupayaproject/go-rupaya/swarm"
-	"github.com/rupayaproject/go-rupaya/swarm/api"
+	"github.com/rupayaproject/rupaya/rpc"
+	"github.com/rupayaproject/rupaya/swarm"
+	"github.com/rupayaproject/rupaya/swarm/api"
 
 	"github.com/docker/docker/pkg/reexec"
 )

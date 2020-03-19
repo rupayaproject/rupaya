@@ -21,7 +21,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/rupayaproject/go-rupaya/eth/tracers/internal/tracers"
+	"github.com/rupayaproject/rupaya/eth/tracers/internal/tracers"
 )
 
 // all contains all the built in JavaScript tracers by name.

@@ -26,9 +26,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/accounts"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/event"
+	"github.com/rupayaproject/rupaya/accounts"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/event"
 )
 
 var testSigData = make([]byte, 32)

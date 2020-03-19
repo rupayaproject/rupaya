@@ -21,7 +21,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/rupayaproject/go-rupaya/core/vm"
+	"github.com/rupayaproject/rupaya/core/vm"
 )
 
 // Iterator for disassembled EVM instructions

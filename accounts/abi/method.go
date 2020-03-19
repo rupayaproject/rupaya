@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/crypto"
 )
 
 // Method represents a callable given a `Name` and whether the method is a constant.

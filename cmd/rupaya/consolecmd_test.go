@@ -27,7 +27,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 const (

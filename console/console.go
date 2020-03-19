@@ -31,9 +31,9 @@ import (
 	"github.com/mattn/go-colorable"
 	"github.com/peterh/liner"
 	"github.com/robertkrimen/otto"
-	"github.com/rupayaproject/go-rupaya/internal/jsre"
-	"github.com/rupayaproject/go-rupaya/internal/web3ext"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/internal/jsre"
+	"github.com/rupayaproject/rupaya/internal/web3ext"
+	"github.com/rupayaproject/rupaya/rpc"
 )
 
 var (

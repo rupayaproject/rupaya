@@ -23,9 +23,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 // A Nonce is a 64-bit hash which proves (combined with the mix-hash) that

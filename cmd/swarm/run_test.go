@@ -27,13 +27,13 @@ import (
 	"time"
 
 	"github.com/docker/docker/pkg/reexec"
-	"github.com/rupayaproject/go-rupaya/accounts"
-	"github.com/rupayaproject/go-rupaya/accounts/keystore"
-	"github.com/rupayaproject/go-rupaya/internal/cmdtest"
-	"github.com/rupayaproject/go-rupaya/node"
-	"github.com/rupayaproject/go-rupaya/p2p"
-	"github.com/rupayaproject/go-rupaya/rpc"
-	"github.com/rupayaproject/go-rupaya/swarm"
+	"github.com/rupayaproject/rupaya/accounts"
+	"github.com/rupayaproject/rupaya/accounts/keystore"
+	"github.com/rupayaproject/rupaya/internal/cmdtest"
+	"github.com/rupayaproject/rupaya/node"
+	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/rpc"
+	"github.com/rupayaproject/rupaya/swarm"
 )
 
 func init() {

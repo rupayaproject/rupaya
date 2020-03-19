@@ -19,8 +19,8 @@
 package whisperv6
 
 import (
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/hexutil"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/hexutil"
 )
 
 // TopicType represents a cryptographically secure, probabilistic partial

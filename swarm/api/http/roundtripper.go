@@ -20,17 +20,17 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 /*
 http roundtripper to register for bzz url scheme
-see https://github.com/rupayaproject/go-rupaya/issues/2040
+see https://github.com/rupayaproject/rupaya/issues/2040
 Usage:
 
 import (
- "github.com/rupayaproject/go-rupaya/common/httpclient"
- "github.com/rupayaproject/go-rupaya/swarm/api/http"
+ "github.com/rupayaproject/rupaya/common/httpclient"
+ "github.com/rupayaproject/rupaya/swarm/api/http"
 )
 client := httpclient.New()
 // for (private) swarm proxy running locally

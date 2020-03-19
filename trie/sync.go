@@ -20,8 +20,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/ethdb"
 	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
 )
 

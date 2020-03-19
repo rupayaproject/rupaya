@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // deployEthstats queries the user for various input on deploying an ethstats

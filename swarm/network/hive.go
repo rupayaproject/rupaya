@@ -22,13 +22,13 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/metrics"
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
-	"github.com/rupayaproject/go-rupaya/p2p/netutil"
-	"github.com/rupayaproject/go-rupaya/swarm/network/kademlia"
-	"github.com/rupayaproject/go-rupaya/swarm/storage"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/metrics"
+	"github.com/rupayaproject/rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/p2p/netutil"
+	"github.com/rupayaproject/rupaya/swarm/network/kademlia"
+	"github.com/rupayaproject/rupaya/swarm/storage"
 )
 
 // Hive is the logistic manager of the swarm

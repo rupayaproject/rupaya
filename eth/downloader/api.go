@@ -20,9 +20,9 @@ import (
 	"context"
 	"sync"
 
-	ethereum "github.com/rupayaproject/go-rupaya"
-	"github.com/rupayaproject/go-rupaya/event"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	ethereum "github.com/rupayaproject/rupaya"
+	"github.com/rupayaproject/rupaya/event"
+	"github.com/rupayaproject/rupaya/rpc"
 )
 
 // PublicDownloaderAPI provides an API which gives information about the current synchronisation status.

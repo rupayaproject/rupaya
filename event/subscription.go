@@ -21,7 +21,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common/mclock"
+	"github.com/rupayaproject/rupaya/common/mclock"
 )
 
 // Subscription represents a stream of events. The carrier of the events is typically a

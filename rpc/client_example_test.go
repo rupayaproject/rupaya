@@ -22,7 +22,7 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/rpc"
 )
 
 // In this example, our client whishes to track the latest 'block number'

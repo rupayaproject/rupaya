@@ -21,7 +21,7 @@ package keystore
 import (
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 	"github.com/rjeczalik/notify"
 )
 

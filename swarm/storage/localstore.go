@@ -19,7 +19,7 @@ package storage
 import (
 	"encoding/binary"
 
-	"github.com/rupayaproject/go-rupaya/metrics"
+	"github.com/rupayaproject/rupaya/metrics"
 )
 
 //metrics variables

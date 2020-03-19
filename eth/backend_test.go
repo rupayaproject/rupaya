@@ -1,7 +1,7 @@
 package eth
 
 import (
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/params"
 	"math/big"
 	"testing"
 )

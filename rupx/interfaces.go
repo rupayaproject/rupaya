@@ -1,9 +1,9 @@
 package rupx
 
 import (
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/rupx/rupx_state"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/rupx/rupx_state"
 	"github.com/globalsign/mgo"
 )
 

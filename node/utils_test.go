@@ -22,8 +22,8 @@ package node
 import (
 	"reflect"
 
-	"github.com/rupayaproject/go-rupaya/p2p"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/rpc"
 )
 
 // NoopService is a trivial implementation of the Service interface.

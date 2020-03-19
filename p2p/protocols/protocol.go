@@ -34,7 +34,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/rupayaproject/go-rupaya/p2p"
+	"github.com/rupayaproject/rupaya/p2p"
 )
 
 // error codes used by this  protocol scheme

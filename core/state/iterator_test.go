@@ -20,8 +20,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/ethdb"
 )
 
 // Tests that the node iterator indeed walks over the entire database contents.

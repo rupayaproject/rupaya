@@ -24,9 +24,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/swarm/storage"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/swarm/storage"
 )
 
 func testApi(t *testing.T, f func(*Api)) {

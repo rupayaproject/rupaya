@@ -26,7 +26,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 var (

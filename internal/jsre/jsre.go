@@ -26,8 +26,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/internal/jsre/deps"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/internal/jsre/deps"
 	"github.com/robertkrimen/otto"
 )
 

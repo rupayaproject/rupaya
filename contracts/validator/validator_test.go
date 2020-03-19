@@ -23,13 +23,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind/backends"
-	"github.com/rupayaproject/go-rupaya/common"
-	contractValidator "github.com/rupayaproject/go-rupaya/contracts/validator/contract"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind/backends"
+	"github.com/rupayaproject/rupaya/common"
+	contractValidator "github.com/rupayaproject/rupaya/contracts/validator/contract"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 var (

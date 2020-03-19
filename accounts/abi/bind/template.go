@@ -16,7 +16,7 @@
 
 package bind
 
-import "github.com/rupayaproject/go-rupaya/accounts/abi"
+import "github.com/rupayaproject/rupaya/accounts/abi"
 
 // tmplData is the data structure required to fill the binding template.
 type tmplData struct {

@@ -21,11 +21,11 @@ import (
 	"net"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/contracts/chequebook"
-	"github.com/rupayaproject/go-rupaya/p2p/discover"
-	"github.com/rupayaproject/go-rupaya/swarm/network/kademlia"
-	"github.com/rupayaproject/go-rupaya/swarm/services/swap"
-	"github.com/rupayaproject/go-rupaya/swarm/storage"
+	"github.com/rupayaproject/rupaya/contracts/chequebook"
+	"github.com/rupayaproject/rupaya/p2p/discover"
+	"github.com/rupayaproject/rupaya/swarm/network/kademlia"
+	"github.com/rupayaproject/rupaya/swarm/services/swap"
+	"github.com/rupayaproject/rupaya/swarm/storage"
 )
 
 /*

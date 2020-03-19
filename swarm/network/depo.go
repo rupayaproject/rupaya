@@ -22,9 +22,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/metrics"
-	"github.com/rupayaproject/go-rupaya/swarm/storage"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/metrics"
+	"github.com/rupayaproject/rupaya/swarm/storage"
 )
 
 //metrics variables

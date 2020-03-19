@@ -24,8 +24,8 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/crypto"
-	"github.com/rupayaproject/go-rupaya/p2p"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/p2p"
 )
 
 // Tests that datadirs can be successfully created, be them manually configured

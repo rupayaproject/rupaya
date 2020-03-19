@@ -5,12 +5,12 @@ package eth
 import (
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/common/hexutil"
-	"github.com/rupayaproject/go-rupaya/consensus/ethash"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/eth/downloader"
-	"github.com/rupayaproject/go-rupaya/eth/gasprice"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/common/hexutil"
+	"github.com/rupayaproject/rupaya/consensus/ethash"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/eth/downloader"
+	"github.com/rupayaproject/rupaya/eth/gasprice"
 )
 
 var _ = (*configMarshaling)(nil)

@@ -21,7 +21,7 @@ import (
 	"bytes"
 	"errors"
 
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/crypto"
 )
 
 const (

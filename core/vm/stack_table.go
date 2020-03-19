@@ -19,7 +19,7 @@ package vm
 import (
 	"fmt"
 
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 func makeStackFunc(pop, push int) stackValidationFunc {

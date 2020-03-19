@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // manageServers displays a list of servers the user can disconnect from, and an

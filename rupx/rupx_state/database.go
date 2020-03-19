@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/ethdb"
-	"github.com/rupayaproject/go-rupaya/trie"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/trie"
 	lru "github.com/hashicorp/golang-lru"
 )
 

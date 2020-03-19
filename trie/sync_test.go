@@ -20,8 +20,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/ethdb"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/ethdb"
 )
 
 // makeTestTrie create a sample test trie to test node-wise reconstruction.

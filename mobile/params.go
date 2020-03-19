@@ -21,9 +21,9 @@ package geth
 import (
 	"encoding/json"
 
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/p2p/discv5"
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/p2p/discv5"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 // MainnetGenesis returns the JSON spec to use for the main Ethereum network. It

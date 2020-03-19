@@ -54,7 +54,7 @@ func TestBloom(t *testing.T) {
 import (
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/core/state"
+	"github.com/rupayaproject/rupaya/core/state"
 )
 
 func TestBloom9(t *testing.T) {

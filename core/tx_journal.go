@@ -21,10 +21,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 // errNoActiveJournal is returned if a transaction is attempted to be inserted

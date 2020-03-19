@@ -25,11 +25,11 @@ import (
 	"io/ioutil"
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind/backends"
-	"github.com/rupayaproject/go-rupaya/contracts/chequebook/contract"
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind/backends"
+	"github.com/rupayaproject/rupaya/contracts/chequebook/contract"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/crypto"
 )
 
 var (

@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rupayaproject/go-rupaya/cmd/utils"
-	"github.com/rupayaproject/go-rupaya/swarm/storage"
+	"github.com/rupayaproject/rupaya/cmd/utils"
+	"github.com/rupayaproject/rupaya/swarm/storage"
 	"gopkg.in/urfave/cli.v1"
 )
 

@@ -24,10 +24,10 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/rupayaproject/go-rupaya/log"
-	"github.com/rupayaproject/go-rupaya/log/term"
-	"github.com/rupayaproject/go-rupaya/metrics"
-	"github.com/rupayaproject/go-rupaya/metrics/exp"
+	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/log/term"
+	"github.com/rupayaproject/rupaya/metrics"
+	"github.com/rupayaproject/rupaya/metrics/exp"
 	colorable "github.com/mattn/go-colorable"
 	"gopkg.in/urfave/cli.v1"
 )

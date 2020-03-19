@@ -19,8 +19,8 @@ package trie
 import (
 	"fmt"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // SecureTrie wraps a trie with key hashing. In a secure trie, all

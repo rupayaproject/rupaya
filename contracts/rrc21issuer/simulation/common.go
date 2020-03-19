@@ -1,7 +1,7 @@
 package simulation
 
 import (
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/crypto"
 	"math/big"
 )
 

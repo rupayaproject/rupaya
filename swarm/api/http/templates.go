@@ -20,7 +20,7 @@ import (
 	"html/template"
 	"path"
 
-	"github.com/rupayaproject/go-rupaya/swarm/api"
+	"github.com/rupayaproject/rupaya/swarm/api"
 )
 
 type htmlListData struct {

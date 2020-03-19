@@ -22,11 +22,11 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/core/types"
-	"github.com/rupayaproject/go-rupaya/internal/ethapi"
-	"github.com/rupayaproject/go-rupaya/params"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/internal/ethapi"
+	"github.com/rupayaproject/rupaya/params"
+	"github.com/rupayaproject/rupaya/rpc"
 )
 
 var maxPrice = big.NewInt(500 * params.Shannon)

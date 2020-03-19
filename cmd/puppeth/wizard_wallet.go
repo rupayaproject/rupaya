@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 // deployWallet creates a new web wallet based on some user input.

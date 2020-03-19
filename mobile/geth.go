@@ -24,17 +24,17 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/eth"
-	"github.com/rupayaproject/go-rupaya/eth/downloader"
-	"github.com/rupayaproject/go-rupaya/ethclient"
-	"github.com/rupayaproject/go-rupaya/ethstats"
-	"github.com/rupayaproject/go-rupaya/les"
-	"github.com/rupayaproject/go-rupaya/node"
-	"github.com/rupayaproject/go-rupaya/p2p"
-	"github.com/rupayaproject/go-rupaya/p2p/nat"
-	"github.com/rupayaproject/go-rupaya/params"
-	whisper "github.com/rupayaproject/go-rupaya/whisper/whisperv6"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/eth"
+	"github.com/rupayaproject/rupaya/eth/downloader"
+	"github.com/rupayaproject/rupaya/ethclient"
+	"github.com/rupayaproject/rupaya/ethstats"
+	"github.com/rupayaproject/rupaya/les"
+	"github.com/rupayaproject/rupaya/node"
+	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/p2p/nat"
+	"github.com/rupayaproject/rupaya/params"
+	whisper "github.com/rupayaproject/rupaya/whisper/whisperv6"
 )
 
 // NodeConfig represents the collection of configuration values to fine tune the Geth

@@ -19,7 +19,7 @@ package event_test
 import (
 	"fmt"
 
-	"github.com/rupayaproject/go-rupaya/event"
+	"github.com/rupayaproject/rupaya/event"
 )
 
 func ExampleFeed_acknowledgedEvents() {

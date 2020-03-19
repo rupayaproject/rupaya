@@ -47,7 +47,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/internal/build"
+	"github.com/rupayaproject/rupaya/internal/build"
 )
 
 var (

@@ -20,7 +20,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 func TestTransaction(t *testing.T) {

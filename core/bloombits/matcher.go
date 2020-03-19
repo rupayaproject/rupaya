@@ -26,8 +26,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common/bitutil"
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/common/bitutil"
+	"github.com/rupayaproject/rupaya/crypto"
 )
 
 // bloomIndexes represents the bit indexes inside the bloom filter that belong

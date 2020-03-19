@@ -30,8 +30,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/crypto"
 )
 
 // Node represents a host on the network.

@@ -3,11 +3,11 @@ package rupx_state
 import (
 	"encoding/json"
 	"errors"
-	"github.com/rupayaproject/go-rupaya/crypto"
+	"github.com/rupayaproject/rupaya/crypto"
 	"math/big"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 const (

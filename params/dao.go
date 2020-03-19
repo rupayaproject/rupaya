@@ -19,7 +19,7 @@ package params
 import (
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 // DAOForkBlockExtra is the block header extra-data field to set for the DAO fork

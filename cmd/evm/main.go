@@ -22,7 +22,7 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/rupayaproject/go-rupaya/cmd/utils"
+	"github.com/rupayaproject/rupaya/cmd/utils"
 	"gopkg.in/urfave/cli.v1"
 )
 

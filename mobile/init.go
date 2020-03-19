@@ -22,7 +22,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 func init() {

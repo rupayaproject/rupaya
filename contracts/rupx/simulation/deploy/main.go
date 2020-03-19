@@ -7,11 +7,11 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/contracts/rupx"
-	"github.com/rupayaproject/go-rupaya/contracts/rupx/simulation"
-	"github.com/rupayaproject/go-rupaya/ethclient"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/contracts/rupx"
+	"github.com/rupayaproject/rupaya/contracts/rupx/simulation"
+	"github.com/rupayaproject/rupaya/ethclient"
 )
 
 func main() {

@@ -21,8 +21,8 @@ import (
 
 	"sync/atomic"
 
-	"github.com/rupayaproject/go-rupaya/consensus"
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/consensus"
+	"github.com/rupayaproject/rupaya/log"
 )
 
 type CpuAgent struct {

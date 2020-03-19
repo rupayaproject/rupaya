@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/rupayaproject/go-rupaya/node"
-	"github.com/rupayaproject/go-rupaya/p2p"
-	"github.com/rupayaproject/go-rupaya/rpc"
+	"github.com/rupayaproject/rupaya/node"
+	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/rpc"
 )
 
 // SampleService is a trivial network service that can be attached to a node for

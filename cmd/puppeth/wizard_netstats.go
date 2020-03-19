@@ -23,8 +23,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/log"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/log"
 	"github.com/olekukonko/tablewriter"
 )
 

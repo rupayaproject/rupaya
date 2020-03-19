@@ -20,9 +20,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/core"
-	"github.com/rupayaproject/go-rupaya/eth/downloader"
-	"github.com/rupayaproject/go-rupaya/light"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/eth/downloader"
+	"github.com/rupayaproject/rupaya/light"
 )
 
 const (

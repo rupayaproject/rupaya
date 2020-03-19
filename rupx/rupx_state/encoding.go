@@ -1,7 +1,7 @@
 package rupx_state
 
 import (
-	"github.com/rupayaproject/go-rupaya/rlp"
+	"github.com/rupayaproject/rupaya/rlp"
 )
 
 func EncodeBytesItem(val interface{}) ([]byte, error) {

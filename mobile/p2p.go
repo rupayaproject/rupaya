@@ -21,7 +21,7 @@ package geth
 import (
 	"errors"
 
-	"github.com/rupayaproject/go-rupaya/p2p"
+	"github.com/rupayaproject/rupaya/p2p"
 )
 
 // NodeInfo represents pi short summary of the information known about the host.

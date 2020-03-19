@@ -22,7 +22,7 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 // Interface represents a wrapped version of Go's interface{}, with the capacity

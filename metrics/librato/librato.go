@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/metrics"
+	"github.com/rupayaproject/rupaya/metrics"
 )
 
 // a regexp for extracting the unit from time.Duration.String

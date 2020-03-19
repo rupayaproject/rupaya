@@ -21,7 +21,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 func (Address) Generate(rand *rand.Rand, size int) reflect.Value {

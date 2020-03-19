@@ -25,9 +25,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rupayaproject/go-rupaya/common"
-	"github.com/rupayaproject/go-rupaya/crypto"
-	whisper "github.com/rupayaproject/go-rupaya/whisper/whisperv6"
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/crypto"
+	whisper "github.com/rupayaproject/rupaya/whisper/whisperv6"
 )
 
 const powRequirement = 0.00001

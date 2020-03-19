@@ -19,7 +19,7 @@ package vm
 import (
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/common"
+	"github.com/rupayaproject/rupaya/common"
 )
 
 // ContractRef is a reference to the contract's backing object

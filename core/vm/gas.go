@@ -19,7 +19,7 @@ package vm
 import (
 	"math/big"
 
-	"github.com/rupayaproject/go-rupaya/params"
+	"github.com/rupayaproject/rupaya/params"
 )
 
 const (
