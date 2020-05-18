@@ -18,20 +18,21 @@
 package web3ext
 
 var Modules = map[string]string{
-	"admin":      Admin_JS,
-	"chequebook": Chequebook_JS,
-	"clique":     Clique_JS,
-	"posv":       Posv_JS,
-	"debug":      Debug_JS,
-	"eth":        Eth_JS,
-	"miner":      Miner_JS,
-	"net":        Net_JS,
-	"personal":   Personal_JS,
-	"rpc":        RPC_JS,
-	"shh":        Shh_JS,
-	"rupx":       RupX_JS,
-	"swarmfs":    SWARMFS_JS,
-	"txpool":     TxPool_JS,
+	"admin":        Admin_JS,
+	"chequebook":   Chequebook_JS,
+	"clique":       Clique_JS,
+	"posv":         Posv_JS,
+	"debug":        Debug_JS,
+	"eth":          Eth_JS,
+	"miner":        Miner_JS,
+	"net":          Net_JS,
+	"personal":     Personal_JS,
+	"rpc":          RPC_JS,
+	"shh":          Shh_JS,
+	"rupx":        RupX_JS,
+	"rupxlending": RupXLending_JS,
+	"swarmfs":      SWARMFS_JS,
+	"txpool":       TxPool_JS,
 }
 
 const Chequebook_JS = `
@@ -140,8 +141,8 @@ web3._extend({
 	],
 	properties: [
 		new web3._extend.Property({
-			name: 'proposals',
-			getter: 'posv_proposals'
+			name: 'networkInformation',
+			getter: 'posv_networkInformation'
 		}),
 	]
 });
@@ -640,8 +641,8 @@ web3._extend({
 			params: 0
 		}),
 		new web3._extend.Method({
-            name: 'GetFeeByEpoch',
-            call: 'rupX_GetFeeByEpoch',
+            name: 'getFeeByEpoch',
+            call: 'rupx_getFeeByEpoch',
             params: 1,
             inputFormatter: [null, web3._extend.formatters.inputAddressFormatter]
         }),
@@ -649,10 +650,21 @@ web3._extend({
             name: 'sendOrderRawTransaction',
             call: 'rupx_sendOrderRawTransaction',
             params: 1
-        }),
+		}),
+		new web3._extend.Method({
+            name: 'sendLendingRawTransaction',
+            call: 'rupx_sendLendingRawTransaction',
+            params: 1
+		}),
+		
 		new web3._extend.Method({
             name: 'sendOrderTransaction',
             call: 'rupx_sendOrder',
+            params: 1
+		}),
+		new web3._extend.Method({
+            name: 'sendLendingTransaction',
+            call: 'rupx_sendLending',
             params: 1
 		}),
 		new web3._extend.Method({
@@ -703,6 +715,214 @@ web3._extend({
 		new web3._extend.Method({
             name: 'getPrice',
             call: 'rupx_getPrice',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getLastEpochPrice',
+            call: 'rupx_getLastEpochPrice',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getCurrentEpochPrice',
+            call: 'rupx_getCurrentEpochPrice',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getTradingOrderBookInfo',
+            call: 'rupx_getTradingOrderBookInfo',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getLiquidationPriceTree',
+            call: 'rupx_getLiquidationPriceTree',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getInvestingTree',
+            call: 'rupx_getInvestingTree',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getBorrowingTree',
+            call: 'rupx_getBorrowingTree',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getLendingOrderBookInfo',
+            call: 'rupx_getLendingOrderBookInfo',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getLendingOrderTree',
+            call: 'rupx_getLendingOrderTree',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getLendingTradeTree',
+            call: 'rupx_getLendingTradeTree',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getLiquidationTimeTree',
+            call: 'rupx_getLiquidationTimeTree',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getLendingOrderCount',
+            call: 'rupx_getLendingOrderCount',
+            params: 1
+        }),
+		new web3._extend.Method({
+            name: 'getBestInvesting',
+            call: 'rupx_getBestInvesting',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getBestBorrowing',
+            call: 'rupx_getBestBorrowing',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getBids',
+            call: 'rupx_getBids',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getAsks',
+            call: 'rupx_getAsks',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getInvests',
+            call: 'rupx_getInvests',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getBorrows',
+            call: 'rupx_getBorrows',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getLendingTxMatchByHash',
+            call: 'rupx_getLendingTxMatchByHash',
+            params: 1
+		}),
+		new web3._extend.Method({
+            name: 'getLiquidatedTradesByTxHash',
+            call: 'rupx_getLiquidatedTradesByTxHash',
+            params: 1
+		}),
+		new web3._extend.Method({
+            name: 'getLendingOrderById',
+            call: 'rupx_getLendingOrderById',
+            params: 3
+		}),
+		new web3._extend.Method({
+            name: 'getLendingTradeById',
+            call: 'rupx_getLendingTradeById',
+            params: 3
+		}),
+	]
+});
+`
+
+const RupXLending_JS = `
+web3._extend({
+	property: 'rupxlending',
+	methods: [
+		new web3._extend.Method({
+			name: 'version',
+			call: 'rupxlending_version',
+			params: 0,
+			outputFormatter: web3._extend.utils.toDecimal
+		}),
+		new web3._extend.Method({
+			name: 'info',
+			call: 'rupxlending_info',
+			params: 0
+		}),
+		new web3._extend.Method({
+            name: 'createOrder',
+            call: 'rupxlending_createOrder',
+            params: 1,
+            inputFormatter: [null]
+        }),
+        new web3._extend.Method({
+            name: 'cancelOrder',
+            call: 'rupxlending_cancelOrder',
+            params: 1,
+            inputFormatter: [null]
+        }),
+        new web3._extend.Method({
+            name: 'getOrders',
+            call: 'rupxlending_getOrders',
+            params: 1
+        }),
+		new web3._extend.Method({
+            name: 'getOrderNonce',
+            call: 'rupxlending_getOrderNonce',
+            params: 1,
+            inputFormatter: [web3._extend.formatters.inputAddressFormatter]
+		}),
+		new web3._extend.Method({
+            name: 'getFeeByEpoch',
+            call: 'rupxlending_GetFeeByEpoch',
+            params: 1,
+            inputFormatter: [null, web3._extend.formatters.inputAddressFormatter]
+        }),
+		new web3._extend.Method({
+            name: 'getPendingOrders',
+            call: 'rupxlending_getPendingOrders',
+            params: 1
+        }),
+		new web3._extend.Method({
+            name: 'getAllPendingHashes',
+            call: 'rupxlending_getAllPendingHashes',
+            params: 0
+        }),
+		new web3._extend.Method({
+            name: 'sendOrderRawTransaction',
+            call: 'rupxlending_sendOrderRawTransaction',
+            params: 1
+        }),
+		new web3._extend.Method({
+            name: 'sendOrderTransaction',
+            call: 'rupxlending_sendOrder',
+            params: 1
+		}),
+		new web3._extend.Method({
+            name: 'getOrderCount',
+            call: 'rupxlending_getOrderCount',
+            params: 1
+        }),
+		new web3._extend.Method({
+            name: 'getBestBid',
+            call: 'rupxlending_getBestBid',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getBestAsk',
+            call: 'rupxlending_getBestAsk',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getBidTree',
+            call: 'rupxlending_getBidTree',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getAskTree',
+            call: 'rupxlending_getAskTree',
+            params: 2
+		}),
+		new web3._extend.Method({
+            name: 'getOrderById',
+            call: 'rupxlending_getOrderById',
+            params: 3
+		}),
+		new web3._extend.Method({
+            name: 'getPrice',
+            call: 'rupxlending_getPrice',
             params: 2
 		}),
 	]

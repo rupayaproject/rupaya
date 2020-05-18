@@ -115,6 +115,9 @@ func (b *LesApiBackend) SendTx(ctx context.Context, signedTx *types.Transaction)
 func (b *LesApiBackend) SendOrderTx(ctx context.Context, signedTx *types.OrderTransaction) error {
 	return nil
 }
+func (b *LesApiBackend) SendLendingTx(ctx context.Context, signedTx *types.LendingTransaction) error {
+	return nil
+}
 
 func (b *LesApiBackend) RemoveTx(txHash common.Hash) {
 	b.eth.txPool.RemoveTx(txHash)
@@ -273,5 +276,9 @@ func (b *LesApiBackend) GetOrderNonce(address common.Hash) (uint64, error) {
 }
 
 func (b *LesApiBackend) RupxService() *rupx.RupX {
+	return nil
+}
+
+func (b *LesApiBackend) LendingService() *rupxlending.Lending {
 	return nil
 }

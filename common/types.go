@@ -28,28 +28,31 @@ import (
 )
 
 const (
-	HashLength          = 32
-	AddressLength       = 20
-	BlockSigners        = "0x0000000000000000000000000000000000000089"
-	MasternodeVotingSMC = "0x0000000000000000000000000000000000000088"
-	RandomizeSMC        = "0x0000000000000000000000000000000000000090"
-	FoudationAddr       = "0x0000000000000000000000000000000000000068"
-	TeamAddr            = "0x0000000000000000000000000000000000000099"
-	RupXAddr           = "0x0000000000000000000000000000000000000091"
-	RupXStateAddr      = "0x0000000000000000000000000000000000000092"
-	RupayaNativeAddress   = "0x0000000000000000000000000000000000000001"
-	VoteMethod          = "0x6dd7d8ea"
-	UnvoteMethod        = "0x02aa9be2"
-	ProposeMethod       = "0x01267951"
-	ResignMethod        = "0xae6e43f5"
-	SignMethod          = "0xe341eaa4"
+	HashLength                        = 32
+	AddressLength                     = 20
+	BlockSigners                      = "0x0000000000000000000000000000000000000089"
+	MasternodeVotingSMC               = "0x0000000000000000000000000000000000000088"
+	RandomizeSMC                      = "0x0000000000000000000000000000000000000090"
+	FoudationAddr                     = "0x0000000000000000000000000000000000000068"
+	TeamAddr                          = "0x0000000000000000000000000000000000000099"
+	RupXAddr                         = "0x0000000000000000000000000000000000000091"
+	TradingStateAddr                  = "0x0000000000000000000000000000000000000092"
+	RupXLendingAddress               = "0x0000000000000000000000000000000000000093"
+	RupXLendingFinalizedTradeAddress = "0x0000000000000000000000000000000000000094"
+	RupayaNativeAddress                 = "0x0000000000000000000000000000000000000001"
+	LendingLockAddress                = "0x0000000000000000000000000000000000000011"
+	VoteMethod                        = "0x6dd7d8ea"
+	UnvoteMethod                      = "0x02aa9be2"
+	ProposeMethod                     = "0x01267951"
+	ResignMethod                      = "0xae6e43f5"
+	SignMethod                        = "0xe341eaa4"
+	RupXApplyMethod                  = "0xc6b32f34"
+	RupZApplyMethod                  = "0xc6b32f34"
 )
 
 var (
-	hashT                         = reflect.TypeOf(Hash{})
-	addressT                      = reflect.TypeOf(Address{})
-	RelayerRegistrationSMC        = "0x0342d186212b04E69eA682b3bed8e232b6b3361a"
-	RelayerRegistrationSMCTestnet = "0xe7c16037992bEcAFaeeE779Dacaf8991637953F3"
+	hashT    = reflect.TypeOf(Hash{})
+	addressT = reflect.TypeOf(Address{})
 )
 
 // Hash represents the 32 byte Keccak256 hash of arbitrary data.
@@ -67,6 +70,7 @@ func BytesToHash(b []byte) Hash {
 }
 func StringToHash(s string) Hash { return BytesToHash([]byte(s)) }
 func BigToHash(b *big.Int) Hash  { return BytesToHash(b.Bytes()) }
+func Uint64ToHash(b uint64) Hash { return BytesToHash(new(big.Int).SetUint64(b).Bytes()) }
 func HexToHash(s string) Hash    { return BytesToHash(FromHex(s)) }
 
 // Get the string representation of the underlying hash

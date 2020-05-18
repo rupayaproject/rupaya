@@ -20,13 +20,14 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"gopkg.in/urfave/cli.v1"
 	"io"
 	"math/big"
 	"os"
 	"reflect"
 	"strings"
 	"unicode"
+
+	"gopkg.in/urfave/cli.v1"
 
 	"github.com/naoina/toml"
 	"github.com/rupayaproject/rupaya/cmd/utils"
@@ -93,7 +94,7 @@ type rupayaConfig struct {
 	Shh         whisper.Config
 	Node        node.Config
 	Ethstats    ethstatsConfig
-	RupX       rupx.Config
+	RupX        rupx.Config
 	Account     account
 	StakeEnable bool
 	Bootnodes   Bootnodes
@@ -130,7 +131,7 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, rupayaConfig) {
 	cfg := rupayaConfig{
 		Eth:         eth.DefaultConfig,
 		Shh:         whisper.DefaultConfig,
-		RupX:       rupx.DefaultConfig,
+		RupX:        rupx.DefaultConfig,
 		Node:        defaultNodeConfig(),
 		StakeEnable: true,
 		Verbosity:   3,
@@ -202,7 +203,6 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, rupayaConfig) {
 
 	utils.SetShhConfig(ctx, stack, &cfg.Shh)
 	utils.SetRupXConfig(ctx, &cfg.RupX)
-
 	return stack, cfg
 }
 
@@ -235,7 +235,6 @@ func makeFullNode(ctx *cli.Context) (*node.Node, rupayaConfig) {
 	// Register RupX's OrderBook service if requested.
 	// enable in default
 	utils.RegisterRupXService(stack, &cfg.RupX)
-
 	utils.RegisterEthService(stack, &cfg.Eth)
 
 	// Whisper must be explicitly enabled by specifying at least 1 whisper flag or in dev mode

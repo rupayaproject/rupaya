@@ -25,6 +25,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/rupayaproject/rupaya/consensus"
+
 	"github.com/rupayaproject/rupaya/common"
 	"github.com/rupayaproject/rupaya/core/state"
 	"github.com/rupayaproject/rupaya/core/types"
@@ -127,8 +129,19 @@ type blockChain interface {
 	CurrentBlock() *types.Block
 	GetBlock(hash common.Hash, number uint64) *types.Block
 	StateAt(root common.Hash) (*state.StateDB, error)
-
 	SubscribeChainHeadEvent(ch chan<- ChainHeadEvent) event.Subscription
+
+	// Engine retrieves the chain's consensus engine.
+	Engine() consensus.Engine
+
+	// GetHeader returns the hash corresponding to their hash.
+	GetHeader(common.Hash, uint64) *types.Header
+
+	// CurrentHeader retrieves the current header from the local chain.
+	CurrentHeader() *types.Header
+
+	// Config retrieves the blockchain's chain configuration.
+	Config() *params.ChainConfig
 }
 
 // TxPoolConfig are the configuration parameters of the transaction pool.
@@ -662,6 +675,17 @@ func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
 		return ErrMinDeploySMC
 	}
 
+	// validate minFee slot for RupZ
+	if tx.IsRupZApplyTransaction() {
+		copyState := pool.currentState.Copy()
+		return ValidateRupZApplyTransaction(pool.chain, nil, copyState, common.BytesToAddress(tx.Data()[4:]))
+	}
+
+	// validate balance slot, token decimal for RupX
+	if tx.IsRupXApplyTransaction() {
+		copyState := pool.currentState.Copy()
+		return ValidateRupXApplyTransaction(pool.chain, nil, copyState, common.BytesToAddress(tx.Data()[4:]))
+	}
 	return nil
 }
 

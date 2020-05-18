@@ -28,8 +28,10 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/rupayaproject/rupaya/rupxlending/lendingstate"
+
 	"github.com/rupayaproject/rupaya/accounts/abi/bind"
-	"github.com/rupayaproject/rupaya/rupx/rupx_state"
+	"github.com/rupayaproject/rupaya/rupx/tradingstate"
 
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/rupayaproject/rupaya/common"
@@ -81,12 +83,13 @@ type CacheConfig struct {
 	TrieTimeLimit time.Duration // Time limit after which to flush the current in-memory trie to disk
 }
 type ResultProcessBlock struct {
-	logs      []*types.Log
-	receipts  []*types.Receipt
-	state     *state.StateDB
-	rupxState *rupx_state.RupXStateDB
-	proctime  time.Duration
-	usedGas   uint64
+	logs         []*types.Log
+	receipts     []*types.Receipt
+	state        *state.StateDB
+	tradingState *tradingstate.TradingStateDB
+	lendingState *lendingstate.LendingStateDB
+	proctime     time.Duration
+	usedGas      uint64
 }
 
 // BlockChain represents the canonical chain given a database with a genesis
@@ -157,8 +160,11 @@ type BlockChain struct {
 	// cache field for tracking finality purpose, can't use for tracking block vs block relationship
 	blocksHashCache *lru.Cache
 
-	resultTrade    *lru.Cache // trades result: key - takerOrderHash, value: trades corresponding to takerOrder
-	rejectedOrders *lru.Cache // rejected orders: key - takerOrderHash, value: rejected orders corresponding to takerOrder
+	resultTrade         *lru.Cache // trades result: key - takerOrderHash, value: trades corresponding to takerOrder
+	rejectedOrders      *lru.Cache // rejected orders: key - takerOrderHash, value: rejected orders corresponding to takerOrder
+	resultLendingTrade  *lru.Cache
+	rejectedLendingItem *lru.Cache
+	finalizedTrade      *lru.Cache // include both trades which force update to closed/liquidated by the protocol
 }
 
 // NewBlockChain returns a fully initialised block chain using information
@@ -182,29 +188,36 @@ func NewBlockChain(db ethdb.Database, cacheConfig *CacheConfig, chainConfig *par
 	downloadingBlock, _ := lru.New(blockCacheLimit)
 
 	// for rupx
-	resultTrade, _ := lru.New(rupx_state.OrderCacheLimit)
-	rejectedOrders, _ := lru.New(rupx_state.OrderCacheLimit)
+	resultTrade, _ := lru.New(tradingstate.OrderCacheLimit)
+	rejectedOrders, _ := lru.New(tradingstate.OrderCacheLimit)
 
+	// rupXlending
+	resultLendingTrade, _ := lru.New(tradingstate.OrderCacheLimit)
+	rejectedLendingItem, _ := lru.New(tradingstate.OrderCacheLimit)
+	finalizedTrade, _ := lru.New(tradingstate.OrderCacheLimit)
 	bc := &BlockChain{
-		chainConfig:      chainConfig,
-		cacheConfig:      cacheConfig,
-		db:               db,
-		triegc:           prque.New(),
-		stateCache:       state.NewDatabase(db),
-		quit:             make(chan struct{}),
-		bodyCache:        bodyCache,
-		bodyRLPCache:     bodyRLPCache,
-		blockCache:       blockCache,
-		futureBlocks:     futureBlocks,
-		resultProcess:    resultProcess,
-		calculatingBlock: preparingBlock,
-		downloadingBlock: downloadingBlock,
-		engine:           engine,
-		vmConfig:         vmConfig,
-		badBlocks:        badBlocks,
-		blocksHashCache:  blocksHashCache,
-		resultTrade:      resultTrade,
-		rejectedOrders:   rejectedOrders,
+		chainConfig:         chainConfig,
+		cacheConfig:         cacheConfig,
+		db:                  db,
+		triegc:              prque.New(),
+		stateCache:          state.NewDatabase(db),
+		quit:                make(chan struct{}),
+		bodyCache:           bodyCache,
+		bodyRLPCache:        bodyRLPCache,
+		blockCache:          blockCache,
+		futureBlocks:        futureBlocks,
+		resultProcess:       resultProcess,
+		calculatingBlock:    preparingBlock,
+		downloadingBlock:    downloadingBlock,
+		engine:              engine,
+		vmConfig:            vmConfig,
+		badBlocks:           badBlocks,
+		blocksHashCache:     blocksHashCache,
+		resultTrade:         resultTrade,
+		rejectedOrders:      rejectedOrders,
+		resultLendingTrade:  resultLendingTrade,
+		rejectedLendingItem: rejectedLendingItem,
+		finalizedTrade:      finalizedTrade,
 	}
 	bc.SetValidator(NewBlockValidator(chainConfig, bc, engine))
 	bc.SetProcessor(NewStateProcessor(chainConfig, bc, engine))
@@ -284,17 +297,31 @@ func (bc *BlockChain) loadLastState() error {
 	} else {
 		engine, ok := bc.Engine().(*posv.Posv)
 		if ok {
-			rupXService := engine.GetRupXService()
-			if bc.Config().IsRIPRupX(currentBlock.Number()) && rupXService != nil {
-				rupxRoot, err := rupXService.GetRupxStateRoot(currentBlock)
+			tradingService := engine.GetRupXService()
+			lendingService := engine.GetLendingService()
+			if bc.Config().IsRIPRupX(currentBlock.Number()) && tradingService != nil && lendingService != nil {
+				tradingRoot, err := tradingService.GetTradingStateRoot(currentBlock)
 				if err != nil {
 					repair = true
 				} else {
-
-					if rupXService.GetStateCache() != nil {
-						_, err = rupx_state.New(rupxRoot, rupXService.GetStateCache())
+					if tradingService.GetStateCache() != nil {
+						_, err = tradingstate.New(tradingRoot, tradingService.GetStateCache())
 						if err != nil {
 							repair = true
+						}
+					}
+				}
+
+				if !repair {
+					lendingRoot, err := lendingService.GetLendingStateRoot(currentBlock)
+					if err != nil {
+						repair = true
+					} else {
+						if lendingService.GetStateCache() != nil {
+							_, err = lendingstate.New(lendingRoot, lendingService.GetStateCache())
+							if err != nil {
+								repair = true
+							}
 						}
 					}
 				}
@@ -474,18 +501,36 @@ func (bc *BlockChain) StateAt(root common.Hash) (*state.StateDB, error) {
 }
 
 // OrderStateAt returns a new mutable state based on a particular point in time.
-func (bc *BlockChain) OrderStateAt(block *types.Block) (*rupx_state.RupXStateDB, error) {
+func (bc *BlockChain) OrderStateAt(block *types.Block) (*tradingstate.TradingStateDB, error) {
 	engine, ok := bc.Engine().(*posv.Posv)
 	if ok {
 		rupXService := engine.GetRupXService()
 		if bc.Config().IsRIPRupX(block.Number()) && rupXService != nil {
 			log.Debug("OrderStateAt", "blocknumber", block.Header().Number)
-			rupxState, err := rupXService.GetRupxState(block)
+			rupxState, err := rupXService.GetTradingState(block)
 			if err == nil {
 				return rupxState, nil
 			} else {
 				return nil, err
 			}
+		}
+	}
+	return nil, errors.New("Get rupx state fail")
+
+}
+
+// LendingStateAt returns a new mutable state based on a particular point in time.
+func (bc *BlockChain) LendingStateAt(block *types.Block) (*lendingstate.LendingStateDB, error) {
+	engine, ok := bc.Engine().(*posv.Posv)
+	if ok {
+		lendingService := engine.GetLendingService()
+		if bc.Config().IsRIPRupX(block.Number()) && lendingService != nil {
+			log.Debug("LendingStateAt", "blocknumber", block.Header().Number)
+			lendingState, err := lendingService.GetLendingState(block)
+			if err == nil {
+				return lendingState, nil
+			}
+			return nil, err
 		}
 	}
 	return nil, errors.New("Get rupx state fail")
@@ -537,13 +582,20 @@ func (bc *BlockChain) repair(head **types.Block) error {
 			log.Info("Rewound blockchain to past state", "number", (*head).Number(), "hash", (*head).Hash())
 			engine, ok := bc.Engine().(*posv.Posv)
 			if ok {
-				rupXService := engine.GetRupXService()
-				if bc.Config().IsRIPRupX((*head).Number()) && rupXService != nil {
-					rupxRoot, err := rupXService.GetRupxStateRoot(*head)
+				tradingService := engine.GetRupXService()
+				lendingService := engine.GetLendingService()
+				if bc.Config().IsRIPRupX((*head).Number()) && tradingService != nil && lendingService != nil {
+					tradingRoot, err := tradingService.GetTradingStateRoot(*head)
 					if err == nil {
-						_, err = rupx_state.New(rupxRoot, rupXService.GetStateCache())
+						_, err = tradingstate.New(tradingRoot, tradingService.GetStateCache())
+					}
+					if err == nil {
+						lendingRoot, err := lendingService.GetLendingStateRoot(*head)
 						if err == nil {
-							return nil
+							_, err = lendingstate.New(lendingRoot, lendingService.GetStateCache())
+							if err == nil {
+								return nil
+							}
 						}
 					}
 				} else {
@@ -672,21 +724,35 @@ func (bc *BlockChain) HasBlock(hash common.Hash, number uint64) bool {
 	return ok
 }
 
-// HasState checks if state trie is fully present in the database or not.
-func (bc *BlockChain) HasState(hash common.Hash) bool {
-	_, err := bc.stateCache.OpenTrie(hash)
-	return err == nil
+// HasFullState checks if state trie is fully present in the database or not.
+func (bc *BlockChain) HasFullState(block *types.Block) bool {
+	_, err := bc.stateCache.OpenTrie(block.Root())
+	if err != nil {
+		return false
+	}
+	engine, _ := bc.Engine().(*posv.Posv)
+	if bc.Config().IsRIPRupX(block.Number()) && engine != nil && block.NumberU64() > bc.chainConfig.Posv.Epoch {
+		tradingService := engine.GetRupXService()
+		lendingService := engine.GetLendingService()
+		if tradingService != nil && !tradingService.HasTradingState(block) {
+			return false
+		}
+		if lendingService != nil && !lendingService.HasLendingState(block) {
+			return false
+		}
+	}
+	return true
 }
 
-// HasBlockAndState checks if a block and associated state trie is fully present
+// HasBlockAndFullState checks if a block and associated state trie is fully present
 // in the database or not, caching it if present.
-func (bc *BlockChain) HasBlockAndState(hash common.Hash, number uint64) bool {
+func (bc *BlockChain) HasBlockAndFullState(hash common.Hash, number uint64) bool {
 	// Check first that the block itself is known
 	block := bc.GetBlock(hash, number)
 	if block == nil {
 		return false
 	}
-	return bc.HasState(block.Root())
+	return bc.HasFullState(block)
 }
 
 // GetBlock retrieves a block from the database by hash and number,
@@ -783,31 +849,28 @@ func (bc *BlockChain) TrieNode(hash common.Hash) ([]byte, error) {
 	return bc.stateCache.TrieDB().Node(hash)
 }
 
-// Stop stops the blockchain service. If any imports are currently in progress
-// it will abort them using the procInterrupt.
-func (bc *BlockChain) Stop() {
-	if !atomic.CompareAndSwapInt32(&bc.running, 0, 1) {
-		return
-	}
-	// Unsubscribe all subscriptions registered from blockchain
-	bc.scope.Close()
-	close(bc.quit)
-	atomic.StoreInt32(&bc.procInterrupt, 1)
-
-	bc.wg.Wait()
-
+func (bc *BlockChain) SaveData() {
+	bc.wg.Add(1)
+	defer bc.wg.Done()
+	// Make sure no inconsistent state is leaked during insertion
+	bc.mu.Lock()
+	defer bc.mu.Unlock()
 	// Ensure the state of a recent block is also stored to disk before exiting.
 	// We're writing three different states to catch different restart scenarios:
 	//  - HEAD:     So we don't need to reprocess any blocks in the general case
 	//  - HEAD-1:   So we don't do large reorgs if our HEAD becomes an uncle
 	//  - HEAD-127: So we have a hard limit on the number of blocks reexecuted
 	if !bc.cacheConfig.Disabled {
-		var rupxTriedb *trie.Database
+		var tradingTriedb *trie.Database
+		var lendingTriedb *trie.Database
 		engine, _ := bc.Engine().(*posv.Posv)
 		triedb := bc.stateCache.TrieDB()
 		if bc.Config().IsRIPRupX(bc.CurrentBlock().Number()) && engine != nil {
-			if rupXService := engine.GetRupXService(); rupXService != nil && rupXService.GetStateCache() != nil {
-				rupxTriedb = rupXService.GetStateCache().TrieDB()
+			if tradingService := engine.GetRupXService(); tradingService != nil && tradingService.GetStateCache() != nil {
+				tradingTriedb = tradingService.GetStateCache().TrieDB()
+			}
+			if lendingService := engine.GetLendingService(); lendingService != nil && lendingService.GetStateCache() != nil {
+				lendingTriedb = lendingService.GetStateCache().TrieDB()
 			}
 		}
 		for _, offset := range []uint64{0, 1, triesInMemory - 1} {
@@ -819,11 +882,19 @@ func (bc *BlockChain) Stop() {
 					log.Error("Failed to commit recent state trie", "err", err)
 				}
 				if bc.Config().IsRIPRupX(bc.CurrentBlock().Number()) && engine != nil {
-					if rupXService := engine.GetRupXService(); rupXService != nil {
-						rupxRoot, _ := rupXService.GetRupxStateRoot(recent)
-						if !common.EmptyHash(rupxRoot) && rupxTriedb != nil {
-							if err := rupxTriedb.Commit(rupxRoot, true); err != nil {
-								log.Error("Failed to commit recent state trie", "err", err)
+					if tradingService := engine.GetRupXService(); tradingService != nil {
+						tradingRoot, _ := tradingService.GetTradingStateRoot(recent)
+						if !common.EmptyHash(tradingRoot) && tradingTriedb != nil {
+							if err := tradingTriedb.Commit(tradingRoot, true); err != nil {
+								log.Error("Failed to commit trading state recent state trie", "err", err)
+							}
+						}
+					}
+					if lendingService := engine.GetLendingService(); lendingService != nil {
+						lendingRoot, _ := lendingService.GetLendingStateRoot(recent)
+						if !common.EmptyHash(lendingRoot) && lendingTriedb != nil {
+							if err := lendingTriedb.Commit(lendingRoot, true); err != nil {
+								log.Error("Failed to commit lending state recent state trie", "err", err)
 							}
 						}
 					}
@@ -833,10 +904,15 @@ func (bc *BlockChain) Stop() {
 		for !bc.triegc.Empty() {
 			triedb.Dereference(bc.triegc.PopItem().(common.Hash), common.Hash{})
 		}
-		if bc.Config().IsRIPRupX(bc.CurrentBlock().Number()) && engine != nil && rupxTriedb != nil {
-			if rupXService := engine.GetRupXService(); rupXService != nil && rupXService.GetTriegc() != nil {
-				for !rupXService.GetTriegc().Empty() {
-					rupxTriedb.Dereference(rupXService.GetTriegc().PopItem().(common.Hash), common.Hash{})
+		if bc.Config().IsRIPRupX(bc.CurrentBlock().Number()) && engine != nil && tradingTriedb != nil && lendingTriedb != nil {
+			if tradingService := engine.GetRupXService(); tradingService != nil && tradingService.GetTriegc() != nil {
+				for !tradingService.GetTriegc().Empty() {
+					tradingTriedb.Dereference(tradingService.GetTriegc().PopItem().(common.Hash), common.Hash{})
+				}
+			}
+			if lendingService := engine.GetLendingService(); lendingService != nil && lendingService.GetTriegc() != nil {
+				for !lendingService.GetTriegc().Empty() {
+					lendingTriedb.Dereference(lendingService.GetTriegc().PopItem().(common.Hash), common.Hash{})
 				}
 			}
 		}
@@ -844,6 +920,20 @@ func (bc *BlockChain) Stop() {
 			log.Error("Dangling trie nodes after full cleanup")
 		}
 	}
+}
+
+// Stop stops the blockchain service. If any imports are currently in progress
+// it will abort them using the procInterrupt.
+func (bc *BlockChain) Stop() {
+	if !atomic.CompareAndSwapInt32(&bc.running, 0, 1) {
+		return
+	}
+	// Unsubscribe all subscriptions registered from blockchain
+	bc.scope.Close()
+	close(bc.quit)
+	atomic.StoreInt32(&bc.procInterrupt, 1)
+	bc.wg.Wait()
+	bc.SaveData()
 	log.Info("Blockchain manager stopped")
 }
 
@@ -1048,7 +1138,7 @@ func (bc *BlockChain) WriteBlockWithoutState(block *types.Block, td *big.Int) (e
 }
 
 // WriteBlockWithState writes the block and all associated state to the database.
-func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.Receipt, state *state.StateDB, rupxState *rupx_state.RupXStateDB) (status WriteStatus, err error) {
+func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.Receipt, state *state.StateDB, tradingState *tradingstate.TradingStateDB, lendingState *lendingstate.LendingStateDB) (status WriteStatus, err error) {
 	bc.wg.Add(1)
 	defer bc.wg.Done()
 
@@ -1078,29 +1168,47 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 	if err != nil {
 		return NonStatTy, err
 	}
-	rupxRoot := common.Hash{}
-	if rupxState != nil {
-		rupxRoot, err = rupxState.Commit()
+	tradingRoot := common.Hash{}
+	if tradingState != nil {
+		tradingRoot, err = tradingState.Commit()
+		if err != nil {
+			return NonStatTy, err
+		}
+	}
+	lendingRoot := common.Hash{}
+	if lendingState != nil {
+		lendingRoot, err = lendingState.Commit()
 		if err != nil {
 			return NonStatTy, err
 		}
 	}
 	engine, _ := bc.Engine().(*posv.Posv)
-	var rupxTrieDb *trie.Database
+	var tradingTrieDb *trie.Database
 	if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
-		if rupXService := engine.GetRupXService(); rupXService != nil {
-			rupxTrieDb = rupXService.GetStateCache().TrieDB()
+		if tradingService := engine.GetRupXService(); tradingService != nil {
+			tradingTrieDb = tradingService.GetStateCache().TrieDB()
+		}
+	}
+
+	var lendingTrieDb *trie.Database
+	if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
+		if lendingService := engine.GetRupXService(); lendingService != nil {
+			lendingTrieDb = lendingService.GetStateCache().TrieDB()
 		}
 	}
 	triedb := bc.stateCache.TrieDB()
-
 	// If we're running an archive node, always flush
 	if bc.cacheConfig.Disabled {
 		if err := triedb.Commit(root, false); err != nil {
 			return NonStatTy, err
 		}
-		if rupxTrieDb != nil {
-			if err := rupxTrieDb.Commit(rupxRoot, false); err != nil {
+		if tradingTrieDb != nil {
+			if err := tradingTrieDb.Commit(tradingRoot, false); err != nil {
+				return NonStatTy, err
+			}
+		}
+		if lendingTrieDb != nil {
+			if err := lendingTrieDb.Commit(lendingRoot, false); err != nil {
 				return NonStatTy, err
 			}
 		}
@@ -1108,22 +1216,32 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 		// Full but not archive node, do proper garbage collection
 		triedb.Reference(root, common.Hash{}) // metadata reference to keep trie alive
 		bc.triegc.Push(root, -float32(block.NumberU64()))
-		if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
-			if rupxTrieDb != nil {
-				rupxTrieDb.Reference(rupxRoot, common.Hash{})
+		if bc.Config().IsRIPRupX(block.Number()) && engine != nil && block.NumberU64() > bc.chainConfig.Posv.Epoch {
+			if tradingTrieDb != nil {
+				tradingTrieDb.Reference(tradingRoot, common.Hash{})
 			}
-			if rupXService := engine.GetRupXService(); rupXService != nil {
-				rupXService.GetTriegc().Push(rupxRoot, -float32(block.NumberU64()))
+			if tradingService := engine.GetRupXService(); tradingService != nil {
+				tradingService.GetTriegc().Push(tradingRoot, -float32(block.NumberU64()))
+			}
+			if lendingTrieDb != nil {
+				lendingTrieDb.Reference(lendingRoot, common.Hash{})
+			}
+			if lendingService := engine.GetLendingService(); lendingService != nil {
+				lendingService.GetTriegc().Push(lendingRoot, -float32(block.NumberU64()))
 			}
 		}
 		if current := block.NumberU64(); current > triesInMemory {
 			// Find the next state trie we need to commit
 			header := bc.GetHeaderByNumber(current - triesInMemory)
 			chosen := header.Number.Uint64()
-			oldRupXRoot := common.Hash{}
+			oldTradingRoot := common.Hash{}
+			oldLendingRoot := common.Hash{}
 			if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
-				if rupXService := engine.GetRupXService(); rupXService != nil {
-					oldRupXRoot, _ = rupXService.GetRupxStateRoot(bc.GetBlock(header.Hash(), current-triesInMemory))
+				if tradingService := engine.GetRupXService(); tradingService != nil {
+					oldTradingRoot, _ = tradingService.GetTradingStateRoot(bc.GetBlock(header.Hash(), current-triesInMemory))
+				}
+				if lendingService := engine.GetLendingService(); lendingService != nil {
+					oldLendingRoot, _ = lendingService.GetLendingStateRoot(bc.GetBlock(header.Hash(), current-triesInMemory))
 				}
 			}
 			// Only write to disk if we exceeded our memory allowance *and* also have at
@@ -1132,13 +1250,19 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 				size  = triedb.Size()
 				limit = common.StorageSize(bc.cacheConfig.TrieNodeLimit) * 1024 * 1024
 			)
-			if size > limit || bc.gcproc > bc.cacheConfig.TrieTimeLimit {
+			if tradingTrieDb != nil {
+				size = size + tradingTrieDb.Size()
+			}
+			if lendingTrieDb != nil {
+				size = size + lendingTrieDb.Size()
+			}
+			if size > limit || bc.gcproc > bc.cacheConfig.TrieTimeLimit || chosen > lastWrite+triesInMemory {
 				// If we're exceeding limits but haven't reached a large enough memory gap,
 				// warn the user that the system is becoming unstable.
 				if chosen < lastWrite+triesInMemory {
 					switch {
 					case size >= 2*limit:
-						log.Warn("State memory usage too high, committing", "size", size, "limit", limit, "optimum", float64(chosen-lastWrite)/triesInMemory)
+						log.Warn("State memory usage too high, committing", "size", size, "limit", limit, "optimum", float64(chosen-lastWrite)/triesInMemory, "triedb", triedb.Size(), "tradingTrieDb", tradingTrieDb.Size(), "lendingTrieDb", lendingTrieDb.Size())
 					case bc.gcproc >= 2*bc.cacheConfig.TrieTimeLimit:
 						log.Info("State in memory for too long, committing", "time", bc.gcproc, "allowance", bc.cacheConfig.TrieTimeLimit, "optimum", float64(chosen-lastWrite)/triesInMemory)
 					}
@@ -1148,8 +1272,9 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 					triedb.Commit(header.Root, true)
 					lastWrite = chosen
 					bc.gcproc = 0
-					if bc.Config().IsRIPRupX(block.Number()) && rupxTrieDb != nil {
-						rupxTrieDb.Commit(oldRupXRoot, true)
+					if bc.Config().IsRIPRupX(block.Number()) && tradingTrieDb != nil && lendingTrieDb != nil {
+						tradingTrieDb.Commit(oldTradingRoot, true)
+						lendingTrieDb.Commit(oldLendingRoot, true)
 					}
 				}
 			}
@@ -1163,14 +1288,24 @@ func (bc *BlockChain) WriteBlockWithState(block *types.Block, receipts []*types.
 				triedb.Dereference(root.(common.Hash), common.Hash{})
 			}
 			if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
-				if rupXService := engine.GetRupXService(); rupXService != nil {
-					for !rupXService.GetTriegc().Empty() {
-						rupayaRoot, number := rupXService.GetTriegc().Pop()
+				if tradingService := engine.GetRupXService(); tradingService != nil {
+					for !tradingService.GetTriegc().Empty() {
+						tradingRoot, number := tradingService.GetTriegc().Pop()
 						if uint64(-number) > chosen {
-							rupXService.GetTriegc().Push(rupayaRoot, number)
+							tradingService.GetTriegc().Push(tradingRoot, number)
 							break
 						}
-						rupxTrieDb.Dereference(rupayaRoot.(common.Hash), common.Hash{})
+						tradingTrieDb.Dereference(tradingRoot.(common.Hash), common.Hash{})
+					}
+				}
+				if lendingService := engine.GetLendingService(); lendingService != nil {
+					for !lendingService.GetTriegc().Empty() {
+						lendingRoot, number := lendingService.GetTriegc().Pop()
+						if uint64(-number) > chosen {
+							lendingService.GetTriegc().Push(lendingRoot, number)
+							break
+						}
+						lendingTrieDb.Dereference(lendingRoot.(common.Hash), common.Hash{})
 					}
 				}
 			}
@@ -1343,7 +1478,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 			var winner []*types.Block
 
 			parent := bc.GetBlock(block.ParentHash(), block.NumberU64()-1)
-			for !bc.HasState(parent.Root()) {
+			for !bc.HasFullState(parent) {
 				winner = append(winner, parent)
 				parent = bc.GetBlock(parent.ParentHash(), parent.NumberU64()-1)
 			}
@@ -1383,39 +1518,97 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 			return i, events, coalescedLogs, err
 		}
 		// clear the previous dry-run cache
-		var rupxState *rupx_state.RupXStateDB
-		if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
-			if rupXService := engine.GetRupXService(); rupXService != nil {
-				txMatchBatchData, err := ExtractMatchingTransactions(block.Transactions())
+		var tradingState *tradingstate.TradingStateDB
+		var lendingState *lendingstate.LendingStateDB
+		var tradingService posv.TradingService
+		var lendingService posv.LendingService
+		isSDKNode := false
+		if bc.Config().IsRIPRupX(block.Number()) && engine != nil && block.NumberU64() > bc.chainConfig.Posv.Epoch {
+			tradingService = engine.GetRupXService()
+			lendingService = engine.GetLendingService()
+			if tradingService != nil && lendingService != nil {
+				isSDKNode = tradingService.IsSDKNode()
+				txMatchBatchData, err := ExtractTradingTransactions(block.Transactions())
 				if err != nil {
 					bc.reportBlock(block, nil, err)
 					return i, events, coalescedLogs, err
 				}
-				rupxState, err = rupXService.GetRupxState(parent)
+				tradingState, err = tradingService.GetTradingState(parent)
 				if err != nil {
 					bc.reportBlock(block, nil, err)
 					return i, events, coalescedLogs, err
 				}
-				for _, txMatchBatch := range txMatchBatchData {
-					log.Debug("Verify matching transaction", "txHash", txMatchBatch.TxHash.Hex())
-					err := bc.Validator().ValidateMatchingOrder(statedb, rupxState, txMatchBatch, author)
+				lendingState, err = lendingService.GetLendingState(parent)
+				if err != nil {
+					bc.reportBlock(block, nil, err)
+					return i, events, coalescedLogs, err
+				}
+				if (block.NumberU64() % bc.chainConfig.Posv.Epoch) == 0 {
+					if err := tradingService.UpdateMediumPriceBeforeEpoch(block.NumberU64()/bc.chainConfig.Posv.Epoch, tradingState, statedb); err != nil {
+						return i, events, coalescedLogs, err
+					}
+				} else {
+					for _, txMatchBatch := range txMatchBatchData {
+						log.Debug("Verify matching transaction", "txHash", txMatchBatch.TxHash.Hex())
+						err := bc.Validator().ValidateTradingOrder(statedb, tradingState, txMatchBatch, author)
+						if err != nil {
+							bc.reportBlock(block, nil, err)
+							return i, events, coalescedLogs, err
+						}
+					}
+					//
+					batches, err := ExtractLendingTransactions(block.Transactions())
 					if err != nil {
 						bc.reportBlock(block, nil, err)
 						return i, events, coalescedLogs, err
 					}
+					for _, batch := range batches {
+						log.Debug("Verify matching transaction", "txHash", batch.TxHash.Hex())
+						err := bc.Validator().ValidateLendingOrder(statedb, lendingState, tradingState, batch, author, block.Header())
+						if err != nil {
+							bc.reportBlock(block, nil, err)
+							return i, events, coalescedLogs, err
+						}
+					}
+					// liquidate / finalize open lendingTrades
+					if block.Number().Uint64()%bc.chainConfig.Posv.Epoch == common.LiquidateLendingTradeBlock {
+						finalizedTrades := map[common.Hash]*lendingstate.LendingTrade{}
+						finalizedTrades, _, _, _, _,  err = lendingService.ProcessLiquidationData(block.Header(), bc, statedb, tradingState, lendingState)
+						if err != nil {
+							return i, events, coalescedLogs, fmt.Errorf("failed to ProcessLiquidationData. Err: %v ", err)
+						}
+						if isSDKNode {
+							finalizedTx := lendingstate.FinalizedResult{}
+							if finalizedTx, err = ExtractLendingFinalizedTradeTransactions(block.Transactions()); err != nil {
+								return i, events, coalescedLogs, err
+							}
+							bc.AddFinalizedTrades(finalizedTx.TxHash, finalizedTrades)
+						}
+					}
 				}
-				if len(txMatchBatchData) > 0 {
-					gotRoot := rupxState.IntermediateRoot()
-					expectRoot, _ := rupXService.GetRupxStateRoot(block)
+				//check
+				if tradingState != nil && tradingService != nil {
+					gotRoot := tradingState.IntermediateRoot()
+					expectRoot, _ := tradingService.GetTradingStateRoot(block)
+					parentRoot, _ := tradingService.GetTradingStateRoot(parent)
 					if gotRoot != expectRoot {
-						err = fmt.Errorf("invalid rupx merke trie got : %s , expect : %s ", gotRoot.Hex(), expectRoot.Hex())
+						err = fmt.Errorf("invalid rupx trading state merke trie got : %s , expect : %s ,parent : %s", gotRoot.Hex(), expectRoot.Hex(), parentRoot.Hex())
 						bc.reportBlock(block, nil, err)
 						return i, events, coalescedLogs, err
 					}
+					log.Debug("RupX Trading State Root", "number", block.NumberU64(), "parent", parentRoot.Hex(), "nextRoot", expectRoot.Hex())
 				}
-				parentRupXRoot, _ := rupXService.GetRupxStateRoot(parent)
-				nextRupxRoot, _ := rupXService.GetRupxStateRoot(block)
-				log.Debug("RupX State Root", "number", block.NumberU64(), "parent", parentRupXRoot.Hex(), "nextRupxRoot", nextRupxRoot.Hex())
+				if lendingState != nil && tradingState != nil {
+					gotRoot := lendingState.IntermediateRoot()
+					expectRoot, _ := lendingService.GetLendingStateRoot(block)
+					parentRoot, _ := lendingService.GetLendingStateRoot(parent)
+					if gotRoot != expectRoot {
+						err = fmt.Errorf("invalid lending state merke trie got : %s , expect : %s , parent :%s ", gotRoot.Hex(), expectRoot.Hex(), parentRoot.Hex())
+						bc.reportBlock(block, nil, err)
+						return i, events, coalescedLogs, err
+					}
+					log.Debug("RupX Lending State Root", "number", block.NumberU64(), "parent", parentRoot.Hex(), "nextRoot", expectRoot.Hex())
+				}
 			}
 		}
 		feeCapacity := state.GetRRC21FeeCapacityFromStateWithCache(parent.Root(), statedb)
@@ -1433,7 +1626,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 		}
 		proctime := time.Since(bstart)
 		// Write the block to the chain and get the status.
-		status, err := bc.WriteBlockWithState(block, receipts, statedb, rupxState)
+		status, err := bc.WriteBlockWithState(block, receipts, statedb, tradingState, lendingState)
 		if err != nil {
 			return i, events, coalescedLogs, err
 		}
@@ -1468,6 +1661,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 			bc.UpdateBlocksHashCache(block)
 			if bc.chainConfig.IsRIPRupX(block.Number()) {
 				bc.logExchangeData(block)
+				bc.logLendingData(block)
 			}
 		case SideStatTy:
 			log.Debug("Inserted forked block from downloader", "number", block.Number(), "hash", block.Hash(), "diff", block.Difficulty(), "elapsed",
@@ -1584,7 +1778,7 @@ func (bc *BlockChain) getResultBlock(block *types.Block, verifiedM2 bool) (*Resu
 		var winner []*types.Block
 
 		parent := bc.GetBlock(block.ParentHash(), block.NumberU64()-1)
-		for !bc.HasState(parent.Root()) {
+		for !bc.HasFullState(parent) {
 			winner = append(winner, parent)
 			parent = bc.GetBlock(parent.ParentHash(), parent.NumberU64()-1)
 		}
@@ -1614,39 +1808,95 @@ func (bc *BlockChain) getResultBlock(block *types.Block, verifiedM2 bool) (*Resu
 		bc.reportBlock(block, nil, err)
 		return nil, err
 	}
-	var rupxState *rupx_state.RupXStateDB
-	if bc.Config().IsRIPRupX(block.Number()) && engine != nil {
-		if rupXService := engine.GetRupXService(); rupXService != nil {
-			rupxState, err = rupXService.GetRupxState(parent)
+	var tradingState *tradingstate.TradingStateDB
+	var lendingState *lendingstate.LendingStateDB
+	var tradingService posv.TradingService
+	var lendingService posv.LendingService
+	isSDKNode := false
+	if bc.Config().IsRIPRupX(block.Number()) && engine != nil && block.NumberU64() > bc.chainConfig.Posv.Epoch {
+		tradingService = engine.GetRupXService()
+		lendingService = engine.GetLendingService()
+		if tradingService != nil && lendingService != nil {
+			isSDKNode = tradingService.IsSDKNode()
+			tradingState, err = tradingService.GetTradingState(parent)
 			if err != nil {
 				bc.reportBlock(block, nil, err)
 				return nil, err
 			}
-			txMatchBatchData, err := ExtractMatchingTransactions(block.Transactions())
+			lendingState, err = lendingService.GetLendingState(parent)
 			if err != nil {
 				bc.reportBlock(block, nil, err)
 				return nil, err
 			}
-			for _, txMatchBatch := range txMatchBatchData {
-				log.Debug("Verify matching transaction", "txHash", txMatchBatch.TxHash.Hex())
-				err := bc.Validator().ValidateMatchingOrder(statedb, rupxState, txMatchBatch, author)
+			if (block.NumberU64() % bc.chainConfig.Posv.Epoch) == 0 {
+				if err := tradingService.UpdateMediumPriceBeforeEpoch(block.NumberU64()/bc.chainConfig.Posv.Epoch, tradingState, statedb); err != nil {
+					return nil, err
+				}
+			} else {
+				txMatchBatchData, err := ExtractTradingTransactions(block.Transactions())
 				if err != nil {
 					bc.reportBlock(block, nil, err)
 					return nil, err
 				}
-			}
-			if len(txMatchBatchData) > 0 {
-				gotRoot := rupxState.IntermediateRoot()
-				expectRoot, _ := rupXService.GetRupxStateRoot(block)
-				if gotRoot != expectRoot {
-					err = fmt.Errorf("invalid rupx merke trie got : %s , expect : %s ", gotRoot.Hex(), expectRoot.Hex())
+				for _, txMatchBatch := range txMatchBatchData {
+					log.Debug("Verify matching transaction", "txHash", txMatchBatch.TxHash.Hex())
+					err := bc.Validator().ValidateTradingOrder(statedb, tradingState, txMatchBatch, author)
+					if err != nil {
+						bc.reportBlock(block, nil, err)
+						return nil, err
+					}
+				}
+				batches, err := ExtractLendingTransactions(block.Transactions())
+				if err != nil {
 					bc.reportBlock(block, nil, err)
 					return nil, err
 				}
+				for _, batch := range batches {
+					log.Debug("Lending Verify matching transaction", "txHash", batch.TxHash.Hex())
+					err := bc.Validator().ValidateLendingOrder(statedb, lendingState, tradingState, batch, author, block.Header())
+					if err != nil {
+						bc.reportBlock(block, nil, err)
+						return nil, err
+					}
+				}
+				// liquidate / finalize open lendingTrades
+				if block.Number().Uint64()%bc.chainConfig.Posv.Epoch == common.LiquidateLendingTradeBlock {
+					finalizedTrades := map[common.Hash]*lendingstate.LendingTrade{}
+					finalizedTrades, _, _, _, _, err = lendingService.ProcessLiquidationData(block.Header(), bc, statedb, tradingState, lendingState)
+					if err != nil {
+						return nil, fmt.Errorf("failed to ProcessLiquidationData. Err: %v ", err)
+					}
+					if isSDKNode {
+						finalizedTx := lendingstate.FinalizedResult{}
+						if finalizedTx, err = ExtractLendingFinalizedTradeTransactions(block.Transactions()); err != nil {
+							return nil, err
+						}
+						bc.AddFinalizedTrades(finalizedTx.TxHash, finalizedTrades)
+					}
+				}
 			}
-			parentRupXRoot, _ := rupXService.GetRupxStateRoot(parent)
-			nextRupxRoot, _ := rupXService.GetRupxStateRoot(block)
-			log.Debug("RupX State Root", "number", block.NumberU64(), "parent", parentRupXRoot.Hex(), "nextRupxRoot", nextRupxRoot.Hex())
+			if tradingState != nil && tradingService != nil {
+				gotRoot := tradingState.IntermediateRoot()
+				expectRoot, _ := tradingService.GetTradingStateRoot(block)
+				parentRoot, _ := tradingService.GetTradingStateRoot(parent)
+				if gotRoot != expectRoot {
+					err = fmt.Errorf("invalid rupx trading state merke trie got : %s , expect : %s ,parent : %s", gotRoot.Hex(), expectRoot.Hex(), parentRoot.Hex())
+					bc.reportBlock(block, nil, err)
+					return nil, err
+				}
+				log.Debug("RupX Trading State Root", "number", block.NumberU64(), "parent", parentRoot.Hex(), "nextRoot", expectRoot.Hex())
+			}
+			if lendingState != nil && tradingState != nil {
+				gotRoot := lendingState.IntermediateRoot()
+				expectRoot, _ := lendingService.GetLendingStateRoot(block)
+				parentRoot, _ := lendingService.GetLendingStateRoot(parent)
+				if gotRoot != expectRoot {
+					err = fmt.Errorf("invalid lending state merke trie got : %s , expect : %s , parent : %s ", gotRoot.Hex(), expectRoot.Hex(), parentRoot.Hex())
+					bc.reportBlock(block, nil, err)
+					return nil, err
+				}
+				log.Debug("RupX Lending State Root", "number", block.NumberU64(), "parent", parentRoot.Hex(), "nextRoot", expectRoot.Hex())
+			}
 		}
 	}
 	feeCapacity := state.GetRRC21FeeCapacityFromStateWithCache(parent.Root(), statedb)
@@ -1668,7 +1918,7 @@ func (bc *BlockChain) getResultBlock(block *types.Block, verifiedM2 bool) (*Resu
 	proctime := time.Since(bstart)
 	log.Debug("Calculate new block", "number", block.Number(), "hash", block.Hash(), "uncles", len(block.Uncles()),
 		"txs", len(block.Transactions()), "gas", block.GasUsed(), "elapsed", common.PrettyDuration(time.Since(bstart)), "process", process)
-	return &ResultProcessBlock{receipts: receipts, logs: logs, state: statedb, rupxState: rupxState, proctime: proctime, usedGas: usedGas}, nil
+	return &ResultProcessBlock{receipts: receipts, logs: logs, state: statedb, tradingState: tradingState, lendingState: lendingState, proctime: proctime, usedGas: usedGas}, nil
 }
 
 // UpdateBlocksHashCache update BlocksHashCache by block number
@@ -1715,10 +1965,10 @@ func (bc *BlockChain) insertBlock(block *types.Block) ([]interface{}, []*types.L
 	// Write the block to the chain and get the status.
 	bc.chainmu.Lock()
 	defer bc.chainmu.Unlock()
-	if bc.HasBlockAndState(block.Hash(), block.NumberU64()) {
+	if bc.HasBlockAndFullState(block.Hash(), block.NumberU64()) {
 		return events, coalescedLogs, nil
 	}
-	status, err := bc.WriteBlockWithState(block, result.receipts, result.state, result.rupxState)
+	status, err := bc.WriteBlockWithState(block, result.receipts, result.state, result.tradingState, result.lendingState)
 
 	if err != nil {
 		return events, coalescedLogs, err
@@ -1752,6 +2002,7 @@ func (bc *BlockChain) insertBlock(block *types.Block) ([]interface{}, []*types.L
 		bc.UpdateBlocksHashCache(block)
 		if bc.chainConfig.IsRIPRupX(block.Number()) {
 			bc.logExchangeData(block)
+			bc.logLendingData(block)
 		}
 	case SideStatTy:
 		log.Debug("Inserted forked block from fetcher", "number", block.Number(), "hash", block.Hash(), "diff", block.Difficulty(), "elapsed",
@@ -2252,7 +2503,7 @@ func (bc *BlockChain) logExchangeData(block *types.Block) {
 	if rupXService == nil || !rupXService.IsSDKNode() {
 		return
 	}
-	txMatchBatchData, err := ExtractMatchingTransactions(block.Transactions())
+	txMatchBatchData, err := ExtractTradingTransactions(block.Transactions())
 	if err != nil {
 		log.Crit("failed to extract matching transaction", "err", err)
 		return
@@ -2276,9 +2527,9 @@ func (bc *BlockChain) logExchangeData(block *types.Block) {
 		dirtyOrderCount := uint64(0)
 		for _, txMatch := range txMatchBatch.Data {
 			var (
-				takerOrderInTx *rupx_state.OrderItem
+				takerOrderInTx *tradingstate.OrderItem
 				trades         []map[string]string
-				rejectedOrders []*rupx_state.OrderItem
+				rejectedOrders []*tradingstate.OrderItem
 			)
 
 			if takerOrderInTx, err = txMatch.DecodeOrder(); err != nil {
@@ -2295,7 +2546,7 @@ func (bc *BlockChain) logExchangeData(block *types.Block) {
 			// getRejectedOrder from cache
 			rejected, ok := bc.rejectedOrders.Get(cacheKey)
 			if ok && rejected != nil {
-				rejectedOrders = rejected.([]*rupx_state.OrderItem)
+				rejectedOrders = rejected.([]*tradingstate.OrderItem)
 			}
 
 			// the smallest time unit in mongodb is millisecond
@@ -2317,6 +2568,7 @@ func (bc *BlockChain) reorgTxMatches(deletedTxs types.Transactions, newChain typ
 		return
 	}
 	rupXService := engine.GetRupXService()
+	lendingService := engine.GetLendingService()
 	if rupXService == nil || !rupXService.IsSDKNode() {
 		return
 	}
@@ -2327,22 +2579,116 @@ func (bc *BlockChain) reorgTxMatches(deletedTxs types.Transactions, newChain typ
 		log.Debug("reorgTxMatches takes", "time", common.PrettyDuration(time.Since(start)))
 	}()
 	for _, deletedTx := range deletedTxs {
-		if deletedTx.IsMatchingTransaction() {
+		if deletedTx.IsTradingTransaction() {
 			log.Debug("Rollback reorg txMatch", "txhash", deletedTx.Hash())
-			rupXService.RollbackReorgTxMatch(deletedTx.Hash())
+			if err := rupXService.RollbackReorgTxMatch(deletedTx.Hash()); err != nil {
+				log.Crit("Reorg trading failed", "err", err, "hash", deletedTx.Hash())
+			}
+		}
+		if lendingService != nil && (deletedTx.IsLendingTransaction() || deletedTx.IsLendingFinalizedTradeTransaction()) {
+			log.Debug("Rollback reorg lendingItem", "txhash", deletedTx.Hash())
+			if err := lendingService.RollbackLendingData(deletedTx.Hash()); err != nil {
+				log.Crit("Reorg lending failed", "err", err, "hash", deletedTx.Hash())
+			}
 		}
 	}
 
 	// apply new chain
 	for i := len(newChain) - 1; i >= 0; i-- {
 		bc.logExchangeData(newChain[i])
+		bc.logLendingData(newChain[i])
 	}
 }
 
-func (bc *BlockChain) AddMatchingResult(txHash common.Hash, matchingResults map[common.Hash]rupx_state.MatchingResult) {
+func (bc *BlockChain) logLendingData(block *types.Block) {
+	engine, ok := bc.Engine().(*posv.Posv)
+	if !ok || engine == nil {
+		return
+	}
+	rupXService := engine.GetRupXService()
+	if rupXService == nil || !rupXService.IsSDKNode() {
+		return
+	}
+	lendingService := engine.GetLendingService()
+	if lendingService == nil {
+		return
+	}
+	batches, err := ExtractLendingTransactions(block.Transactions())
+	if err != nil {
+		log.Crit("failed to extract lending transaction", "err", err)
+	}
+	start := time.Now()
+	defer func() {
+		//The deferred call's arguments are evaluated immediately, but the function call is not executed until the surrounding function returns
+		// That's why we should put this log statement in an anonymous function
+		log.Debug("logLendingData takes", "time", common.PrettyDuration(time.Since(start)), "blockNumber", block.NumberU64())
+	}()
+
+	for _, batch := range batches {
+		dirtyOrderCount := uint64(0)
+		for _, item := range batch.Data {
+			var (
+				trades         []*lendingstate.LendingTrade
+				rejectedOrders []*lendingstate.LendingItem
+			)
+			// getTrades from cache
+			resultLendingTrades, ok := bc.resultLendingTrade.Get(crypto.Keccak256Hash(batch.TxHash.Bytes(), lendingstate.GetLendingCacheKey(item).Bytes()))
+			if ok && resultLendingTrades != nil {
+				trades = resultLendingTrades.([]*lendingstate.LendingTrade)
+			}
+
+			// getRejectedOrder from cache
+			rejected, ok := bc.rejectedLendingItem.Get(crypto.Keccak256Hash(batch.TxHash.Bytes(), lendingstate.GetLendingCacheKey(item).Bytes()))
+			if ok && rejected != nil {
+				rejectedOrders = rejected.([]*lendingstate.LendingItem)
+			}
+
+			// the smallest time unit in mongodb is millisecond
+			// hence, we should update time in millisecond
+			// old txData has been attached with nanosecond, to avoid hard fork, convert nanosecond to millisecond here
+			milliSecond := batch.Timestamp / 1e6
+			txMatchTime := time.Unix(0, milliSecond*1e6).UTC()
+			statedb, _ := bc.State()
+			if err := lendingService.SyncDataToSDKNode(bc, statedb.Copy(),  block, item, batch.TxHash, txMatchTime, trades, rejectedOrders, &dirtyOrderCount); err != nil {
+				log.Crit("lending: failed to SyncDataToSDKNode ", "blockNumber", block.Number(), "err", err)
+			}
+		}
+	}
+
+	// update finalizedTrades
+	if block.Number().Uint64()%bc.chainConfig.Posv.Epoch == common.LiquidateLendingTradeBlock {
+		finalizedTx, err := ExtractLendingFinalizedTradeTransactions(block.Transactions())
+		if err != nil {
+			log.Crit("failed to extract finalizedTrades transaction", "err", err)
+		}
+		finalizedTrades := map[common.Hash]*lendingstate.LendingTrade{}
+		finalizedData, ok := bc.finalizedTrade.Get(finalizedTx.TxHash)
+		if ok && finalizedData != nil {
+			finalizedTrades = finalizedData.(map[common.Hash]*lendingstate.LendingTrade)
+		}
+		if len(finalizedTrades) > 0 {
+			if err := lendingService.UpdateLiquidatedTrade(block.Time().Uint64(), finalizedTx, finalizedTrades); err != nil {
+				log.Crit("lending: failed to UpdateLiquidatedTrade ", "blockNumber", block.Number(), "err", err)
+			}
+		}
+	}
+}
+
+func (bc *BlockChain) AddMatchingResult(txHash common.Hash, matchingResults map[common.Hash]tradingstate.MatchingResult) {
 	for hash, result := range matchingResults {
 		cacheKey := crypto.Keccak256Hash(txHash.Bytes(), hash.Bytes())
 		bc.resultTrade.Add(cacheKey, result.Trades)
 		bc.rejectedOrders.Add(cacheKey, result.Rejects)
 	}
+}
+
+func (bc *BlockChain) AddLendingResult(txHash common.Hash, lendingResults map[common.Hash]lendingstate.MatchingResult) {
+	for hash, result := range lendingResults {
+		bc.resultLendingTrade.Add(crypto.Keccak256Hash(txHash.Bytes(), hash.Bytes()), result.Trades)
+		bc.rejectedLendingItem.Add(crypto.Keccak256Hash(txHash.Bytes(), hash.Bytes()), result.Rejects)
+	}
+}
+
+func (bc *BlockChain) AddFinalizedTrades(txHash common.Hash, trades map[common.Hash]*lendingstate.LendingTrade) {
+	bc.finalizedTrade.Add(txHash, trades)
 }

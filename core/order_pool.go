@@ -26,7 +26,7 @@ import (
 
 	"github.com/rupayaproject/rupaya/consensus"
 	"github.com/rupayaproject/rupaya/consensus/posv"
-	"github.com/rupayaproject/rupaya/rupx/rupx_state"
+	"github.com/rupayaproject/rupaya/rupx/tradingstate"
 
 	"github.com/rupayaproject/rupaya/common"
 	"github.com/rupayaproject/rupaya/core/state"
@@ -62,6 +62,7 @@ var (
 
 var (
 	ErrPendingNonceTooLow = errors.New("pending nonce too low")
+	ErrPoolOverflow       = errors.New("Exceed pool size")
 )
 
 // OrderPoolConfig are the configuration parameters of the order transaction pool.
@@ -82,7 +83,7 @@ type OrderPoolConfig struct {
 type blockChainRupx interface {
 	CurrentBlock() *types.Block
 	GetBlock(hash common.Hash, number uint64) *types.Block
-	OrderStateAt(block *types.Block) (*rupx_state.RupXStateDB, error)
+	OrderStateAt(block *types.Block) (*tradingstate.TradingStateDB, error)
 	StateAt(root common.Hash) (*state.StateDB, error)
 	SubscribeChainHeadEvent(ch chan<- ChainHeadEvent) event.Subscription
 	Engine() consensus.Engine
@@ -139,8 +140,8 @@ type OrderPool struct {
 	mu           sync.RWMutex
 
 	currentRootState  *state.StateDB
-	currentOrderState *rupx_state.RupXStateDB      // Current order state in the blockchain head
-	pendingState      *rupx_state.RupXManagedState // Pending state tracking virtual nonces
+	currentOrderState *tradingstate.TradingStateDB    // Current order state in the blockchain head
+	pendingState      *tradingstate.RupXManagedState // Pending state tracking virtual nonces
 
 	locals  *orderAccountSet // Set of local transaction to exempt from eviction rules
 	journal *ordertxJournal  // Journal of local transaction to back up to disk
@@ -294,7 +295,7 @@ func (pool *OrderPool) reset(oldHead, newblock *types.Block) {
 		return
 	}
 	pool.currentOrderState = orderstate
-	pool.pendingState = rupx_state.ManageState(orderstate)
+	pool.pendingState = tradingstate.ManageState(orderstate)
 
 	state, err := pool.chain.StateAt(newHead.Root)
 	if err != nil {
@@ -345,7 +346,7 @@ func (pool *OrderPool) SubscribeTxPreEvent(ch chan<- OrderTxPreEvent) event.Subs
 }
 
 // State returns the virtual managed state of the transaction pool.
-func (pool *OrderPool) State() *rupx_state.RupXManagedState {
+func (pool *OrderPool) State() *tradingstate.RupXManagedState {
 	pool.mu.RLock()
 	defer pool.mu.RUnlock()
 
@@ -457,7 +458,7 @@ func (pool *OrderPool) validateOrder(tx *types.OrderTransaction) error {
 		if orderType != OrderTypeLimit && orderType != OrderTypeMarket {
 			return ErrInvalidOrderType
 		}
-		if err := rupx_state.VerifyPair(cloneStateDb, tx.ExchangeAddress(), tx.BaseToken(), tx.QuoteToken()); err != nil {
+		if err := tradingstate.VerifyPair(cloneStateDb, tx.ExchangeAddress(), tx.BaseToken(), tx.QuoteToken()); err != nil {
 			return err
 		}
 
@@ -470,16 +471,16 @@ func (pool *OrderPool) validateOrder(tx *types.OrderTransaction) error {
 			if rupXServ == nil {
 				return fmt.Errorf("rupx not found in order validation")
 			}
-			baseDecimal, err := rupXServ.GetTokenDecimal(pool.chain, cloneStateDb, pool.chain.CurrentBlock().Header().Coinbase, tx.BaseToken())
+			baseDecimal, err := rupXServ.GetTokenDecimal(pool.chain, cloneStateDb, tx.BaseToken())
 			if err != nil {
 				return fmt.Errorf("validateOrder: failed to get baseDecimal. err: %v", err)
 			}
-			quoteDecimal, err := rupXServ.GetTokenDecimal(pool.chain, cloneStateDb, pool.chain.CurrentBlock().Header().Coinbase, tx.QuoteToken())
+			quoteDecimal, err := rupXServ.GetTokenDecimal(pool.chain, cloneStateDb, tx.QuoteToken())
 			if err != nil {
 				return fmt.Errorf("validateOrder: failed to get quoteDecimal. err: %v", err)
 			}
-			if err := rupx_state.VerifyBalance(cloneStateDb, cloneRupXStateDb, tx, baseDecimal, quoteDecimal); err != nil {
-				return fmt.Errorf("not enough balance to make this order. OrderHash: %s. UserAddress: %s. PairName: %s. Err: %v", tx.Hash().Hex(), tx.UserAddress().Hex(), tx.PairName(), err)
+			if err := tradingstate.VerifyBalance(cloneStateDb, cloneRupXStateDb, tx, baseDecimal, quoteDecimal); err != nil {
+				return fmt.Errorf("VerifyBalance failed. OrderHash: %s. UserAddress: %s. Err: %v", tx.Hash().Hex(), tx.UserAddress().Hex(), err)
 			}
 		}
 
@@ -503,11 +504,15 @@ func (pool *OrderPool) validateOrder(tx *types.OrderTransaction) error {
 		if tx.OrderID() == 0 {
 			return ErrInvalidCancelledOrder
 		}
-		// originOrder := cloneRupXStateDb.GetOrder(rupx_state.GetOrderBookHash(tx.BaseToken(), tx.QuoteToken()), common.BigToHash(new(big.Int).SetUint64(tx.OrderID())))
-		// if originOrder == rupx_state.EmptyOrder {
-		//	log.Debug("Order not found ", "OrderId", tx.OrderID(), "BaseToken", tx.BaseToken().Hex(), "QuoteToken", tx.QuoteToken().Hex())
-		//	return ErrInvalidCancelledOrder
-		//  }
+		originOrder := cloneRupXStateDb.GetOrder(tradingstate.GetTradingOrderBookHash(tx.BaseToken(), tx.QuoteToken()), common.BigToHash(new(big.Int).SetUint64(tx.OrderID())))
+		if originOrder == tradingstate.EmptyOrder {
+			log.Debug("Order not found ", "OrderId", tx.OrderID(), "BaseToken", tx.BaseToken().Hex(), "QuoteToken", tx.QuoteToken().Hex())
+			return ErrInvalidCancelledOrder
+		}
+		if originOrder.Hash != tx.OrderHash() {
+			log.Debug("Invalid order hash", "expected", originOrder.Hash.Hex(), "got", tx.OrderHash().Hex())
+			return ErrInvalidOrderHash
+		}
 	}
 
 	from, _ := types.OrderSender(pool.signer, tx)
@@ -515,7 +520,7 @@ func (pool *OrderPool) validateOrder(tx *types.OrderTransaction) error {
 		return ErrInvalidOrderUserAddress
 	}
 
-	if !rupx_state.IsValidRelayer(cloneStateDb, tx.ExchangeAddress()) {
+	if !tradingstate.IsValidRelayer(cloneStateDb, tx.ExchangeAddress()) {
 		return fmt.Errorf("invalid relayer. ExchangeAddress: %s", tx.ExchangeAddress().Hex())
 	}
 
@@ -581,6 +586,8 @@ func (pool *OrderPool) add(tx *types.OrderTransaction, local bool) (bool, error)
 
 	// If the transaction pool is full, discard underpriced transactions
 	if uint64(len(pool.all)) >= pool.config.GlobalSlots+pool.config.GlobalQueue {
+		log.Debug("Add order transaction to pool full", "hash", hash, "nonce", tx.Nonce())
+		return false, ErrPoolOverflow
 	}
 	// If the transaction is replacing an already pending one, do directly
 	if list := pool.pending[from]; list != nil && list.Overlaps(tx) {

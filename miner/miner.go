@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"sync/atomic"
 
+	"github.com/rupayaproject/rupaya/rupxlending"
+
 	"github.com/rupayaproject/rupaya/accounts"
 	"github.com/rupayaproject/rupaya/common"
 	"github.com/rupayaproject/rupaya/consensus"
@@ -43,6 +45,8 @@ type Backend interface {
 	ChainDb() ethdb.Database
 	GetRupX() *rupx.RupX
 	OrderPool() *core.OrderPool
+	LendingPool() *core.LendingPool
+	GetRupXLending() *rupxlending.Lending
 }
 
 // Miner creates blocks and searches for proof-of-work values.

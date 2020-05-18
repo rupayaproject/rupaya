@@ -13,15 +13,15 @@ require (
 	github.com/deckarep/golang-set v0.0.0-20180603214616-504e848d77ea
 	github.com/docker/docker v1.4.2-0.20180625184442-8e610b2b55bf
 	github.com/edsrzf/mmap-go v1.0.0
-	github.com/elastic/gosigar v0.10.5
-	github.com/ethereum/go-ethereum v1.9.10 // indirect
+	github.com/elastic/gosigar v0.10.5 // indirect
+	github.com/ethereum/go-ethereum v1.9.14 // indirect
 	github.com/fatih/color v1.6.0
 	github.com/gizak/termui v2.2.0+incompatible
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/go-stack/stack v1.8.0
 	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.1
-	github.com/hashicorp/golang-lru v0.5.3
+	github.com/hashicorp/golang-lru v0.5.4
 	github.com/huin/goupnp v1.0.0
 	github.com/influxdata/influxdb v1.7.9
 	github.com/jackpal/go-nat-pmp v1.0.2-0.20160603034137-1fa385a6f458
@@ -31,6 +31,7 @@ require (
 	github.com/karalabe/hid v1.0.0
 	github.com/kkdai/bstream v0.0.0-20161212061736-f391b8402d23 // indirect
 	github.com/maruel/panicparse v0.0.0-20160720141634-ad661195ed0e // indirect
+	github.com/maruel/ut v1.0.1 // indirect
 	github.com/mattn/go-colorable v0.1.0
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
@@ -46,15 +47,16 @@ require (
 	github.com/rs/cors v1.6.0
 	github.com/stretchr/testify v1.4.0
 	github.com/syndtr/goleveldb v1.0.1-0.20190923125748-758128399b1d
-	golang.org/x/crypto v0.0.0-20191105034135-c7e5f84aec59
-	golang.org/x/net v0.0.0-20190912160710-24e19bdeb0f2
+	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4
+	golang.org/x/net v0.0.0-20200425230154-ff2c4b7c35a0
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190912141932-bc967efca4b8
+	golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd
 	golang.org/x/tools v0.0.0-20191104232314-dc038396d1f0
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127
 	gopkg.in/fatih/set.v0 v0.2.1 // indirect
 	gopkg.in/karalabe/cookiejar.v2 v2.0.0-20150724131613-8dcd6a7f4951
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce
-	gopkg.in/olebedev/go-duktape.v3 v3.0.0-20190213234257-ec84240a7772
+	gopkg.in/olebedev/go-duktape.v3 v3.0.0-20200316214253-d7b0ff38cac9
+	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 	gopkg.in/urfave/cli.v1 v1.20.0
 )

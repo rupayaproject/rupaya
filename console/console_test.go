@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"errors"
 	"github.com/rupayaproject/rupaya/rupx"
+	"github.com/rupayaproject/rupaya/rupxlending"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -105,7 +106,7 @@ func newTester(t *testing.T, confOverride func(*eth.Config)) *tester {
 	if confOverride != nil {
 		confOverride(ethConf)
 	}
-	if err = stack.Register(func(ctx *node.ServiceContext) (node.Service, error) { return eth.New(ctx, ethConf, &rupx.RupX{}) }); err != nil {
+	if err = stack.Register(func(ctx *node.ServiceContext) (node.Service, error) { return eth.New(ctx, ethConf, &rupx.RupX{},&rupxlending.Lending{}) }); err != nil {
 		t.Fatalf("failed to register Ethereum protocol: %v", err)
 	}
 	// Start the node and assemble the JavaScript console around it

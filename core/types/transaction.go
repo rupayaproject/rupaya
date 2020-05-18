@@ -33,8 +33,14 @@ import (
 //go:generate gencodec -type txdata -field-override txdataMarshaling -out gen_tx_json.go
 
 var (
-	ErrInvalidSig = errors.New("invalid transaction v, r, s values")
-	errNoSigner   = errors.New("missing signing methods")
+	ErrInvalidSig               = errors.New("invalid transaction v, r, s values")
+	errNoSigner                 = errors.New("missing signing methods")
+	skipNonceDestinationAddress = map[string]bool{
+		common.RupXAddr:                         true,
+		common.TradingStateAddr:                 true,
+		common.RupXLendingAddress:               true,
+		common.RupXLendingFinalizedTradeAddress: true,
+	}
 )
 
 // deriveSigner makes a *best* guess about which signer to use.
@@ -301,7 +307,7 @@ func (tx *Transaction) IsSpecialTransaction() bool {
 	return tx.To().String() == common.RandomizeSMC || tx.To().String() == common.BlockSigners
 }
 
-func (tx *Transaction) IsMatchingTransaction() bool {
+func (tx *Transaction) IsTradingTransaction() bool {
 	if tx.To() == nil {
 		return false
 	}
@@ -313,11 +319,33 @@ func (tx *Transaction) IsMatchingTransaction() bool {
 	return true
 }
 
+func (tx *Transaction) IsLendingTransaction() bool {
+	if tx.To() == nil {
+		return false
+	}
+
+	if tx.To().String() != common.RupXLendingAddress {
+		return false
+	}
+	return true
+}
+
+func (tx *Transaction) IsLendingFinalizedTradeTransaction() bool {
+	if tx.To() == nil {
+		return false
+	}
+
+	if tx.To().String() != common.RupXLendingFinalizedTradeAddress {
+		return false
+	}
+	return true
+}
+
 func (tx *Transaction) IsSkipNonceTransaction() bool {
 	if tx.To() == nil {
 		return false
 	}
-	if tx.To().String() == common.RupXAddr || tx.To().String() == common.RupXStateAddr {
+	if skip := skipNonceDestinationAddress[tx.To().String()]; skip {
 		return true
 	}
 	return false
@@ -381,6 +409,60 @@ func (tx *Transaction) IsVotingTransaction() (bool, *common.Address) {
 	}
 
 	return b, nil
+}
+
+func (tx *Transaction) IsRupXApplyTransaction() bool {
+	if tx.To() == nil {
+		return false
+	}
+
+	addr := common.RupXListingSMC
+	if common.IsTestnet {
+		addr = common.RupXListingSMCTestNet
+	}
+	if tx.To().String() != addr.String() {
+		return false
+	}
+
+	method := common.ToHex(tx.Data()[0:4])
+
+	if method != common.RupXApplyMethod {
+		return false
+	}
+
+	// 4 bytes for function name
+	// 32 bytes for 1 parameter
+	if len(tx.Data()) != (32 + 4) {
+		return false
+	}
+	return true
+}
+
+func (tx *Transaction) IsRupZApplyTransaction() bool {
+	if tx.To() == nil {
+		return false
+	}
+
+	addr := common.RRC21IssuerSMC
+	if common.IsTestnet {
+		addr = common.RRC21IssuerSMCTestNet
+	}
+	if tx.To().String() != addr.String() {
+		return false
+	}
+
+	method := common.ToHex(tx.Data()[0:4])
+	if method != common.RupZApplyMethod {
+		return false
+	}
+
+	// 4 bytes for function name
+	// 32 bytes for 1 parameter
+	if len(tx.Data()) != (32 + 4) {
+		return false
+	}
+
+	return true
 }
 
 func (tx *Transaction) String() string {

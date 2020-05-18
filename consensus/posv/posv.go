@@ -21,7 +21,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/rupayaproject/rupaya/rupx/rupx_state"
+	"github.com/rupayaproject/rupaya/rupx/tradingstate"
+	"github.com/rupayaproject/rupaya/rupxlending/lendingstate"
 	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
 	"io/ioutil"
 	"math/big"
@@ -62,16 +63,33 @@ type Masternode struct {
 	Stake   *big.Int
 }
 
-type RupXService interface {
-	GetRupxStateRoot(block *types.Block) (common.Hash, error)
-	GetRupxState(block *types.Block) (*rupx_state.RupXStateDB, error)
-	GetStateCache() rupx_state.Database
+type TradingService interface {
+	GetTradingStateRoot(block *types.Block) (common.Hash, error)
+	GetTradingState(block *types.Block) (*tradingstate.TradingStateDB, error)
+	HasTradingState(block *types.Block) bool
+	GetStateCache() tradingstate.Database
 	GetTriegc() *prque.Prque
-	ApplyOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, rupXstatedb *rupx_state.RupXStateDB, orderBook common.Hash, order *rupx_state.OrderItem) ([]map[string]string, []*rupx_state.OrderItem, error)
+	ApplyOrder(coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, rupXstatedb *tradingstate.TradingStateDB, orderBook common.Hash, order *tradingstate.OrderItem) ([]map[string]string, []*tradingstate.OrderItem, error)
+	UpdateMediumPriceBeforeEpoch(epochNumber uint64, tradingStateDB *tradingstate.TradingStateDB, statedb *state.StateDB) error
 	IsSDKNode() bool
-	SyncDataToSDKNode(takerOrder *rupx_state.OrderItem, txHash common.Hash, txMatchTime time.Time, statedb *state.StateDB, trades []map[string]string, rejectedOrders []*rupx_state.OrderItem, dirtyOrderCount *uint64) error
-	RollbackReorgTxMatch(txhash common.Hash)
-	GetTokenDecimal(chain consensus.ChainContext, statedb *state.StateDB, coinbase common.Address, tokenAddr common.Address) (*big.Int, error)
+	SyncDataToSDKNode(takerOrder *tradingstate.OrderItem, txHash common.Hash, txMatchTime time.Time, statedb *state.StateDB, trades []map[string]string, rejectedOrders []*tradingstate.OrderItem, dirtyOrderCount *uint64) error
+	RollbackReorgTxMatch(txhash common.Hash) error
+	GetTokenDecimal(chain consensus.ChainContext, statedb *state.StateDB, tokenAddr common.Address) (*big.Int, error)
+}
+
+type LendingService interface {
+	GetLendingStateRoot(block *types.Block) (common.Hash, error)
+	GetLendingState(block *types.Block) (*lendingstate.LendingStateDB, error)
+	HasLendingState(block *types.Block) bool
+	GetStateCache() lendingstate.Database
+	GetTriegc() *prque.Prque
+	ApplyOrder(header *types.Header, coinbase common.Address, chain consensus.ChainContext, statedb *state.StateDB, lendingStateDB *lendingstate.LendingStateDB, tradingStateDb *tradingstate.TradingStateDB, lendingOrderBook common.Hash, order *lendingstate.LendingItem) ([]*lendingstate.LendingTrade, []*lendingstate.LendingItem, error)
+	GetCollateralPrices(header *types.Header, chain consensus.ChainContext, statedb *state.StateDB, tradingStateDb *tradingstate.TradingStateDB, collateralToken common.Address, lendingToken common.Address) (*big.Int, *big.Int, error)
+	GetMediumTradePriceBeforeEpoch(chain consensus.ChainContext, statedb *state.StateDB, tradingStateDb *tradingstate.TradingStateDB, baseToken common.Address, quoteToken common.Address) (*big.Int, error)
+	ProcessLiquidationData(header *types.Header, chain consensus.ChainContext, statedb *state.StateDB, tradingState *tradingstate.TradingStateDB, lendingState *lendingstate.LendingStateDB) (updatedTrades map[common.Hash]*lendingstate.LendingTrade, liquidatedTrades, autoRepayTrades, autoTopUpTrades, autoRecallTrades []*lendingstate.LendingTrade, err error)
+	SyncDataToSDKNode(chain consensus.ChainContext, state *state.StateDB, block *types.Block, takerOrderInTx *lendingstate.LendingItem, txHash common.Hash, txMatchTime time.Time, trades []*lendingstate.LendingTrade, rejectedOrders []*lendingstate.LendingItem, dirtyOrderCount *uint64) error
+	UpdateLiquidatedTrade(blockTime uint64, result lendingstate.FinalizedResult, trades map[common.Hash]*lendingstate.LendingTrade) error
+	RollbackLendingData(txhash common.Hash) error
 }
 
 // Posv proof-of-stake-voting protocol constants.
@@ -242,12 +260,13 @@ type Posv struct {
 	lock   sync.RWMutex    // Protects the signer fields
 
 	BlockSigners               *lru.Cache
-	HookReward                 func(chain consensus.ChainReader, state *state.StateDB,parentState *state.StateDB, header *types.Header) (error, map[string]interface{})
+	HookReward                 func(chain consensus.ChainReader, state *state.StateDB, parentState *state.StateDB, header *types.Header) (error, map[string]interface{})
 	HookPenalty                func(chain consensus.ChainReader, blockNumberEpoc uint64) ([]common.Address, error)
 	HookPenaltyRIPSigning      func(chain consensus.ChainReader, header *types.Header, candidate []common.Address) ([]common.Address, error)
 	HookValidator              func(header *types.Header, signers []common.Address) ([]byte, error)
 	HookVerifyMNs              func(header *types.Header, signers []common.Address) error
-	GetRupXService            func() RupXService
+	GetRupXService            func() TradingService
+	GetLendingService          func() LendingService
 	HookGetSignersFromContract func(blockHash common.Hash) ([]common.Address, error)
 }
 
@@ -938,7 +957,7 @@ func (c *Posv) UpdateMasternodes(chain consensus.ChainReader, header *types.Head
 
 // Finalize implements consensus.Engine, ensuring no uncles are set, nor block
 // rewards given, and returns the final block.
-func (c *Posv) Finalize(chain consensus.ChainReader, header *types.Header, state *state.StateDB,parentState *state.StateDB, txs []*types.Transaction, uncles []*types.Header, receipts []*types.Receipt) (*types.Block, error) {
+func (c *Posv) Finalize(chain consensus.ChainReader, header *types.Header, state *state.StateDB, parentState *state.StateDB, txs []*types.Transaction, uncles []*types.Header, receipts []*types.Receipt) (*types.Block, error) {
 	// set block reward
 	number := header.Number.Uint64()
 	rCheckpoint := chain.Config().Posv.RewardCheckpoint
@@ -946,7 +965,7 @@ func (c *Posv) Finalize(chain consensus.ChainReader, header *types.Header, state
 	// _ = c.CacheData(header, txs, receipts)
 
 	if c.HookReward != nil && number%rCheckpoint == 0 {
-		err, rewards := c.HookReward(chain, state,parentState, header)
+		err, rewards := c.HookReward(chain, state, parentState, header)
 		if err != nil {
 			return nil, err
 		}
@@ -1078,7 +1097,7 @@ func (c *Posv) APIs(chain consensus.ChainReader) []rpc.API {
 		Namespace: "posv",
 		Version:   "1.0",
 		Service:   &API{chain: chain, posv: c},
-		Public:    false,
+		Public:    true,
 	}}
 }
 

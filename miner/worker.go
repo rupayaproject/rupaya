@@ -20,7 +20,9 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+
 	"github.com/rupayaproject/rupaya/accounts"
+	"github.com/rupayaproject/rupaya/rupxlending/lendingstate"
 
 	"math/big"
 	"os"
@@ -28,7 +30,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/rupayaproject/rupaya/rupx/rupx_state"
+	"github.com/rupayaproject/rupaya/rupx/tradingstate"
 
 	mapset "github.com/deckarep/golang-set"
 	"github.com/rupayaproject/rupaya/common"
@@ -80,13 +82,14 @@ type Work struct {
 	config *params.ChainConfig
 	signer types.Signer
 
-	state       *state.StateDB // apply state changes here
-	parentState *state.StateDB
-	rupxState  *rupx_state.RupXStateDB
-	ancestors   mapset.Set // ancestor set (used for checking uncle parent validity)
-	family      mapset.Set // family set (used for checking uncle invalidity)
-	uncles      mapset.Set // uncle set
-	tcount      int        // tx count in cycle
+	state        *state.StateDB // apply state changes here
+	parentState  *state.StateDB
+	tradingState *tradingstate.TradingStateDB
+	lendingState *lendingstate.LendingStateDB
+	ancestors    mapset.Set // ancestor set (used for checking uncle parent validity)
+	family       mapset.Set // family set (used for checking uncle invalidity)
+	uncles       mapset.Set // uncle set
+	tcount       int        // tx count in cycle
 
 	Block *types.Block // the new block
 
@@ -355,7 +358,7 @@ func (self *worker) wait() {
 				log.BlockHash = block.Hash()
 			}
 			self.currentMu.Lock()
-			stat, err := self.chain.WriteBlockWithState(block, work.receipts, work.state, work.rupxState)
+			stat, err := self.chain.WriteBlockWithState(block, work.receipts, work.state, work.tradingState, work.lendingState)
 			self.currentMu.Unlock()
 			if err != nil {
 				log.Error("Failed writing block to chain", "err", err)
@@ -451,27 +454,35 @@ func (self *worker) makeCurrent(parent *types.Block, header *types.Header) error
 	if err != nil {
 		return err
 	}
-	var rupxState *rupx_state.RupXStateDB
+	var rupxStake *tradingstate.TradingStateDB
+	var lendingState *lendingstate.LendingStateDB
 	if self.config.Posv != nil {
 		rupX := self.eth.GetRupX()
-		rupxState, err = rupX.GetRupxState(parent)
+		rupxStake, err = rupX.GetTradingState(parent)
 		if err != nil {
-			log.Error("Failed to create mining context", "err", err)
+			log.Error("Failed to get rupx state ", "number", parent.Number(), "err", err)
+			return err
+		}
+		lending := self.eth.GetRupXLending()
+		lendingState, err = lending.GetLendingState(parent)
+		if err != nil {
+			log.Error("Failed to get lending state ", "number", parent.Number(), "err", err)
 			return err
 		}
 	}
 
 	work := &Work{
-		config:      self.config,
-		signer:      types.NewEIP155Signer(self.config.ChainId),
-		state:       state,
-		parentState: state.Copy(),
-		rupxState:  rupxState,
-		ancestors:   mapset.NewSet(),
-		family:      mapset.NewSet(),
-		uncles:      mapset.NewSet(),
-		header:      header,
-		createdAt:   time.Now(),
+		config:       self.config,
+		signer:       types.NewEIP155Signer(self.config.ChainId),
+		state:        state,
+		parentState:  state.Copy(),
+		tradingState: rupxStake,
+		lendingState: lendingState,
+		ancestors:    mapset.NewSet(),
+		family:       mapset.NewSet(),
+		uncles:       mapset.NewSet(),
+		header:       header,
+		createdAt:    time.Now(),
 	}
 
 	if self.config.Posv == nil {
@@ -612,11 +623,17 @@ func (self *worker) commitNewWork() {
 	}
 	// won't grasp txs at checkpoint
 	var (
-		txs                 *types.TransactionsByPriceAndNonce
-		specialTxs          types.Transactions
-		matchingTransaction *types.Transaction
-		txMatches           []rupx_state.TxDataMatch
-		matchingResults     map[common.Hash]rupx_state.MatchingResult
+		txs                                                                  *types.TransactionsByPriceAndNonce
+		specialTxs                                                           types.Transactions
+		tradingTransaction                                                   *types.Transaction
+		lendingTransaction                                                   *types.Transaction
+		tradingTxMatches                                                     []tradingstate.TxDataMatch
+		tradingMatchingResults                                               map[common.Hash]tradingstate.MatchingResult
+		lendingMatchingResults                                               map[common.Hash]lendingstate.MatchingResult
+		lendingInput                                                         []*lendingstate.LendingItem
+		updatedTrades                                                        map[common.Hash]*lendingstate.LendingTrade
+		liquidatedTrades, autoRepayTrades, autoTopUpTrades, autoRecallTrades []*lendingstate.LendingTrade
+		lendingFinalizedTradeTransaction                                     *types.Transaction
 	)
 	feeCapacity := state.GetRRC21FeeCapacityFromStateWithCache(parent.Root(), work.state)
 	if self.config.Posv != nil && header.Number.Uint64()%self.config.Posv.Epoch != 0 {
@@ -633,49 +650,131 @@ func (self *worker) commitNewWork() {
 			log.Warn("Can't find coinbase account wallet", "coinbase", self.coinbase, "err", err)
 			return
 		}
-		if self.config.Posv != nil && header.Number.Uint64()%self.config.Posv.Epoch != 0 && self.chain.Config().IsRIPRupX(header.Number) {
+		if self.config.Posv != nil && self.chain.Config().IsRIPRupX(header.Number) {
 			rupX := self.eth.GetRupX()
+			rupXLending := self.eth.GetRupXLending()
 			if rupX != nil && header.Number.Uint64() > self.config.Posv.Epoch {
-				log.Debug("Start processing order pending")
-				orderPending, _ := self.eth.OrderPool().Pending()
-				log.Debug("Start processing order pending", "len", len(orderPending))
-				txMatches, matchingResults = rupX.ProcessOrderPending(self.coinbase, self.chain, orderPending, work.state, work.rupxState)
-				log.Debug("transaction matches found", "txMatches", len(txMatches))
-			}
-			txMatchBatch := &rupx_state.TxMatchBatch{
-				Data:      txMatches,
-				Timestamp: time.Now().UnixNano(),
-				TxHash:    common.Hash{},
-			}
-			txMatchBytes, err := rupx_state.EncodeTxMatchesBatch(*txMatchBatch)
-			if err != nil {
-				log.Error("Fail to marshal txMatch", "error", err)
-				return
-			}
-			nonce := work.state.GetNonce(self.coinbase)
-			tx := types.NewTransaction(nonce, common.HexToAddress(common.RupXAddr), big.NewInt(0), txMatchGasLimit, big.NewInt(0), txMatchBytes)
-			txM, err := wallet.SignTx(accounts.Account{Address: self.coinbase}, tx, self.config.ChainId)
-			if err != nil {
-				log.Error("Fail to create tx matches", "error", err)
-				return
-			} else {
-				matchingTransaction = txM
-				if rupX != nil && rupX.IsSDKNode() {
-					self.chain.AddMatchingResult(matchingTransaction.Hash(), matchingResults)
+				if header.Number.Uint64()%self.config.Posv.Epoch == 0 {
+					err := rupX.UpdateMediumPriceBeforeEpoch(header.Number.Uint64()/self.config.Posv.Epoch, work.tradingState, work.state)
+					if err != nil {
+						log.Error("Fail when update medium price last epoch", "error", err)
+						return
+					}
+				}
+				// won't grasp tx at checkpoint
+				//https://github.com/rupayaproject/rupaya-v1/pull/416
+				if header.Number.Uint64()%self.config.Posv.Epoch != 0 {
+					log.Debug("Start processing order pending")
+					tradingOrderPending, _ := self.eth.OrderPool().Pending()
+					log.Debug("Start processing order pending", "len", len(tradingOrderPending))
+					tradingTxMatches, tradingMatchingResults = rupX.ProcessOrderPending(self.coinbase, self.chain, tradingOrderPending, work.state, work.tradingState)
+					log.Debug("trading transaction matches found", "tradingTxMatches", len(tradingTxMatches))
+
+					lendingOrderPending, _ := self.eth.LendingPool().Pending()
+					lendingInput, lendingMatchingResults = rupXLending.ProcessOrderPending(header, self.coinbase, self.chain, lendingOrderPending, work.state, work.lendingState, work.tradingState)
+					log.Debug("lending transaction matches found", "lendingInput", len(lendingInput), "lendingMatchingResults", len(lendingMatchingResults))
+					if header.Number.Uint64()%self.config.Posv.Epoch == common.LiquidateLendingTradeBlock {
+						updatedTrades, liquidatedTrades, autoRepayTrades, autoTopUpTrades, autoRecallTrades, err = rupXLending.ProcessLiquidationData(header, self.chain, work.state, work.tradingState, work.lendingState)
+						if err != nil {
+							log.Error("Fail when process lending liquidation data ", "error", err)
+							return
+						}
+					}
+				}
+				if len(tradingTxMatches) > 0 {
+					txMatchBatch := &tradingstate.TxMatchBatch{
+						Data:      tradingTxMatches,
+						Timestamp: time.Now().UnixNano(),
+						TxHash:    common.Hash{},
+					}
+					txMatchBytes, err := tradingstate.EncodeTxMatchesBatch(*txMatchBatch)
+					if err != nil {
+						log.Error("Fail to marshal txMatch", "error", err)
+						return
+					}
+					nonce := work.state.GetNonce(self.coinbase)
+					tx := types.NewTransaction(nonce, common.HexToAddress(common.RupXAddr), big.NewInt(0), txMatchGasLimit, big.NewInt(0), txMatchBytes)
+					txM, err := wallet.SignTx(accounts.Account{Address: self.coinbase}, tx, self.config.ChainId)
+					if err != nil {
+						log.Error("Fail to create tx matches", "error", err)
+						return
+					} else {
+						tradingTransaction = txM
+						if rupX.IsSDKNode() {
+							self.chain.AddMatchingResult(tradingTransaction.Hash(), tradingMatchingResults)
+						}
+					}
+				}
+				if len(lendingInput) > 0 {
+					// lending transaction
+					lendingBatch := &lendingstate.TxLendingBatch{
+						Data:      lendingInput,
+						Timestamp: time.Now().UnixNano(),
+						TxHash:    common.Hash{},
+					}
+					lendingDataBytes, err := lendingstate.EncodeTxLendingBatch(*lendingBatch)
+					if err != nil {
+						log.Error("Fail to marshal lendingData", "error", err)
+						return
+					}
+					nonce := work.state.GetNonce(self.coinbase)
+					lendingTx := types.NewTransaction(nonce, common.HexToAddress(common.RupXLendingAddress), big.NewInt(0), txMatchGasLimit, big.NewInt(0), lendingDataBytes)
+					signedLendingTx, err := wallet.SignTx(accounts.Account{Address: self.coinbase}, lendingTx, self.config.ChainId)
+					if err != nil {
+						log.Error("Fail to create lending tx", "error", err)
+						return
+					} else {
+						lendingTransaction = signedLendingTx
+						if rupX.IsSDKNode() {
+							self.chain.AddLendingResult(lendingTransaction.Hash(), lendingMatchingResults)
+						}
+					}
+				}
+
+				if len(updatedTrades) > 0 {
+					log.Debug("M1 finalized trades")
+					finalizedTradeData, err := lendingstate.EncodeFinalizedResult(liquidatedTrades, autoRepayTrades, autoTopUpTrades, autoRecallTrades)
+					if err != nil {
+						log.Error("Fail to marshal lendingData", "error", err)
+						return
+					}
+					nonce := work.state.GetNonce(self.coinbase)
+					finalizedTx := types.NewTransaction(nonce, common.HexToAddress(common.RupXLendingFinalizedTradeAddress), big.NewInt(0), txMatchGasLimit, big.NewInt(0), finalizedTradeData)
+					signedFinalizedTx, err := wallet.SignTx(accounts.Account{Address: self.coinbase}, finalizedTx, self.config.ChainId)
+					if err != nil {
+						log.Error("Fail to create lending tx", "error", err)
+						return
+					} else {
+						lendingFinalizedTradeTransaction = signedFinalizedTx
+						if rupX.IsSDKNode() {
+							self.chain.AddFinalizedTrades(lendingFinalizedTradeTransaction.Hash(), updatedTrades)
+						}
+					}
 				}
 			}
-			// force adding matching transaction to this block
-			specialTxs = append(specialTxs, matchingTransaction)
 		}
-		RupxStateRoot := work.rupxState.IntermediateRoot()
-		tx := types.NewTransaction(work.state.GetNonce(self.coinbase), common.HexToAddress(common.RupXStateAddr), big.NewInt(0), txMatchGasLimit, big.NewInt(0), RupxStateRoot.Bytes())
+
+		// force adding trading, lending transaction to this block
+		if tradingTransaction != nil {
+			specialTxs = append(specialTxs, tradingTransaction)
+		}
+		if lendingTransaction != nil {
+			specialTxs = append(specialTxs, lendingTransaction)
+		}
+		if lendingFinalizedTradeTransaction != nil {
+			specialTxs = append(specialTxs, lendingFinalizedTradeTransaction)
+		}
+
+		RupxStateRoot := work.tradingState.IntermediateRoot()
+		LendingStateRoot := work.lendingState.IntermediateRoot()
+		txData := append(RupxStateRoot.Bytes(), LendingStateRoot.Bytes()...)
+		tx := types.NewTransaction(work.state.GetNonce(self.coinbase), common.HexToAddress(common.TradingStateAddr), big.NewInt(0), txMatchGasLimit, big.NewInt(0), txData)
 		txStateRoot, err := wallet.SignTx(accounts.Account{Address: self.coinbase}, tx, self.config.ChainId)
 		if err != nil {
 			log.Error("Fail to create tx state root", "error", err)
 			return
 		}
 		specialTxs = append(specialTxs, txStateRoot)
-
 	}
 	work.commitTransactions(self.mux, feeCapacity, txs, specialTxs, self.chain, self.coinbase)
 	// compute uncles for the new block.
@@ -748,6 +847,25 @@ func (env *Work) commitTransactions(mux *event.TypeMux, balanceFee map[common.Ad
 			// check if receiver is in black list
 			if tx.To() != nil && common.Blacklist[*tx.To()] {
 				log.Debug("Skipping transaction with receiver in black-list", "receiver", tx.To().Hex())
+				continue
+			}
+		}
+
+		// validate minFee slot for RupZ
+		if tx.IsRupZApplyTransaction() {
+			copyState, _ := bc.State()
+			if err := core.ValidateRupZApplyTransaction(bc, nil, copyState, common.BytesToAddress(tx.Data()[4:])); err != nil {
+				log.Debug("RupZApply: invalid token", "token", common.BytesToAddress(tx.Data()[4:]).Hex())
+				txs.Pop()
+				continue
+			}
+		}
+		// validate balance slot, token decimal for RupX
+		if tx.IsRupXApplyTransaction() {
+			copyState, _ := bc.State()
+			if err := core.ValidateRupXApplyTransaction(bc, nil, copyState, common.BytesToAddress(tx.Data()[4:])); err != nil {
+				log.Debug("RupXApply: invalid token", "token", common.BytesToAddress(tx.Data()[4:]).Hex())
+				txs.Pop()
 				continue
 			}
 		}
@@ -844,6 +962,25 @@ func (env *Work) commitTransactions(mux *event.TypeMux, balanceFee map[common.Ad
 			if tx.To() != nil && common.Blacklist[*tx.To()] {
 				log.Debug("Skipping transaction with receiver in black-list", "receiver", tx.To().Hex())
 				txs.Shift()
+				continue
+			}
+		}
+
+		// validate minFee slot for RupZ
+		if tx.IsRupZApplyTransaction() {
+			copyState, _ := bc.State()
+			if err := core.ValidateRupZApplyTransaction(bc, nil, copyState, common.BytesToAddress(tx.Data()[4:])); err != nil {
+				log.Debug("RupZApply: invalid token", "token", common.BytesToAddress(tx.Data()[4:]).Hex())
+				txs.Pop()
+				continue
+			}
+		}
+		// validate balance slot, token decimal for RupX
+		if tx.IsRupXApplyTransaction() {
+			copyState, _ := bc.State()
+			if err := core.ValidateRupXApplyTransaction(bc, nil, copyState, common.BytesToAddress(tx.Data()[4:])); err != nil {
+				log.Debug("RupXApply: invalid token", "token", common.BytesToAddress(tx.Data()[4:]).Hex())
+				txs.Pop()
 				continue
 			}
 		}

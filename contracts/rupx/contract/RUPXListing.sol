@@ -25,7 +25,7 @@ contract RUPXListing {
     }
 
     function apply(address token) public payable onlyValidApplyNewToken(token){
-        require(msg.value >= 1000 ether);
+        require(msg.value == 1000 ether);
         foundation.transfer(msg.value);
 
         _tokens.push(token);

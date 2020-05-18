@@ -93,6 +93,20 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 				return nil, nil, 0, fmt.Errorf("Block contains transaction with receiver in black-list: %v", tx.To().Hex())
 			}
 		}
+		// validate minFee slot for Rupz
+		if tx.IsRupZApplyTransaction() {
+			copyState := statedb.Copy()
+			if err := ValidateRupZApplyTransaction(p.bc, block.Number(), copyState, common.BytesToAddress(tx.Data()[4:])); err != nil {
+				return nil, nil, 0, err
+			}
+		}
+		// validate balance slot, token decimal for RupX
+		if tx.IsRupXApplyTransaction() {
+			copyState := statedb.Copy()
+			if err := ValidateRupXApplyTransaction(p.bc, block.Number(), copyState, common.BytesToAddress(tx.Data()[4:])); err != nil {
+				return nil, nil, 0, err
+			}
+		}
 		statedb.Prepare(tx.Hash(), block.Hash(), i)
 		receipt, gas, err, tokenFeeUsed := ApplyTransaction(p.config, balanceFee, p.bc, nil, gp, statedb, header, tx, usedGas, cfg)
 		if err != nil {
@@ -157,6 +171,20 @@ func (p *StateProcessor) ProcessBlockNoValidator(cBlock *CalculatedBlock, stated
 				return nil, nil, 0, fmt.Errorf("Block contains transaction with receiver in black-list: %v", tx.To().Hex())
 			}
 		}
+		// validate minFee slot for Rupz
+		if tx.IsRupZApplyTransaction() {
+			copyState := statedb.Copy()
+			if err := ValidateRupZApplyTransaction(p.bc, block.Number(), copyState, common.BytesToAddress(tx.Data()[4:])); err != nil {
+				return nil, nil, 0, err
+			}
+		}
+		// validate balance slot, token decimal for RupX
+		if tx.IsRupXApplyTransaction() {
+			copyState := statedb.Copy()
+			if err := ValidateRupXApplyTransaction(p.bc, block.Number(), copyState, common.BytesToAddress(tx.Data()[4:])); err != nil {
+				return nil, nil, 0, err
+			}
+		}
 		statedb.Prepare(tx.Hash(), block.Hash(), i)
 		receipt, gas, err, tokenFeeUsed := ApplyTransaction(p.config, balanceFee, p.bc, nil, gp, statedb, header, tx, usedGas, cfg)
 		if err != nil {
@@ -191,12 +219,20 @@ func ApplyTransaction(config *params.ChainConfig, tokensFee map[common.Address]*
 	if tx.To() != nil && tx.To().String() == common.BlockSigners && config.IsRIPSigning(header.Number) {
 		return ApplySignTransaction(config, statedb, header, tx, usedGas)
 	}
-	if tx.To() != nil && tx.To().String() == common.RupXStateAddr && config.IsRIPRupX(header.Number) {
+	if tx.To() != nil && tx.To().String() == common.TradingStateAddr && config.IsRIPRupX(header.Number) {
 		return ApplyEmptyTransaction(config, statedb, header, tx, usedGas)
 	}
-	if tx.IsMatchingTransaction() && config.IsRIPRupX(header.Number) {
+	if tx.To() != nil && tx.To().String() == common.RupXLendingAddress && config.IsRIPRupX(header.Number) {
 		return ApplyEmptyTransaction(config, statedb, header, tx, usedGas)
 	}
+	if tx.IsTradingTransaction() && config.IsRIPRupX(header.Number) {
+		return ApplyEmptyTransaction(config, statedb, header, tx, usedGas)
+	}
+
+	if tx.IsLendingFinalizedTradeTransaction() && config.IsRIPRupX(header.Number) {
+		return ApplyEmptyTransaction(config, statedb, header, tx, usedGas)
+	}
+
 	var balanceFee *big.Int
 	if tx.To() != nil {
 		if value, ok := tokensFee[*tx.To()]; ok {

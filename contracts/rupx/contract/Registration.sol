@@ -36,6 +36,7 @@ contract RelayerRegistration {
 
     uint public RelayerCount;
     uint256 public MinimumDeposit;
+    uint public ActiveRelayerCount;
 
     AbstractRUPXListing private RupXListing;
 
@@ -44,6 +45,7 @@ contract RelayerRegistration {
     event ConfigEvent(uint max_relayer, uint max_token, uint256 min_deposit);
     event RegisterEvent(uint256 deposit, uint16 tradeFee, address[] fromTokens, address[] toTokens);
     event UpdateEvent(uint256 deposit, uint16 tradeFee, address[] fromTokens, address[] toTokens);
+    event UpdateFeeEvent(address coinbase, uint16 tradeFee);
     event TransferEvent(address owner, uint256 deposit, uint16 tradeFee, address[] fromTokens, address[] toTokens);
     event ResignEvent(uint deposit_release_time, uint256 deposit_amount);
     event RefundEvent(bool success, uint remaining_time, uint256 deposit_amount);
@@ -54,6 +56,7 @@ contract RelayerRegistration {
     constructor (address rupxListing, uint maxRelayers, uint maxTokenList, uint minDeposit) public {
         RupXListing = AbstractRUPXListing(rupxListing);
         RelayerCount = 0;
+        ActiveRelayerCount = 0;
         MaximumRelayers = maxRelayers;
         MaximumTokenList = maxTokenList;
         MinimumDeposit = minDeposit;
@@ -88,9 +91,15 @@ contract RelayerRegistration {
     }
 
 
+    /// @dev support to move to oracle service
+    function changeContractOwner(address owner) public contractOwnerOnly {
+        require(owner != address(0));
+        CONTRACT_OWNER = owner;
+    }
+
     /// @dev Contract Config Modifications
     function reconfigure(uint maxRelayer, uint maxToken, uint minDeposit) public contractOwnerOnly {
-        require(maxRelayer >= RelayerCount);
+        require(maxRelayer >= ActiveRelayerCount);
         require(maxToken > 4 && maxToken < 1001);
         require(minDeposit > 10000);
         MaximumRelayers = maxRelayer;
@@ -109,18 +118,17 @@ contract RelayerRegistration {
         require(coinbase != CONTRACT_OWNER, "Coinbase must not be same as CONTRACT_OWNER");
         require(msg.value >= MinimumDeposit, "Minimum deposit not satisfied.");
         /// @dev valid relayer configuration
-        require(tradeFee >= 1 && tradeFee < 1000, "Invalid Maker Fee");
+        require(tradeFee >= 0 && tradeFee < 1000, "Invalid Maker Fee");
         require(fromTokens.length <= MaximumTokenList, "Exceeding number of trade pairs");
         require(toTokens.length == fromTokens.length, "Not valid number of Pairs");
 
         require(RELAYER_LIST[coinbase]._deposit == 0, "Coinbase already registered.");
-        require(RelayerCount < MaximumRelayers, "Maximum relayers registered");
+        require(RESIGN_REQUESTS[coinbase] == 0, "The relayer has been requested to close.");
+        require(ActiveRelayerCount < MaximumRelayers, "Maximum relayers registered");
 
         // check valid tokens, token must pair with rupaya(x/RUPX)
         require(validateTokens(fromTokens, toTokens) == true, "Invalid quote tokens");
 
-        /// @notice Do we need to check the duplication of Token trade-pairs?
-        // Relayer memory relayer = Relayer(msg.value, tradeFee, fromTokens, toTokens, RelayerCount, msg.sender);
         RELAYER_COINBASES[RelayerCount] = coinbase;
         RELAYER_LIST[coinbase] = Relayer({
             _deposit: msg.value,
@@ -132,6 +140,7 @@ contract RelayerRegistration {
         });
 
         RelayerCount++;
+        ActiveRelayerCount++;
 
         emit RegisterEvent(RELAYER_LIST[coinbase]._deposit,
                            RELAYER_LIST[coinbase]._tradeFee,
@@ -141,7 +150,7 @@ contract RelayerRegistration {
 
 
     function update(address coinbase, uint16 tradeFee, address[] memory fromTokens, address[] memory toTokens) public relayerOwnerOnly(coinbase) onlyActiveRelayer(coinbase) notForSale(coinbase) {
-        require(tradeFee >= 1 && tradeFee < 1000, "Invalid Maker Fee");
+        require(tradeFee >= 0 && tradeFee < 1000, "Invalid Maker Fee");
         require(fromTokens.length <= MaximumTokenList, "Exceeding number of trade pairs");
         require(toTokens.length == fromTokens.length, "Not valid number of Pairs");
 
@@ -155,6 +164,12 @@ contract RelayerRegistration {
                          RELAYER_LIST[coinbase]._tradeFee,
                          RELAYER_LIST[coinbase]._fromTokens,
                          RELAYER_LIST[coinbase]._toTokens);
+    }
+
+    function updateFee(address coinbase, uint16 tradeFee) public relayerOwnerOnly(coinbase) onlyActiveRelayer(coinbase) notForSale(coinbase) {
+        require(tradeFee >= 0 && tradeFee < 1000, "Invalid Maker Fee");
+        RELAYER_LIST[coinbase]._tradeFee = tradeFee;
+        emit UpdateFeeEvent(coinbase, RELAYER_LIST[coinbase]._tradeFee);
     }
 
     // List new tokens
@@ -197,7 +212,7 @@ contract RelayerRegistration {
 
     function transfer(address coinbase, address new_owner) public relayerOwnerOnly(coinbase) onlyActiveRelayer(coinbase) notForSale(coinbase) {
         require(new_owner != address(0) && new_owner != msg.sender);
-        require(RELAYER_LIST[new_owner]._tradeFee == 0, "Owner address must not be currently used as relayer-coinbase");
+        require(RELAYER_LIST[new_owner]._owner == address(0), "Owner address must not be currently used as relayer-coinbase");
 
         RELAYER_LIST[coinbase]._owner = new_owner;
         emit TransferEvent(RELAYER_LIST[coinbase]._owner,
@@ -221,8 +236,8 @@ contract RelayerRegistration {
     function resign(address coinbase) public relayerOwnerOnly(coinbase) notForSale(coinbase) {
         require(RELAYER_LIST[coinbase]._deposit > 0, "No relayer associated with this address");
         require(RESIGN_REQUESTS[coinbase] == 0, "Request already received");
-        /// @notice: for testing contract, change `4 weeks` to 4 seconds only
         RESIGN_REQUESTS[coinbase] = now + 4 weeks;
+        ActiveRelayerCount--;
         emit ResignEvent(RESIGN_REQUESTS[coinbase],
                          RELAYER_LIST[coinbase]._deposit);
     }
@@ -350,14 +365,14 @@ contract RelayerRegistration {
 
         address[] memory rupayaPairs = new address[](RELAYER_LIST[coinbase]._toTokens.length + 1);
 
-        if (fromToken == rupayaNative || toToken == rupayaNative) {
-            return true;
-        }
-
         bool b = RupXListing.getTokenStatus(toToken) || (toToken == rupayaNative);
         b = b && (RupXListing.getTokenStatus(fromToken) || fromToken == rupayaNative);
         if (!b) {
             return false;
+        }
+
+        if (fromToken == rupayaNative || toToken == rupayaNative) {
+            return true;
         }
 
         // get tokens that paired with rupaya
@@ -393,6 +408,17 @@ contract RelayerRegistration {
             }
         }
 
+        if (count != RELAYER_LIST[coinbase]._toTokens.length) {
+            address[] memory fts = new address[](newToTokens.length-1);
+            address[] memory tts = new address[](newToTokens.length-1);
+            for (uint j = 0; j < newToTokens.length - 1; j++) {
+                fts[j] = newFromTokens[j];
+                tts[j] = newToTokens[j];
+            }
+            return (fts, tts);
+        }
+
         return (newFromTokens, newToTokens);
+       
     }
 }

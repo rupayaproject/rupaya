@@ -26,6 +26,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/prometheus/prometheus/util/flock"
 	"github.com/rupayaproject/rupaya/accounts"
 	"github.com/rupayaproject/rupaya/ethdb"
 	"github.com/rupayaproject/rupaya/event"
@@ -33,7 +34,6 @@ import (
 	"github.com/rupayaproject/rupaya/log"
 	"github.com/rupayaproject/rupaya/p2p"
 	"github.com/rupayaproject/rupaya/rpc"
-	"github.com/prometheus/prometheus/util/flock"
 )
 
 // Node is a container on which services can be registered.
@@ -482,6 +482,9 @@ func (n *Node) Stop() error {
 		return ErrNodeStopped
 	}
 
+	for _, service := range n.services {
+		service.SaveData()
+	}
 	// Terminate the API, services and the p2p server.
 	n.stopWS()
 	n.stopHTTP()

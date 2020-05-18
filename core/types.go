@@ -21,7 +21,8 @@ import (
 	"github.com/rupayaproject/rupaya/core/state"
 	"github.com/rupayaproject/rupaya/core/types"
 	"github.com/rupayaproject/rupaya/core/vm"
-	"github.com/rupayaproject/rupaya/rupx/rupx_state"
+	"github.com/rupayaproject/rupaya/rupx/tradingstate"
+	"github.com/rupayaproject/rupaya/rupxlending/lendingstate"
 	"math/big"
 )
 
@@ -37,7 +38,9 @@ type Validator interface {
 	// gas used.
 	ValidateState(block, parent *types.Block, state *state.StateDB, receipts types.Receipts, usedGas uint64) error
 
-	ValidateMatchingOrder(statedb *state.StateDB, rupxStatedb *rupx_state.RupXStateDB, txMatchBatch rupx_state.TxMatchBatch, coinbase common.Address) error
+	ValidateTradingOrder(statedb *state.StateDB, rupxStatedb *tradingstate.TradingStateDB, txMatchBatch tradingstate.TxMatchBatch, coinbase common.Address) error
+
+	ValidateLendingOrder(statedb *state.StateDB, lendingStateDb *lendingstate.LendingStateDB, rupxStatedb *tradingstate.TradingStateDB, batch lendingstate.TxLendingBatch, coinbase common.Address, headr *types.Header) error
 }
 
 // Processor is an interface for processing blocks using a given initial state.

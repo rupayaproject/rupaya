@@ -27,6 +27,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/rupayaproject/rupaya/rupxlending"
+
 	"github.com/rupayaproject/rupaya/accounts/abi/bind"
 	"github.com/rupayaproject/rupaya/common/hexutil"
 	"github.com/rupayaproject/rupaya/core/state"
@@ -81,6 +83,7 @@ type Ethereum struct {
 	// Handlers
 	txPool          *core.TxPool
 	orderPool       *core.OrderPool
+	lendingPool     *core.LendingPool
 	blockchain      *core.BlockChain
 	protocolManager *ProtocolManager
 	lesServer       LesServer
@@ -104,8 +107,9 @@ type Ethereum struct {
 	networkId     uint64
 	netRPCService *ethapi.PublicNetAPI
 
-	lock  sync.RWMutex // Protects the variadic fields (e.g. gas price and etherbase)
-	RupX *rupx.RupX
+	lock    sync.RWMutex // Protects the variadic fields (e.g. gas price and etherbase)
+	RupX   *rupx.RupX
+	Lending *rupxlending.Lending
 }
 
 func (s *Ethereum) AddLesServer(ls LesServer) {
@@ -115,7 +119,7 @@ func (s *Ethereum) AddLesServer(ls LesServer) {
 
 // New creates a new Ethereum object (including the
 // initialisation of the common Ethereum object)
-func New(ctx *node.ServiceContext, config *Config, rupXServ *rupx.RupX) (*Ethereum, error) {
+func New(ctx *node.ServiceContext, config *Config, rupXServ *rupx.RupX, lendingServ *rupxlending.Lending) (*Ethereum, error) {
 	if config.SyncMode == downloader.LightSync {
 		return nil, errors.New("can't run eth.Ethereum in light sync mode, use les.LightEthereum")
 	}
@@ -153,6 +157,9 @@ func New(ctx *node.ServiceContext, config *Config, rupXServ *rupx.RupX) (*Ethere
 	if rupXServ != nil {
 		eth.RupX = rupXServ
 	}
+	if lendingServ != nil {
+		eth.Lending = lendingServ
+	}
 	log.Info("Initialising Ethereum protocol", "versions", ProtocolVersions, "network", config.NetworkId)
 
 	if !config.SkipBcVersionCheck {
@@ -168,11 +175,14 @@ func New(ctx *node.ServiceContext, config *Config, rupXServ *rupx.RupX) (*Ethere
 	)
 	if eth.chainConfig.Posv != nil {
 		c := eth.engine.(*posv.Posv)
-		c.GetRupXService = func() posv.RupXService {
+		c.GetRupXService = func() posv.TradingService {
 			return eth.RupX
 		}
+		c.GetLendingService = func() posv.LendingService {
+			return eth.Lending
+		}
 	}
-	eth.blockchain, err = core.NewBlockChainEx(chainDb, rupXServ.GetDB(), cacheConfig, eth.chainConfig, eth.engine, vmConfig)
+	eth.blockchain, err = core.NewBlockChainEx(chainDb, rupXServ.GetLevelDB(), cacheConfig, eth.chainConfig, eth.engine, vmConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -189,6 +199,7 @@ func New(ctx *node.ServiceContext, config *Config, rupXServ *rupx.RupX) (*Ethere
 	}
 	eth.txPool = core.NewTxPool(config.TxPool, eth.chainConfig, eth.blockchain)
 	eth.orderPool = core.NewOrderPool(eth.chainConfig, eth.blockchain)
+	eth.lendingPool = core.NewLendingPool(eth.chainConfig, eth.blockchain)
 	if common.RollbackHash != common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000") {
 		curBlock := eth.blockchain.CurrentBlock()
 		prevBlock := eth.blockchain.GetBlockByHash(common.RollbackHash)
@@ -208,7 +219,7 @@ func New(ctx *node.ServiceContext, config *Config, rupXServ *rupx.RupX) (*Ethere
 		}
 	}
 
-	if eth.protocolManager, err = NewProtocolManagerEx(eth.chainConfig, config.SyncMode, config.NetworkId, eth.eventMux, eth.txPool, eth.orderPool, eth.engine, eth.blockchain, chainDb); err != nil {
+	if eth.protocolManager, err = NewProtocolManagerEx(eth.chainConfig, config.SyncMode, config.NetworkId, eth.eventMux, eth.txPool, eth.orderPool, eth.lendingPool, eth.engine, eth.blockchain, chainDb); err != nil {
 		return nil, err
 	}
 	eth.miner = miner.New(eth, eth.chainConfig, eth.EventMux(), eth.engine, ctx.GetConfig().AnnounceTxs)
@@ -862,7 +873,9 @@ func (s *Ethereum) Start(srvr *p2p.Server) error {
 	}
 	return nil
 }
-
+func (s *Ethereum) SaveData()  {
+	s.blockchain.SaveData()
+}
 // Stop implements node.Service, terminating all internal goroutines used by the
 // Ethereum protocol.
 func (s *Ethereum) Stop() error {
@@ -940,4 +953,13 @@ func (s *Ethereum) GetRupX() *rupx.RupX {
 
 func (s *Ethereum) OrderPool() *core.OrderPool {
 	return s.orderPool
+}
+
+func (s *Ethereum) GetRupXLending() *rupxlending.Lending {
+	return s.Lending
+}
+
+// LendingPool geth eth lending pool
+func (s *Ethereum) LendingPool() *core.LendingPool {
+	return s.lendingPool
 }

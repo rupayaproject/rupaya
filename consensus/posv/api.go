@@ -16,6 +16,8 @@
 package posv
 
 import (
+	"math/big"
+
 	"github.com/rupayaproject/rupaya/common"
 	"github.com/rupayaproject/rupaya/consensus"
 	"github.com/rupayaproject/rupaya/core/types"
@@ -27,6 +29,14 @@ import (
 type API struct {
 	chain consensus.ChainReader
 	posv  *Posv
+}
+type NetworkInformation struct {
+	NetworkId                  *big.Int
+	RupayaValidatorAddress     common.Address
+	RelayerRegistrationAddress common.Address
+	RupXListingAddress         common.Address
+	RupZAddress                common.Address
+	LendingAddress             common.Address
 }
 
 // GetSnapshot retrieves the state snapshot at a given block.
@@ -87,14 +97,22 @@ func (api *API) GetSignersAtHash(hash common.Hash) ([]common.Address, error) {
 	return snap.GetSigners(), nil
 }
 
-// Proposals returns the current proposals the node tries to uphold and vote on.
-func (api *API) Proposals() map[common.Address]bool {
+func (api *API) NetworkInformation() NetworkInformation {
 	api.posv.lock.RLock()
 	defer api.posv.lock.RUnlock()
-
-	proposals := make(map[common.Address]bool)
-	for address, auth := range api.posv.proposals {
-		proposals[address] = auth
+	info := NetworkInformation{}
+	info.NetworkId = api.chain.Config().ChainId
+	info.RupayaValidatorAddress = common.HexToAddress(common.MasternodeVotingSMC)
+	if common.IsTestnet {
+		info.LendingAddress = common.HexToAddress(common.LendingRegistrationSMCTestnet)
+		info.RelayerRegistrationAddress = common.HexToAddress(common.RelayerRegistrationSMCTestnet)
+		info.RupXListingAddress = common.RupXListingSMCTestNet
+		info.RupZAddress = common.RRC21IssuerSMCTestNet
+	} else {
+		info.LendingAddress = common.HexToAddress(common.LendingRegistrationSMC)
+		info.RelayerRegistrationAddress = common.HexToAddress(common.RelayerRegistrationSMC)
+		info.RupXListingAddress = common.RupXListingSMC
+		info.RupZAddress = common.RRC21IssuerSMC
 	}
-	return proposals
+	return info
 }

@@ -353,6 +353,21 @@ func (pool *TxPool) validateTx(ctx context.Context, tx *types.Transaction) error
 		return fmt.Errorf("Reject transaction with receiver in black-list: %v", tx.To().Hex())
 	}
 
+	// validate minFee slot for RupZ
+	if tx.IsRupZApplyTransaction() {
+		copyState := pool.currentState(ctx).Copy()
+		if err := core.ValidateRupZApplyTransaction(pool.chain, nil, copyState, common.BytesToAddress(tx.Data()[4:])); err != nil {
+			return err
+		}
+	}
+	// validate balance slot, token decimal for RupX
+	if tx.IsRupXApplyTransaction() {
+		copyState := pool.currentState(ctx).Copy()
+		if err := core.ValidateRupXApplyTransaction(pool.chain, nil, copyState, common.BytesToAddress(tx.Data()[4:])); err != nil {
+			return err
+		}
+	}
+
 	// Validate the transaction sender and it's sig. Throw
 	// if the from fields is invalid.
 	if from, err = types.Sender(pool.signer, tx); err != nil {

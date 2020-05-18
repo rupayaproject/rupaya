@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	RewardMasterPercent        = 40 
+	RewardMasterPercent        = 40
 	RewardVoterPercent         = 50
 	RewardFoundationPercent    = 10
 	HexSignMethod              = "e341eaa4"
@@ -23,6 +23,8 @@ const (
 	RangeReturnSigner          = 150
 	MinimunMinerBlockPerEpoch  = 1
 	//IgnoreSignerCheckBlock     = uint64(14458500)
+	OneYear                    = uint64(365 * 86400)
+	LiquidateLendingTradeBlock = uint64(100)
 )
 
 var RIP2019Block = big.NewInt(0)
@@ -34,18 +36,30 @@ var RIPRupXTestnet = big.NewInt(11303000)
 var IsTestnet bool = false
 var StoreRewardFolder string
 var RollbackHash Hash
-var BasePrice = big.NewInt(1000000000000000000) // 1
-var RelayerLockedFund = big.NewInt(20000)       // 20000 RUPX
-var RelayerFee = big.NewInt(1000000000000000)   // 0.001
-var RupXBaseFee = big.NewInt(10000)
-var RelayerCancelFee = big.NewInt(100000000000000) // 0.0001
-var RupXBaseCancelFee = big.NewInt(10000)          // 1/10000
+var BasePrice = big.NewInt(1000000000000000000)                       // 1
+var RelayerLockedFund = big.NewInt(20000)                             // 20000 RUPX
+var RelayerFee = big.NewInt(1000000000000000)                         // 0.001
+var RupXBaseFee = big.NewInt(10000)                                   // 1 / RupXBaseFee
+var RelayerCancelFee = big.NewInt(100000000000000)                    // 0.0001
+var RupXBaseCancelFee = new(big.Int).Mul(RupXBaseFee, big.NewInt(10)) // 1/ (RupXBaseFee *10)
+var RelayerLendingFee = big.NewInt(10000000000000000)                 // 0.01
+var RelayerLendingCancelFee = big.NewInt(1000000000000000)            // 0.001
+var BaseLendingInterest = big.NewInt(100000000)                       // 1e8
 
 var MinGasPrice = big.NewInt(DefaultMinGasPrice)
+var RelayerRegistrationSMC = "0x16c63b79f9C8784168103C0b74E6A59EC2de4a02"
+var RelayerRegistrationSMCTestnet = "0xe7c16037992bEcAFaeeE779Dacaf8991637953F3"
+var LendingRegistrationSMC = "0x7d761afd7ff65a79e4173897594a194e3c506e57"
+var LendingRegistrationSMCTestnet = "0x4d7eA2cE949216D6b120f3AA10164173615A2b6C"
 var RRC21IssuerSMCTestNet = HexToAddress("0x7081C72c9DC44686C7B7EAB1d338EA137Fa9f0D3")
 var RRC21IssuerSMC = HexToAddress("0x8c0faeb5C6bEd2129b8674F262Fd45c4e9468bee")
+var RupXListingSMC = HexToAddress("0xDE34dD0f536170993E8CFF639DdFfCF1A85D3E53")
+var RupXListingSMCTestNet = HexToAddress("0x80430A33EaB86890a346bCf64F86CFeAC73287f3")
 var RRC21GasPriceBefore = big.NewInt(2500)
 var RRC21GasPrice = big.NewInt(250000000)
+var RateTopUp = big.NewInt(90) // 90%
+var BaseTopUp = big.NewInt(100)
+var BaseRecall = big.NewInt(100)
 var Blacklist = map[Address]bool{
 	//HexToAddress("0x5248bfb72fd4f234e062d3e9bb76f08643004fcd"): true,
 	//HexToAddress("0x5ac26105b35ea8935be382863a70281ec7a985e9"): true,
@@ -109,3 +123,4 @@ var Blacklist = map[Address]bool{
 	//HexToAddress("0xe187cf86c2274b1f16e8225a7da9a75aba4f1f5f"): true,
 }
 var RIPRRC21Fee = big.NewInt(13523400)
+var LimitTimeFinality = uint64(30) // limit in 30 block

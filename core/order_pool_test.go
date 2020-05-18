@@ -2,17 +2,18 @@ package core
 
 import (
 	"context"
-	"github.com/rupayaproject/rupaya/common"
-	"github.com/rupayaproject/rupaya/core/types"
-	"github.com/rupayaproject/rupaya/crypto"
-	"github.com/rupayaproject/rupaya/ethclient"
-	"github.com/rupayaproject/rupaya/rpc"
 	"log"
 	"math/big"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/rupayaproject/rupaya/common"
+	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/crypto"
+	"github.com/rupayaproject/rupaya/ethclient"
+	"github.com/rupayaproject/rupaya/rpc"
 )
 
 type OrderMsg struct {
@@ -26,7 +27,6 @@ type OrderMsg struct {
 	Status          string         `json:"status,omitempty"`
 	Side            string         `json:"side,omitempty"`
 	Type            string         `json:"type,omitempty"`
-	PairName        string         `json:"pairName,omitempty"`
 	OrderID         uint64         `json:"orderid,omitempty"`
 	// Signature values
 	V *big.Int `json:"v" gencodec:"required"`
@@ -36,6 +36,23 @@ type OrderMsg struct {
 	// This is only used when marshaling to JSON.
 	Hash common.Hash `json:"hash" rlp:"-"`
 }
+
+var (
+	BTCAddress = common.HexToAddress("0xC2fa1BA90b15E3612E0067A0020192938784D9C5")
+	ETHAddress = common.HexToAddress("0xAad540ac542C3688652a3fc7b8e21B3fC1D097e9")
+	XRPAddress = common.HexToAddress("0x5dc27D59bB80E0EF853Bb2e27B94113DF08F547F")
+	LTCAddress = common.HexToAddress("0x6F98655A8fa7AEEF3147ee002c666d09c7AA4F5c")
+	BNBAddress = common.HexToAddress("0xaC389aCA56394a5B14918cF6437600760B6c650C")
+	ADAAddress = common.HexToAddress("0x576201Ac3f1E0fe483a9320DaCc4B08EB3E58306")
+	ETCAddress = common.HexToAddress("0xf992cf45394dAc5f50A26446de17803a79B940da")
+	BCHAddress = common.HexToAddress("0xFDF68dE6dFFd893221fc9f7985FeBC2AB20761A6")
+	EOSAddress = common.HexToAddress("0xd9bb01454c85247B2ef35BB5BE57384cC275a8cf")
+	USDAddress = common.HexToAddress("0x45c25041b8e6CBD5c963E7943007187C3673C7c9")
+	_1E18      = new(big.Int).Mul(big.NewInt(10000000000000000), big.NewInt(100))
+	_1E17      = new(big.Int).Mul(big.NewInt(10000000000000000), big.NewInt(10))
+	_1E8       = big.NewInt(100000000)
+	_1E7       = big.NewInt(10000000)
+)
 
 func getNonce(t *testing.T, userAddress common.Address) (uint64, error) {
 	rpcClient, err := rpc.DialHTTP("http://127.0.0.1:8501")
@@ -73,15 +90,14 @@ func testSendOrder(t *testing.T, amount, price *big.Int, side string, status str
 		Price:           price,
 		ExchangeAddress: common.HexToAddress("0x0D3ab14BBaD3D99F4203bd7a11aCB94882050E7e"),
 		UserAddress:     crypto.PubkeyToAddress(privateKey.PublicKey),
-		BaseToken:       common.HexToAddress("0x4d7eA2cE949216D6b120f3AA10164173615A2b6C"),
-		QuoteToken:      common.HexToAddress("0x0000000000000000000000000000000000000001"),
+		BaseToken:       common.HexToAddress(common.RupayaNativeAddress),
+		QuoteToken:      BTCAddress,
 		Status:          status,
 		Side:            side,
 		Type:            "LO",
-		PairName:        "BTC/RUPX",
 	}
 	nonce, _ := getNonce(t, msg.UserAddress)
-	tx := types.NewOrderTransaction(nonce, msg.Quantity, msg.Price, msg.ExchangeAddress, msg.UserAddress, msg.BaseToken, msg.QuoteToken, msg.Status, msg.Side, msg.Type, msg.PairName, common.Hash{}, orderID)
+	tx := types.NewOrderTransaction(nonce, msg.Quantity, msg.Price, msg.ExchangeAddress, msg.UserAddress, msg.BaseToken, msg.QuoteToken, msg.Status, msg.Side, msg.Type, common.Hash{}, orderID)
 	signedTx, err := types.OrderSignTx(tx, types.OrderTxSigner{}, privateKey)
 	if err != nil {
 		log.Print(err)
@@ -109,15 +125,14 @@ func testSendOrderRUPXUSD(t *testing.T, amount, price *big.Int, side string, sta
 		Price:           price,
 		ExchangeAddress: common.HexToAddress("0x0D3ab14BBaD3D99F4203bd7a11aCB94882050E7e"),
 		UserAddress:     crypto.PubkeyToAddress(privateKey.PublicKey),
-		BaseToken:       common.HexToAddress("0x0000000000000000000000000000000000000001"),
-		QuoteToken:      common.HexToAddress("0xd9bb01454c85247B2ef35BB5BE57384cC275a8cf"),
+		BaseToken:       common.HexToAddress(common.RupayaNativeAddress),
+		QuoteToken:      USDAddress,
 		Status:          status,
 		Side:            side,
 		Type:            "LO",
-		PairName:        "RUPX/USD",
 	}
 	nonce, _ := getNonce(t, msg.UserAddress)
-	tx := types.NewOrderTransaction(nonce, msg.Quantity, msg.Price, msg.ExchangeAddress, msg.UserAddress, msg.BaseToken, msg.QuoteToken, msg.Status, msg.Side, msg.Type, msg.PairName, common.Hash{}, orderID)
+	tx := types.NewOrderTransaction(nonce, msg.Quantity, msg.Price, msg.ExchangeAddress, msg.UserAddress, msg.BaseToken, msg.QuoteToken, msg.Status, msg.Side, msg.Type, common.Hash{}, orderID)
 	signedTx, err := types.OrderSignTx(tx, types.OrderTxSigner{}, privateKey)
 	if err != nil {
 		log.Print(err)
@@ -145,15 +160,49 @@ func testSendOrderBTCUSD(t *testing.T, amount, price *big.Int, side string, stat
 		Price:           price,
 		ExchangeAddress: common.HexToAddress("0x0D3ab14BBaD3D99F4203bd7a11aCB94882050E7e"),
 		UserAddress:     crypto.PubkeyToAddress(privateKey.PublicKey),
-		BaseToken:       common.HexToAddress("0x4d7eA2cE949216D6b120f3AA10164173615A2b6C"),
-		QuoteToken:      common.HexToAddress("0xd9bb01454c85247B2ef35BB5BE57384cC275a8cf"),
+		BaseToken:       BTCAddress,
+		QuoteToken:      USDAddress,
 		Status:          status,
 		Side:            side,
 		Type:            "LO",
-		PairName:        "BTC/USD",
 	}
 	nonce, _ := getNonce(t, msg.UserAddress)
-	tx := types.NewOrderTransaction(nonce, msg.Quantity, msg.Price, msg.ExchangeAddress, msg.UserAddress, msg.BaseToken, msg.QuoteToken, msg.Status, msg.Side, msg.Type, msg.PairName, common.Hash{}, orderID)
+	tx := types.NewOrderTransaction(nonce, msg.Quantity, msg.Price, msg.ExchangeAddress, msg.UserAddress, msg.BaseToken, msg.QuoteToken, msg.Status, msg.Side, msg.Type, common.Hash{}, orderID)
+	signedTx, err := types.OrderSignTx(tx, types.OrderTxSigner{}, privateKey)
+	if err != nil {
+		log.Print(err)
+	}
+
+	err = client.SendOrderTransaction(context.Background(), signedTx)
+	if err != nil {
+		log.Print(err)
+	}
+}
+
+func testSendOrderRUPXBTC(t *testing.T, amount, price *big.Int, side string, status string, orderID uint64) {
+
+	client, err := ethclient.Dial("http://127.0.0.1:8501")
+	if err != nil {
+		log.Print(err)
+	}
+
+	privateKey, err := crypto.HexToECDSA("65ec4d4dfbcac594a14c36baa462d6f73cd86134840f6cf7b80a1e1cd33473e2")
+	if err != nil {
+		log.Print(err)
+	}
+	msg := &OrderMsg{
+		Quantity:        amount,
+		Price:           price,
+		ExchangeAddress: common.HexToAddress("0x0D3ab14BBaD3D99F4203bd7a11aCB94882050E7e"),
+		UserAddress:     crypto.PubkeyToAddress(privateKey.PublicKey),
+		BaseToken:       common.HexToAddress(common.RupayaNativeAddress),
+		QuoteToken:      BTCAddress,
+		Status:          status,
+		Side:            side,
+		Type:            "LO",
+	}
+	nonce, _ := getNonce(t, msg.UserAddress)
+	tx := types.NewOrderTransaction(nonce, msg.Quantity, msg.Price, msg.ExchangeAddress, msg.UserAddress, msg.BaseToken, msg.QuoteToken, msg.Status, msg.Side, msg.Type, common.Hash{}, orderID)
 	signedTx, err := types.OrderSignTx(tx, types.OrderTxSigner{}, privateKey)
 	if err != nil {
 		log.Print(err)
@@ -181,15 +230,14 @@ func testSendOrderETHBTC(t *testing.T, amount, price *big.Int, side string, stat
 		Price:           price,
 		ExchangeAddress: common.HexToAddress("0x0D3ab14BBaD3D99F4203bd7a11aCB94882050E7e"),
 		UserAddress:     crypto.PubkeyToAddress(privateKey.PublicKey),
-		BaseToken:       common.HexToAddress("0xC2fa1BA90b15E3612E0067A0020192938784D9C5"),
-		QuoteToken:      common.HexToAddress("0x4d7eA2cE949216D6b120f3AA10164173615A2b6C"),
+		BaseToken:       ETHAddress,
+		QuoteToken:      BTCAddress,
 		Status:          status,
 		Side:            side,
 		Type:            "LO",
-		PairName:        "ETH/BTC",
 	}
 	nonce, _ := getNonce(t, msg.UserAddress)
-	tx := types.NewOrderTransaction(nonce, msg.Quantity, msg.Price, msg.ExchangeAddress, msg.UserAddress, msg.BaseToken, msg.QuoteToken, msg.Status, msg.Side, msg.Type, msg.PairName, common.Hash{}, orderID)
+	tx := types.NewOrderTransaction(nonce, msg.Quantity, msg.Price, msg.ExchangeAddress, msg.UserAddress, msg.BaseToken, msg.QuoteToken, msg.Status, msg.Side, msg.Type, common.Hash{}, orderID)
 	signedTx, err := types.OrderSignTx(tx, types.OrderTxSigner{}, privateKey)
 	if err != nil {
 		log.Print(err)
@@ -210,21 +258,45 @@ func TestSendSellOrder(t *testing.T) {
 }
 func TestFilled(t *testing.T) {
 	//BTC/RUPX
-	price := new(big.Int).Mul(big.NewInt(1000000000000000000), big.NewInt(5000))
-	testSendOrderRUPXUSD(t, new(big.Int).Mul(big.NewInt(1000000000000000000), big.NewInt(5000)), price, "BUY", "NEW", 0)
+	//price := new(big.Int).Mul(big.NewInt(1000000000000000000), big.NewInt(5000))
+	//testSendOrderRUPXUSD(t, new(big.Int).Mul(big.NewInt(1000000000000000000), big.NewInt(5000)), price, "BUY", "NEW", 0)
 	//ETH/BTC
-	price = new(big.Int).Mul(big.NewInt(10000000000000000), big.NewInt(20000))
-	testSendOrderBTCUSD(t, new(big.Int).SetUint64(1000000000), price, "BUY", "NEW", 0)
-	time.Sleep(5 * time.Second)
-	testSendOrderBTCUSD(t, new(big.Int).SetUint64(1000000000), price, "SELL", "NEW", 0)
-	time.Sleep(5 * time.Second)
-	testSendOrderBTCUSD(t, new(big.Int).SetUint64(100000000000000000), price, "BUY", "NEW", 0)
-	time.Sleep(5 * time.Second)
-	testSendOrderBTCUSD(t, new(big.Int).SetUint64(100000000000000000), price, "BUY", "NEW", 0)
-	time.Sleep(5 * time.Second)
-	testSendOrderBTCUSD(t, new(big.Int).SetUint64(200000000000000000), price, "SELL", "NEW", 0)
-	time.Sleep(5 * time.Second)
-	testSendOrderBTCUSD(t, new(big.Int).SetUint64(100000000), price, "SELL", "NEW", 0)
+
+	BTCUSDPrice := new(big.Int).Mul(_1E8, big.NewInt(10000)) // 10000
+	time.Sleep(2 * time.Second)
+	testSendOrderBTCUSD(t, _1E18, BTCUSDPrice, "BUY", "NEW", 0)
+	time.Sleep(2 * time.Second)
+	testSendOrderBTCUSD(t, _1E18, BTCUSDPrice, "BUY", "NEW", 0)
+	time.Sleep(2 * time.Second)
+	testSendOrderBTCUSD(t, new(big.Int).Mul(big.NewInt(2), _1E18), BTCUSDPrice, "SELL", "NEW", 0)
+
+	RUPXBTCPrice := new(big.Int).Mul(big.NewInt(10000000000000), big.NewInt(6)) // 0.00006
+	time.Sleep(2 * time.Second)
+	testSendOrderRUPXBTC(t, new(big.Int).Mul(big.NewInt(600000), _1E18), RUPXBTCPrice, "BUY", "NEW", 0)
+	time.Sleep(2 * time.Second)
+	testSendOrderRUPXBTC(t, new(big.Int).Mul(big.NewInt(600000), _1E18), RUPXBTCPrice, "BUY", "NEW", 0)
+	time.Sleep(2 * time.Second)
+	testSendOrderRUPXBTC(t, new(big.Int).Mul(big.NewInt(1200000), _1E18), RUPXBTCPrice, "SELL", "NEW", 0)
+
+	RUPXUSDPrice := new(big.Int).Mul(_1E7, big.NewInt(6)) // 0.6
+	time.Sleep(2 * time.Second)
+	testSendOrderRUPXUSD(t, new(big.Int).Mul(big.NewInt(600000), _1E18), RUPXUSDPrice, "BUY", "NEW", 0)
+	time.Sleep(2 * time.Second)
+	testSendOrderRUPXUSD(t, new(big.Int).Mul(big.NewInt(600000), _1E18), RUPXUSDPrice, "BUY", "NEW", 0)
+	time.Sleep(2 * time.Second)
+	testSendOrderRUPXUSD(t, new(big.Int).Mul(big.NewInt(1200000), _1E18), RUPXUSDPrice, "SELL", "NEW", 0)
+
+}
+
+func TestX10Filled(t *testing.T) {
+	RUPXUSDPrice := new(big.Int).Mul(_1E7, big.NewInt(60)) // 6
+	time.Sleep(2 * time.Second)
+	testSendOrderRUPXUSD(t, new(big.Int).Mul(big.NewInt(600000), _1E18), RUPXUSDPrice, "BUY", "NEW", 0)
+	time.Sleep(2 * time.Second)
+	testSendOrderRUPXUSD(t, new(big.Int).Mul(big.NewInt(600000), _1E18), RUPXUSDPrice, "BUY", "NEW", 0)
+	time.Sleep(2 * time.Second)
+	testSendOrderRUPXUSD(t, new(big.Int).Mul(big.NewInt(1200000), _1E18), RUPXUSDPrice, "SELL", "NEW", 0)
+
 }
 func TestPartialFilled(t *testing.T) {
 
@@ -234,9 +306,10 @@ func TestNoMatch(t *testing.T) {
 }
 
 func TestCancelOrder(t *testing.T) {
-	//testSendOrder(t, new(big.Int).SetUint64(48), new(big.Int).SetUint64(15), "BUY", "NEW", 0)
-	//time.Sleep(5 * time.Second)
-	testSendOrder(t, new(big.Int).SetUint64(48), new(big.Int).SetUint64(15), "BUY", "CANCELLED", 3)
-	//time.Sleep(5 * time.Second)
+	RUPXBTCPrice := new(big.Int).Mul(big.NewInt(10000000000000), big.NewInt(6)) // 0.00006
+	testSendOrder(t, new(big.Int).Mul(big.NewInt(600000), _1E18), RUPXBTCPrice, "BUY", "NEW", 0)
+	time.Sleep(5 * time.Second)
+	testSendOrder(t, new(big.Int).Mul(big.NewInt(600000), _1E18), RUPXBTCPrice, "BUY", "CANCELLED", 3)
+	time.Sleep(5 * time.Second)
 	//testSendOrder(t, new(big.Int).SetUint64(48), new(big.Int).SetUint64(15), "SELL", "NEW", 0)
 }
