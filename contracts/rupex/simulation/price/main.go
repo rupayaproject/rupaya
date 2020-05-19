@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/rupayaproject/rupaya/contracts/rupx"
+	rupx "github.com/rupayaproject/rupaya/contracts/rupex"
 	"github.com/rupayaproject/rupaya/core/state"
 	"github.com/rupayaproject/rupaya/rupxlending/lendingstate"
 

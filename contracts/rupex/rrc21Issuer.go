@@ -1,10 +1,11 @@
 package rupx
 
 import (
+	"math/big"
+
 	"github.com/rupayaproject/rupaya/accounts/abi/bind"
 	"github.com/rupayaproject/rupaya/common"
-	"github.com/rupayaproject/rupaya/contracts/rupx/contract"
-	"math/big"
+	"github.com/rupayaproject/rupaya/contracts/rupex/contract"
 )
 
 type RRC21Issuer struct {

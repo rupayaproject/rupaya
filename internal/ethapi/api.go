@@ -27,17 +27,25 @@ import (
 	"time"
 
 	"github.com/rupayaproject/rupaya/accounts"
+	"github.com/rupayaproject/rupaya/accounts/abi/bind"
 	"github.com/rupayaproject/rupaya/accounts/keystore"
 	"github.com/rupayaproject/rupaya/common"
 	"github.com/rupayaproject/rupaya/common/hexutil"
 	"github.com/rupayaproject/rupaya/common/math"
+	"github.com/rupayaproject/rupaya/consensus/ethash"
 	"github.com/rupayaproject/rupaya/consensus/posv"
+	contractValidator "github.com/rupayaproject/rupaya/contracts/validator/contract"
+	"github.com/rupayaproject/rupaya/core"
+	"github.com/rupayaproject/rupaya/core/state"
 	"github.com/rupayaproject/rupaya/core/types"
+	"github.com/rupayaproject/rupaya/core/vm"
 	"github.com/rupayaproject/rupaya/crypto"
 	"github.com/rupayaproject/rupaya/log"
+	"github.com/rupayaproject/rupaya/p2p"
 	"github.com/rupayaproject/rupaya/params"
 	"github.com/rupayaproject/rupaya/rlp"
 	"github.com/rupayaproject/rupaya/rpc"
+
 	"github.com/rupayaproject/rupaya/rupxlending/lendingstate"
 
 	"github.com/rupayaproject/rupaya/rupx/tradingstate"
@@ -2543,7 +2551,6 @@ func (s *PublicRupXTransactionPoolAPI) GetLendingOrderById(ctx context.Context, 
 	return lendingItem, nil
 }
 
-
 func (s *PublicRupXTransactionPoolAPI) GetLendingTradeById(ctx context.Context, lendingToken common.Address, term uint64, tradeId uint64) (lendingstate.LendingTrade, error) {
 	lendingItem := lendingstate.LendingTrade{}
 	block := s.b.CurrentBlock()
@@ -2566,6 +2573,7 @@ func (s *PublicRupXTransactionPoolAPI) GetLendingTradeById(ctx context.Context, 
 	}
 	return lendingItem, nil
 }
+
 // Sign calculates an ECDSA signature for:
 // keccack256("\x19Ethereum Signed Message:\n" + len(message) + message).
 //

@@ -24,6 +24,8 @@ import (
 	"math/big"
 	"path/filepath"
 
+	"github.com/rupayaproject/rupaya/rupxlending"
+
 	"github.com/rupayaproject/rupaya/rupx"
 
 	"github.com/rupayaproject/rupaya/accounts"

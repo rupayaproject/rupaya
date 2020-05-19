@@ -8,12 +8,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/rupayaproject/rupaya/contracts/rupx/simulation"
-	"github.com/rupayaproject/rupaya/rupx"
+	"github.com/rupayaproject/rupaya/contracts/rupex/simulation"
 
 	"github.com/rupayaproject/rupaya/accounts/abi/bind"
 	"github.com/rupayaproject/rupaya/common"
-	"github.com/rupayaproject/rupaya/contracts/rupx"
+	rupx "github.com/rupayaproject/rupaya/contracts/rupex"
 	"github.com/rupayaproject/rupaya/crypto"
 	"github.com/rupayaproject/rupaya/ethclient"
 )

@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/rupayaproject/rupaya/contracts/rupx/contract"
+	"github.com/rupayaproject/rupaya/contracts/rupex/contract"
 	"github.com/rupayaproject/rupaya/log"
 
 	ethereum "github.com/rupayaproject/rupaya"

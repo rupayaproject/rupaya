@@ -26,7 +26,7 @@ import (
 	"github.com/rupayaproject/rupaya/accounts/abi"
 	"github.com/rupayaproject/rupaya/common"
 	"github.com/rupayaproject/rupaya/consensus"
-	"github.com/rupayaproject/rupaya/contracts/rupx/contract"
+	"github.com/rupayaproject/rupaya/contracts/rupex/contract"
 	"github.com/rupayaproject/rupaya/core/state"
 	"github.com/rupayaproject/rupaya/core/vm"
 	"github.com/rupayaproject/rupaya/log"

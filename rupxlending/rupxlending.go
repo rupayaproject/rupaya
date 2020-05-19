@@ -9,10 +9,9 @@ import (
 	"time"
 
 	"github.com/rupayaproject/rupaya/consensus"
-	"github.com/rupayaproject/rupaya/rupx"
-	"github.com/rupayaproject/rupaya/contracts/rupx"
 	"github.com/rupayaproject/rupaya/core/types"
 	"github.com/rupayaproject/rupaya/p2p"
+	"github.com/rupayaproject/rupaya/rupx"
 	"github.com/rupayaproject/rupaya/rupx/tradingstate"
 	"github.com/rupayaproject/rupaya/rupxDAO"
 	"github.com/rupayaproject/rupaya/rupxlending/lendingstate"

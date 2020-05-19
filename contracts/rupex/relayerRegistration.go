@@ -5,7 +5,7 @@ import (
 
 	"github.com/rupayaproject/rupaya/accounts/abi/bind"
 	"github.com/rupayaproject/rupaya/common"
-	"github.com/rupayaproject/rupaya/contracts/rupx/contract"
+	"github.com/rupayaproject/rupaya/contracts/rupex/contract"
 )
 
 type RelayerRegistration struct {
